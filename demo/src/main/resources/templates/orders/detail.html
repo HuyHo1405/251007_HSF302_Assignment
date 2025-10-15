@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Chi tiết đơn hàng</title>
+</head>
+<body>
+<h1>Chi tiết đơn hàng</h1>
+<p>ID: <span th:text="${order.id}"></span></p>
+<p>User: <span th:text="${order.userFullName}"></span></p>
+<p>Status: <span th:text="${order.status}"></span></p>
+<p>Địa chỉ: <span th:text="${order.shippingAddress}"></span></p>
+<p>Tổng tiền: <span th:text="${order.totalPrice}"></span></p>
+
+<!-- PAYMENT SECTION -->
+<h3>Thông tin thanh toán</h3>
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Phương thức</th>
+        <th>Số tiền</th>
+        <th>Trạng thái</th>
+        <th>Ngày thanh toán</th>
+        <th>Hành động</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="payment : ${payments}">
+        <td th:text="${payment.id}"></td>
+        <td th:text="${payment.paymentMethod}"></td>
+        <td th:text="${payment.amount}"></td>
+        <td th:text="${payment.status}"></td>
+        <td th:text="${payment.paidAt}"></td>
+        <td>
+            <form th:action="@{'/orders/' + ${order.id} + '/payments/' + ${payment.id} + '/complete'}" method="post" th:if="${payment.status}=='pending'">
+                <button type="submit">Hoàn thành</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<a th:href="@{'/orders/' + ${order.id} + '/payments/create'}">Thêm thanh toán mới</a>
+
+<!-- PRODUCT LIST -->
+<h3>Danh sách sản phẩm</h3>
+<table>
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Tên sản phẩm</th>
+        <th>Số lượng</th>
+        <th>Đơn giá</th>
+        <th>Thành tiền</th>
+        <th>Thao tác</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${order.items}">
+        <td th:text="${item.id}"></td>
+        <td th:text="${item.productName}"></td>
+        <td th:text="${item.quantity}"></td>
+        <td th:text="${item.unitPrice}"></td>
+        <td th:text="${item.subtotal}"></td>
+        <td>
+            <!-- Sửa -->
+            <a th:href="@{'/orders/' + ${order.id} + '/items/' + ${item.id} + '/edit'}">Sửa</a>
+            <!-- Xóa -->
+            <form th:action="@{'/orders/' + ${order.id} + '/items/' + ${item.id} + '/delete'}" method="post" style="display:inline;">
+                <button type="submit" onclick="return confirm('Bạn chắc chắn muốn xóa sản phẩm này?')">Xóa</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- Thêm, đổi/trạng thái đơn như bạn đã có -->
+<h3>Thêm sản phẩm vào đơn</h3>
+<form th:action="@{'/orders/' + ${order.id} + '/items/add'}" method="post" th:object="${orderItem}">
+    <input type="hidden" th:field="*{orderId}" th:value="${order.id}" />
+    <label>Sản phẩm:</label>
+    <select th:field="*{productId}" required>
+        <option th:each="prod : ${products}" th:value="${prod.id}" th:text="${prod.name}"></option>
+    </select>
+    <label>Số lượng:</label>
+    <input type="number" th:field="*{quantity}" min="1" required />
+    <label>Đơn giá:</label>
+    <input type="number" th:field="*{unitPrice}" step="0.01" required />
+    <button type="submit">Thêm sản phẩm</button>
+</form>
+
+<form method="post" th:action="@{'/orders/' + ${order.id} + '/status'}">
+    <label>Đổi trạng thái:</label>
+    <input type="text" name="status" />
+    <button type="submit">Cập nhật</button>
+</form>
+<form method="post" th:action="@{'/orders/' + ${order.id} + '/cancel'}">
+    <button type="submit">Hủy đơn</button>
+</form>
+<form method="post" th:action="@{'/orders/' + ${order.id} + '/delete'}">
+    <button type="submit">Xóa đơn</button>
+</form>
+<a th:href="@{/orders}">Quay lại danh sách</a>
+</body>
+</html>

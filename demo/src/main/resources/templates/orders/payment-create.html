@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Thêm Thanh Toán Cho Đơn</title>
+</head>
+<body>
+<h2>Thêm Thanh Toán Cho Đơn #<span th:text="${orderId}"></span></h2>
+<form th:action="@{'/orders/' + ${orderId} + '/payments/create'}" method="post" th:object="${payment}">
+    <label for="paymentMethod">Phương thức thanh toán:</label>
+    <select id="paymentMethod" th:field="*{paymentMethod}" required>
+        <option value="cash">Tiền mặt</option>
+        <option value="card">Thẻ ngân hàng</option>
+        <option value="banking">Chuyển khoản</option>
+        <option value="momo">Momo</option>
+        <option value="vnpay">VNPAY</option>
+    </select>
+    <br><br>
+    <label for="amount">Số tiền:</label>
+    <input type="number" id="amount" th:field="*{amount}" min="1" required />
+    <br><br>
+    <button type="submit">Thêm thanh toán</button>
+</form>
+<a th:href="@{'/orders/' + ${orderId}}">Quay lại đơn hàng</a>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh Sách Thanh Toán Cho Đơn</title>
+</head>
+<body>
+<h2>Danh Sách Thanh Toán - Đơn #${orderId}</h2>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Phương thức</th>
+        <th>Số tiền</th>
+        <th>Trạng thái</th>
+        <th>Ngày thanh toán</th>
+        <th>Hành động</th>
+    </tr>
+    <!-- Thymeleaf forEach payments -->
+    <tr th:each="payment : ${payments}">
+        <td th:text="${payment.id}"></td>
+        <td th:text="${payment.paymentMethod}"></td>
+        <td th:text="${payment.amount}"></td>
+        <td th:text="${payment.status}"></td>
+        <td th:text="${payment.paidAt}"></td>
+        <td>
+            <form th:action="@{'/orders/' + ${orderId} + '/payments/' + ${payment.id} + '/complete'}" method="post" th:if="${payment.status}=='pending'">
+                <button type="submit">Hoàn thành</button>
+            </form>
+        </td>
+    </tr>
+</table>
+<br>
+<a th:href="@{'/orders/' + ${orderId}}">Quay lại đơn hàng</a>
+<a th:href="@{'/orders/' + ${orderId} + '/payments/create'}">Thêm giao dịch mới</a>
+</body>
+</html>

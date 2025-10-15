@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Tạo đơn hàng</title>
+</head>
+<body>
+<h1>Tạo đơn hàng</h1>
+<form method="post" th:action="@{/orders/create}" th:object="${order}">
+    <label>User ID:</label>
+    <input type="text" th:field="*{userId}" /><br/>
+    <label>Địa chỉ:</label>
+    <input type="text" th:field="*{shippingAddress}" /><br/>
+    <label>Status:</label>
+    <input type="text" th:field="*{status}" value="pending" /><br/>
+    <h2>Order Items</h2>
+    <div th:each="item, iterStat : *{items}">
+        <label>Tên sản phẩm:</label>
+        <input type="text" th:field="*{items[__${iterStat.index}__].productName}" /><br/>
+        <label>ID sản phẩm:</label>
+        <input type="text" th:field="*{items[__${iterStat.index}__].productId}" /><br/>
+        <label>Số lượng:</label>
+        <input type="number" th:field="*{items[__${iterStat.index}__].quantity}" /><br/>
+        <label>Đơn giá:</label>
+        <input type="number" th:field="*{items[__${iterStat.index}__].unitPrice}" /><br/>
+        <hr/>
+    </div>
+    <button type="submit">Tạo đơn</button>
+</form>
+</body>
+</html>

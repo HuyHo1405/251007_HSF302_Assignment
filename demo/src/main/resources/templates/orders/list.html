@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Danh sách đơn hàng</title>
+</head>
+<body>
+<h1>Danh sách đơn hàng</h1>
+<form method="get" th:action="@{/orders}">
+    <label>Trạng thái:</label>
+    <input type="text" name="status" />
+    <button type="submit">Lọc</button>
+</form>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>User</th>
+        <th>Status</th>
+        <th>Total</th>
+        <th>Actions</th>
+    </tr>
+    <tr th:each="order : ${orders}">
+        <td th:text="${order.id}"></td>
+        <td th:text="${order.userFullName}"></td>
+        <td th:text="${order.status}"></td>
+        <td th:text="${order.totalPrice}"></td>
+        <td>
+            <a th:href="@{/orders/{id}(id=${order.id})}">Xem</a>
+            <form th:action="@{/orders/{id}/delete(id=${order.id})}" method="post" style="display:inline;">
+                <button type="submit" onclick="return confirm('Bạn chắc chắn muốn xóa?')">Xóa</button>
+            </form>
+
+        </td>
+    </tr>
+</table>
+<a th:href="@{/orders/create}">Tạo đơn mới</a>
+</body>
+</html>

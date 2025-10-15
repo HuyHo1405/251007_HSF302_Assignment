@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Order Item</title>
+</head>
+<body>
+<h1>Edit Order Item</h1>
+
+<form th:action="@{/orders/{orderId}/items/{itemId}/edit(orderId=${orderItem.orderId}, itemId=${orderItem.id})}"
+      th:object="${orderItem}"
+      method="post">
+
+    <div>
+        <label>Product:</label>
+        <select th:field="*{productId}" required>
+            <option value="">-- Select Product --</option>
+            <option th:each="product : ${products}"
+                    th:value="${product.id}"
+                    th:text="${product.name}">
+            </option>
+        </select>
+    </div>
+
+    <div>
+        <label>Quantity:</label>
+        <input type="number" th:field="*{quantity}" min="1" required />
+    </div>
+
+    <div>
+        <label>Unit Price:</label>
+        <input type="number" th:field="*{unitPrice}" step="0.01" min="0" required />
+    </div>
+
+    <div>
+        <button type="submit">Update</button>
+        <a th:href="@{/orders/{orderId}(orderId=${orderItem.orderId})}">Cancel</a>
+    </div>
+</form>
+</body>
+</html>

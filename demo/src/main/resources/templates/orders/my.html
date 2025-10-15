@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Đơn hàng của tôi</title>
+</head>
+<body>
+<h1>Đơn hàng của bạn</h1>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Status</th>
+        <th>Total</th>
+        <th>Actions</th>
+    </tr>
+    <tr th:each="order : ${orders}">
+        <td th:text="${order.id}"></td>
+        <td th:text="${order.status}"></td>
+        <td th:text="${order.totalPrice}"></td>
+        <td>
+            <a th:href="@{/orders/{id}(id=${order.id})}">Xem</a>
+            <a th:href="@{/orders/{id}/cancel(id=${order.id})}">Hủy</a>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
