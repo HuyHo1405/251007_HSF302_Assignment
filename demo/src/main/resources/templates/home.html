@@ -182,13 +182,16 @@
     <nav class="navbar">
         <div class="logo">🛍️ HSF302 Shop</div>
         <div class="nav-links">
-            <a href="/home">Trang chủ</a>
-            <a href="/orders/my">Đơn hàng của tôi</a>
-            <a href="/orders/create">Tạo đơn hàng</a>
+            <a href="/home">🏠 Trang chủ</a>
+            <a href="/orders/my">📦 Đơn hàng</a>
+            <a href="/users/profile">👤 Hồ sơ</a>
+            <!-- Admin/Staff menu -->
+            <a href="/users/list" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">👥 Quản lý User</a>
+            <a href="/orders" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">📊 Quản lý Đơn hàng</a>
+            <a href="/orders/statistics" sec:authorize="hasRole('ADMIN')">📈 Thống kê</a>
             <div class="user-info">
-                <span class="user-name" sec:authentication="principal.fullName">User</span>
                 <form th:action="@{/auth/logout}" method="post" style="margin: 0;">
-                    <button type="submit" class="logout-btn">Đăng xuất</button>
+                    <button type="submit" class="logout-btn">🚪 Đăng xuất</button>
                 </form>
             </div>
         </div>
@@ -223,6 +226,12 @@
 
         <!-- Features Section -->
         <div class="features">
+            <a href="/users/profile" class="feature-card">
+                <div class="feature-icon">👤</div>
+                <h3>Thông tin cá nhân</h3>
+                <p>Xem và chỉnh sửa thông tin hồ sơ của bạn</p>
+            </a>
+
             <a href="/orders/my" class="feature-card">
                 <div class="feature-icon">📋</div>
                 <h3>Đơn hàng của tôi</h3>

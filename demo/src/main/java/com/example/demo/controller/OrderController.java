@@ -3,16 +3,22 @@ package com.example.demo.controller;
 import com.example.demo.model.dto.OrderDTO;
 import com.example.demo.model.dto.OrderItemDTO;
 import com.example.demo.model.dto.PaymentDTO;
+import com.example.demo.model.entity.User;
+import com.example.demo.repo.OrderRepository;
 import com.example.demo.repo.ProductRepository;
 import com.example.demo.service.OrderItemService;
 import com.example.demo.service.OrderService;
 import com.example.demo.service.PaymentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,6 +28,7 @@ public class OrderController {
     private final OrderItemService orderItemService;
     private final ProductRepository productRepo;
     private final PaymentService paymentService;
+    private final OrderRepository orderRepository;
 
     // Xem tất cả đơn (staff/admin, có thể filter status)
     @GetMapping
@@ -35,8 +42,8 @@ public class OrderController {
 
     // Xem đơn hàng của tôi (customer)
     @GetMapping("/my")
-    public String myOrders(@RequestParam Long userId, Model model) {
-        List<OrderDTO> orders = orderService.findByUser(userId);
+    public String myOrders(@AuthenticationPrincipal User currentUser, Model model) {
+        List<OrderDTO> orders = orderService.findByUser(currentUser.getId());
         model.addAttribute("orders", orders);
         return "orders/my"; // Thymeleaf template
     }
@@ -160,5 +167,21 @@ public class OrderController {
     public String completePayment(@PathVariable Long orderId, @PathVariable Long paymentId) {
         paymentService.completePayment(paymentId);
         return "redirect:/orders/" + orderId;
+    }
+
+    // Thêm vào OrderController
+    @GetMapping("/statistics")
+    public String viewStatistics(@AuthenticationPrincipal User currentUser, Model model, RedirectAttributes redirectAttributes) {
+        // Chỉ admin được xem
+        if (currentUser.getRole() != User.Role.ADMIN) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền xem thống kê");
+            return "redirect:/orders";
+        }
+
+        List<Map<String, Object>> topProducts = orderRepository.findTop10Products();
+        model.addAttribute("topProducts", topProducts.stream().limit(10).collect(Collectors.toList()));
+        model.addAttribute("currentUser", currentUser);
+
+        return "orders/statistics";
     }
 }
