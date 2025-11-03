@@ -1,10 +1,47 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <title>Đơn hàng của tôi</title>
+    <style>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .logout-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
 </head>
 <body>
-<h1>Đơn hàng của bạn</h1>
+<div class="header">
+    <h1>Đơn hàng của bạn</h1>
+    <div class="user-info">
+        <span sec:authentication="name">User</span>
+        <form th:action="@{/auth/logout}" method="post" style="margin: 0;">
+            <button type="submit" class="logout-btn">Đăng xuất</button>
+        </form>
+    </div>
+</div>
 <table border="1">
     <tr>
         <th>ID</th>

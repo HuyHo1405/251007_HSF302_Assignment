@@ -3,6 +3,11 @@ package com.example.demo.repo;
 import com.example.demo.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface UserRepository extends JpaRepository<User, Long> {
-    // Có thể thêm các method custom sau này nếu cần filter
+    Optional<User> findByPhoneNumber(String phoneNumber);
+    Optional<User> findByEmailAddress(String emailAddress);
+    boolean existsByPhoneNumber(String phoneNumber);
+    boolean existsByEmailAddress(String emailAddress);
 }
