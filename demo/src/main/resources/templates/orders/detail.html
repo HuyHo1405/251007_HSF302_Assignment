@@ -283,8 +283,8 @@
             <i class="bi bi-info-circle"></i> Chưa có giao dịch thanh toán nào cho đơn hàng này.
         </div>
 
-        <a th:href="@{/payments/create/{id}(id=${order.id})}" class="btn btn-primary mt-3">
-            <i class="bi bi-plus-circle" th:if="${order.status != 'cancelled' && order.status != 'paid'}"></i> Tạo thanh toán
+        <a th:href="@{/payments/create/{id}(id=${order.id})}" class="btn btn-primary mt-3" th:if="${order.status == 'pending'}">
+            <i class="bi bi-plus-circle"></i> Tạo thanh toán
         </a>
 
         <div class="page-header mt-5"> <h2>
@@ -337,14 +337,15 @@
                 </form>
 
                 <form method="post" th:action="@{'/orders/' + ${order.id} + '/cancel'}" class="d-inline" >
-                    <button type="submit" class="btn btn-outline-warning" th:if="${order.status != 'cancelled'}">
+                    <button type="submit" class="btn btn-outline-warning" th:if="${order.status == 'pending'}">
                         <i class="bi bi-x-circle"></i> Hủy đơn
                     </button>
                 </form>
 
                 <button type="button"
                         class="btn btn-outline-danger" data-bs-toggle="modal"
-                        th:attr="data-bs-target='#deleteOrderModal' + ${order.id}">
+                        th:attr="data-bs-target='#deleteOrderModal' + ${order.id}"
+                        th:if="${order.status == 'pending'}">
                     <i class="bi bi-trash"></i> Xóa đơn
                 </button>
             </div>
