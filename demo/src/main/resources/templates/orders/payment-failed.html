@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thanh toán thất bại</title>
+</head>
+<body>
+    <h1>Thanh toán thất bại!</h1>
+
+    <div th:if="${message}">
+        <p th:text="${message}"></p>
+    </div>
+
+    <div th:if="${orderCode}">
+        <p><strong>Mã đơn hàng:</strong> <span th:text="${orderCode}"></span></p>
+    </div>
+
+    <div>
+        <h3>Lý do có thể:</h3>
+        <ul>
+            <li>Số dư tài khoản không đủ</li>
+            <li>Thông tin thẻ không chính xác</li>
+            <li>Giao dịch bị hủy</li>
+            <li>Lỗi kết nối</li>
+        </ul>
+    </div>
+
+    <div>
+        <p>Vui lòng thử lại hoặc chọn phương thức thanh toán khác.</p>
+    </div>
+
+    <div>
+        <a th:href="@{/orders/my}">Xem đơn hàng của tôi</a> |
+        <a th:href="@{/home}">Về trang chủ</a>
+    </div>
+</body>
+</html>
+

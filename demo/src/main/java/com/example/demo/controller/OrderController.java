@@ -33,10 +33,11 @@ public class OrderController {
     // Xem tất cả đơn (staff/admin, có thể filter status)
     @GetMapping
     public String listOrders(@RequestParam(required = false) String status, Model model) {
-        List<OrderDTO> orders = (status == null)
+        List<OrderDTO> orders = (status == null || status.isEmpty())
                 ? orderService.getAllOrders()
                 : orderService.findByStatus(status);
         model.addAttribute("orders", orders);
+        model.addAttribute("status", status);
         return "orders/list"; // Thymeleaf template
     }
 
@@ -56,13 +57,13 @@ public class OrderController {
         // Danh sách các item (cho table lặp)
         model.addAttribute("items", dto.getItems() == null ? List.of() : dto.getItems());
 
-            // Sản phẩm (dropdown, dùng form thêm)
+        // Sản phẩm (dropdown, dùng form thêm)
         model.addAttribute("products", productRepo.findAll());
 
         // Thông tin đơn
         model.addAttribute("order", dto);
 
-        List<PaymentDTO> paymentList = paymentService.getPaymentsByOrderId(id);
+        List<PaymentDTO> paymentList = paymentService.getPaymentDTOsByOrderId(id); // SỬA ĐÂY!
         model.addAttribute("payments", paymentList);
 
         // Truyền 1 payment rỗng cho form tạo payment mới nếu muốn dùng binding
@@ -109,13 +110,6 @@ public class OrderController {
         return "redirect:/orders";
     }
 
-    @PostMapping("/{orderId}/items/add")
-    public String addOrderItem(@PathVariable Long orderId, @ModelAttribute OrderItemDTO dto) {
-        dto.setOrderId(orderId); // truyền id đơn đang thao tác
-        orderItemService.addOrderItem(dto);
-        return "redirect:/orders/" + orderId;
-    }
-
     @GetMapping("/{orderId}/items/{itemId}/edit")
     public String showEditItem(@PathVariable Long orderId, @PathVariable Long itemId, Model model) {
         OrderItemDTO dto = orderItemService.getItemById(itemId);
@@ -137,14 +131,24 @@ public class OrderController {
         return "redirect:/orders/" + orderId;
     }
 
-    @GetMapping("/{orderId}/payments")
-    public String viewPayments(@PathVariable Long orderId, Model model) {
-        List<PaymentDTO> payments = paymentService.getPaymentsByOrderId(orderId);
-        model.addAttribute("payments", payments);
-        model.addAttribute("orderId", orderId);
-        return "orders/payments"; // Thymeleaf template
-    }
+//    @GetMapping("/{orderId}/payments")
+//    public String viewPayments(@PathVariable Long orderId, Model model) {
+//        List<PaymentDTO> payments = paymentService.getPaymentsByOrderId(orderId);
+//        model.addAttribute("payments", payments);
+//        model.addAttribute("orderId", orderId);
+//        return "orders/payments"; // Thymeleaf template
+//    }
+//
+//    // Tạo payment mới (GET form)
+//    @GetMapping("/{orderId}/payments/create")
+//    public String createPaymentForm(@PathVariable Long orderId, Model model) {
+//        PaymentDTO payment = new PaymentDTO();
+//        payment.setOrderId(orderId);
+//        model.addAttribute("payment", payment);
+//        return "orders/payment-create"; // Thymeleaf template
+//    }
 
+<<<<<<< Updated upstream
     // Tạo payment mới (GET form)
     @GetMapping("/{orderId}/payments/create")
     public String createPaymentForm(@PathVariable Long orderId, Model model) {
@@ -167,6 +171,37 @@ public class OrderController {
     public String completePayment(@PathVariable Long orderId, @PathVariable Long paymentId) {
         paymentService.completePayment(paymentId);
         return "redirect:/orders/" + orderId;
+=======
+//    // Tạo payment mới (POST form)
+//    @PostMapping("/{orderId}/payments/create")
+//    public String createPayment(@PathVariable Long orderId, @ModelAttribute PaymentDTO dto) {
+//        dto.setOrderId(orderId);
+//        paymentService.createPayment(dto);
+//        return "redirect:/orders/" + orderId;
+//    }
+//
+//    // Hoàn thành payment (chuyển pending -> completed)
+//    @PostMapping("/{orderId}/payments/{paymentId}/complete")
+//    public String completePayment(@PathVariable Long orderId, @PathVariable Long paymentId) {
+//        paymentService.completePayment(paymentId);
+//        return "redirect:/orders/" + orderId;
+//    }
+
+    // Thêm vào OrderController
+    @GetMapping("/statistics")
+    public String viewStatistics(@AuthenticationPrincipal User currentUser, Model model, RedirectAttributes redirectAttributes) {
+        // Chỉ admin được xem
+        if (currentUser.getRole() != User.Role.ADMIN) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền xem thống kê");
+            return "redirect:/orders";
+        }
+
+        List<Map<String, Object>> topProducts = orderRepository.findTop10Products();
+        model.addAttribute("topProducts", topProducts.stream().limit(10).collect(Collectors.toList()));
+        model.addAttribute("currentUser", currentUser);
+
+        return "orders/statistics";
+>>>>>>> Stashed changes
     }
 
     // Thêm vào OrderController

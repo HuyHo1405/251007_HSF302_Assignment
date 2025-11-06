@@ -43,6 +43,8 @@
             padding: 25px;
             margin-bottom: 20px;
             transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
         }
         .order-card:hover {
             border-color: #667eea;
@@ -178,6 +180,7 @@
     </style>
 </head>
 <body>
+
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
@@ -232,7 +235,7 @@
 
             <!-- Orders List -->
             <div th:if="${orders != null and !orders.isEmpty()}">
-                <div class="order-card" th:each="order : ${orders}">
+                <a th:href="@{/orders/{id}(id=${order.id})}" class="order-card" th:each="order : ${orders}">
                     <!-- Order Header -->
                     <div class="order-header">
                         <div class="order-id">
@@ -254,7 +257,7 @@
                             </div>
                             <div class="info-content">
                                 <div class="info-label">Ngày đặt</div>
-                                <div class="info-value" th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2024</div>
+                                <div class="info-value" th:text="${order.createdAt}">01/01/2024</div>
                             </div>
                         </div>
 
@@ -292,47 +295,8 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Order Actions -->
-                    <div class="order-actions">
-                        <a th:href="@{/orders/{id}(id=${order.id})}" class="btn btn-action btn-view">
-                            <i class="bi bi-eye"></i> Xem chi tiết
-                        </a>
-                        <button type="button" 
-                                class="btn btn-action btn-cancel" 
-                                data-bs-toggle="modal" 
-                                th:attr="data-bs-target='#cancelModal' + ${order.id}"
-                                th:if="${order.status == 'pending'}">
-                            <i class="bi bi-x-circle"></i> Hủy đơn
-                        </button>
-
-                        <!-- Cancel Modal -->
-                        <div class="modal fade" th:id="'cancelModal' + ${order.id}" tabindex="-1">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-warning">
-                                        <h5 class="modal-title">
-                                            <i class="bi bi-exclamation-triangle"></i> Xác nhận hủy đơn
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>Bạn có chắc chắn muốn hủy đơn hàng <strong th:text="'#' + ${order.id}">#1</strong>?</p>
-                                        <p class="text-muted mb-0"><small>Đơn hàng đã hủy không thể khôi phục</small></p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Không</button>
-                                        <form th:action="@{/orders/{id}/cancel(id=${order.id})}" method="post" class="d-inline">
-                                            <button type="submit" class="btn btn-danger">
-                                                <i class="bi bi-x-circle"></i> Hủy đơn
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    <!-- Không cần nút actions nữa vì cả card đã click được -->
+                </a>
             </div>
 
             <!-- Empty State -->
