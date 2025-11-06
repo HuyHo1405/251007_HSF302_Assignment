@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thanh toán thành công</title>
+</head>
+<body>
+    <h1>Thanh toán thành công!</h1>
+
+    <div th:if="${message}">
+        <p th:text="${message}"></p>
+    </div>
+
+    <div th:if="${payment}">
+        <h2>Thông tin thanh toán</h2>
+        <p><strong>Mã đơn hàng:</strong> <span th:text="${orderCode}"></span></p>
+        <p><strong>Số tiền:</strong> <span th:text="${payment.amount}"></span> VND</p>
+        <p><strong>Phương thức:</strong> <span th:text="${payment.paymentMethod}"></span></p>
+        <p><strong>Mã giao dịch:</strong> <span th:text="${payment.transactionRef}"></span></p>
+        <p><strong>Thời gian:</strong> <span th:text="${payment.paidAt}"></span></p>
+    </div>
+
+    <div th:if="${order}">
+        <h2>Thông tin đơn hàng</h2>
+        <p><strong>Mã đơn:</strong> <span th:text="${order.id}"></span></p>
+        <p><strong>Tổng tiền:</strong> <span th:text="${order.totalPrice}"></span> VND</p>
+        <p><strong>Trạng thái:</strong> <span th:text="${order.status}"></span></p>
+        <p><strong>Địa chỉ giao hàng:</strong> <span th:text="${order.shippingAddress}"></span></p>
+    </div>
+
+    <div>
+        <a th:href="@{/orders/my}">Xem đơn hàng của tôi</a> |
+        <a th:href="@{/home}">Về trang chủ</a>
+    </div>
+</body>
+</html>
+

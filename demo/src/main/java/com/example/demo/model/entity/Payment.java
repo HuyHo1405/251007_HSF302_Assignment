@@ -28,8 +28,17 @@ public class Payment {
 
     private String status; // pending, completed, failed
 
-    @Column(name = "transaction_ref")
+    @Column(name = "order_code", unique = true, length = 50)
+    private String orderCode;
+
+    @Column(name = "transactkoion_ref", length = 50)
     private String transactionRef;
+
+    @Column(name = "response_code", length = 10)
+    private String responseCode; // Mã response VNPay (00 = success)
+
+    @Column(name = "raw_response_data", columnDefinition = "NVARCHAR(MAX)")
+    private String rawResponseData; // Lưu toàn bộ response VNPay để debug
 
     @Column(name = "paid_at")
     private LocalDateTime paidAt;

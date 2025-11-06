@@ -1,25 +1,34 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Thêm Thanh Toán Cho Đơn</title>
+    <meta charset="UTF-8">
+    <title>Chọn phương thức thanh toán</title>
 </head>
 <body>
-<h2>Thêm Thanh Toán Cho Đơn #<span th:text="${orderId}"></span></h2>
-<form th:action="@{'/orders/' + ${orderId} + '/payments/create'}" method="post" th:object="${payment}">
-    <label for="paymentMethod">Phương thức thanh toán:</label>
-    <select id="paymentMethod" th:field="*{paymentMethod}" required>
-        <option value="cash">Tiền mặt</option>
-        <option value="card">Thẻ ngân hàng</option>
-        <option value="banking">Chuyển khoản</option>
-        <option value="momo">Momo</option>
-        <option value="vnpay">VNPAY</option>
-    </select>
-    <br><br>
-    <label for="amount">Số tiền:</label>
-    <input type="number" id="amount" th:field="*{amount}" min="1" required />
-    <br><br>
-    <button type="submit">Thêm thanh toán</button>
-</form>
-<a th:href="@{'/orders/' + ${orderId}}">Quay lại đơn hàng</a>
+    <h1>Chọn phương thức thanh toán</h1>
+
+    <div th:if="${order}">
+        <h2>Thông tin đơn hàng</h2>
+        <p><strong>Mã đơn:</strong> <span th:text="${order.id}"></span></p>
+        <p><strong>Tổng tiền:</strong> <span th:text="${order.totalPrice}"></span> VND</p>
+        <p><strong>Địa chỉ giao hàng:</strong> <span th:text="${order.shippingAddress}"></span></p>
+    </div>
+
+    <h2>Chọn phương thức thanh toán</h2>
+
+    <form th:action="@{/payments/vnpay/create}" method="post">
+        <input type="hidden" name="orderId" th:value="${order.id}">
+        <button type="submit">Thanh toán VNPay</button>
+    </form>
+
+    <br>
+
+    <form th:action="@{/payments/cod/create}" method="post">
+        <input type="hidden" name="orderId" th:value="${order.id}">
+        <button type="submit">Thanh toán COD</button>
+    </form>
+
+    <br>
+    <a th:href="@{/orders/my}">Quay lại</a>
 </body>
 </html>
