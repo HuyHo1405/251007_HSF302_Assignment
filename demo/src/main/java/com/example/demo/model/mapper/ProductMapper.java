@@ -1,8 +1,10 @@
-package fa25.studentcode.demoproduct.model.mapper;
+package com.example.demo.model.mapper;
 
-import fa25.studentcode.demoproduct.entity.Product;
-import fa25.studentcode.demoproduct.model.dto.ProductDetailDTO;
-import fa25.studentcode.demoproduct.model.dto.ProductListDTO;
+
+
+import com.example.demo.model.dto.ProductDetailDTO;
+import com.example.demo.model.dto.ProductListDTO;
+import com.example.demo.model.entity.Product;
 
 import java.util.Optional;
 

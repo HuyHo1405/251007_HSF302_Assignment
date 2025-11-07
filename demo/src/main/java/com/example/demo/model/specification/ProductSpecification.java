@@ -1,6 +1,6 @@
-package fa25.studentcode.demoproduct.specification;
+package com.example.demo.model.specification;
 
-import fa25.studentcode.demoproduct.entity.Product;
+import com.example.demo.model.entity.Product;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;

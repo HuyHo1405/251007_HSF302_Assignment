@@ -1,7 +1,10 @@
-package fa25.studentcode.demoproduct.entity;
+package com.example.demo.model.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "product_images")

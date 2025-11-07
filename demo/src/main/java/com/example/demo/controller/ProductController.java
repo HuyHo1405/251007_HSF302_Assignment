@@ -1,9 +1,10 @@
-package fa25.studentcode.demoproduct.controller;
+package com.example.demo.controller;
 
-import fa25.studentcode.demoproduct.entity.Product;
-import fa25.studentcode.demoproduct.model.dto.ProductDetailDTO;
-import fa25.studentcode.demoproduct.model.dto.ProductListDTO;
-import fa25.studentcode.demoproduct.service.ProductService;
+
+import com.example.demo.model.dto.ProductDetailDTO;
+import com.example.demo.model.dto.ProductListDTO;
+import com.example.demo.model.entity.Product;
+import com.example.demo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;

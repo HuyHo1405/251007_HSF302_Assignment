@@ -1,11 +1,12 @@
-package fa25.studentcode.demoproduct.service;
+package com.example.demo.service;
 
-import fa25.studentcode.demoproduct.entity.Product;
-import fa25.studentcode.demoproduct.model.dto.ProductDetailDTO;
-import fa25.studentcode.demoproduct.model.dto.ProductListDTO;
-import fa25.studentcode.demoproduct.model.mapper.ProductMapper;
-import fa25.studentcode.demoproduct.repo.ProductRepo;
-import fa25.studentcode.demoproduct.specification.ProductSpecification;
+
+import com.example.demo.model.dto.ProductDetailDTO;
+import com.example.demo.model.dto.ProductListDTO;
+import com.example.demo.model.entity.Product;
+import com.example.demo.model.mapper.ProductMapper;
+import com.example.demo.model.specification.ProductSpecification;
+import com.example.demo.repo.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,7 +19,7 @@ import java.util.List;
 @Service
 public class ProductService {
     @Autowired
-    private ProductRepo productRepo;
+    private ProductRepository productRepo;
 
     //Xem tất cả sản phẩm, filter, paginate
     public List<ProductListDTO> getProductList(Pageable pageable, String name, String brand, Double unitPrice){

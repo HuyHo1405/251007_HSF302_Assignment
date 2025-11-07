@@ -3,6 +3,7 @@ package com.example.demo.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -47,4 +48,10 @@ public class Product {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+
+    @OneToMany (mappedBy = "product",
+            cascade = CascadeType.ALL,     // cascade sang con
+            orphanRemoval = true,          // xoá con “mồ côi”
+            fetch = FetchType.LAZY)
+    private List<ProductImage> productImages;
 }

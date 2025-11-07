@@ -1,4 +1,4 @@
-package fa25.studentcode.demoproduct.model.dto;
+package com.example.demo.model.dto;
 
 import lombok.*;
 

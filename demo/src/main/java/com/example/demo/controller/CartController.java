@@ -2,12 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.model.dto.OrderDTO;
 import com.example.demo.model.dto.OrderItemDTO;
-import com.example.demo.model.entity.Order;
 import com.example.demo.model.entity.OrderItem;
 import com.example.demo.model.entity.Product;
 import com.example.demo.model.entity.User;
 import com.example.demo.service.OrderService;
-import com.example.demo.service.ProductService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Controller

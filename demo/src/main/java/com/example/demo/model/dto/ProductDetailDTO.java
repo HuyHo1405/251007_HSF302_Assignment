@@ -1,6 +1,5 @@
-package fa25.studentcode.demoproduct.model.dto;
+package com.example.demo.model.dto;
 
-import jakarta.persistence.Column;
 import lombok.*;
 
 import java.time.LocalDateTime;
