@@ -4,13 +4,16 @@ package com.example.demo.controller;
 import com.example.demo.model.dto.ProductDetailDTO;
 import com.example.demo.model.dto.ProductListDTO;
 import com.example.demo.model.entity.Product;
+import com.example.demo.model.entity.User;
 import com.example.demo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -30,6 +33,7 @@ public class ProductController {
                                            @RequestParam (required = false) String name,
                                            @RequestParam (required = false) String brand,
                                            @RequestParam (required = false) Double unitPrice,
+                                           @AuthenticationPrincipal User currentUser,
                                            Model model) {
 
 
@@ -51,47 +55,76 @@ public class ProductController {
         model.addAttribute("name", name);
         model.addAttribute("brand", brand);
         model.addAttribute("unitPrice", unitPrice);
-        return "productlist";
+        model.addAttribute("currentUser", currentUser); // Truyền currentUser để check role trong view
+        return "products/productlist";
     }
 
     //Xem chi tiết sản phẩm
     @GetMapping("/detail/{id}")
-    public String getProductDetail(@PathVariable Long id, Model model){
+    public String getProductDetail(@PathVariable Long id,
+                                   @AuthenticationPrincipal User currentUser,
+                                   Model model){
         ProductDetailDTO proDetails = productService.getProductDetail(id);
         model.addAttribute("productdetail", proDetails);
-        return "productdetail";
+        model.addAttribute("currentUser", currentUser);
+        return "products/productdetail";
     }
 
     //Form tạo sản phẩm
     @GetMapping("/create")
-    public String createProductForm(Model model){
+    public String createProductForm(@AuthenticationPrincipal User currentUser, Model model){
         model.addAttribute("product", new Product());
-        return "productcreate";
+        model.addAttribute("currentUser", currentUser);
+        return "products/productcreate";
     }
+
     //Tạo sản phẩm
     @PostMapping("/create")
-    public String createProduct(@ModelAttribute("product") Product pro, Model model){
-        productService.createProduct(pro);
+    public String createProduct(@ModelAttribute("product") Product pro,
+                               RedirectAttributes redirectAttributes){
+        try {
+            productService.createProduct(pro);
+            redirectAttributes.addFlashAttribute("success", "Tạo sản phẩm thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+        }
         return "redirect:/products/list";
     }
+
     //update form
     @GetMapping("/update/{id}")
-    public String updateProductForm(Model model, @PathVariable Long id){
+    public String updateProductForm(Model model, @PathVariable Long id,
+                                   @AuthenticationPrincipal User currentUser){
         model.addAttribute("product", productService.getProductById(id));
-        return "productupdate";
+        model.addAttribute("currentUser", currentUser);
+        return "products/productupdate";
     }
+
     //Sửa sản phẩm
     @PostMapping("/update/{id}")
-    public String updateProduct(@PathVariable Long id,  @ModelAttribute("product") Product pro){
-        pro.setId(id);
-        productService.updateProduct(pro, id);
+    public String updateProduct(@PathVariable Long id,
+                               @ModelAttribute("product") Product pro,
+                               RedirectAttributes redirectAttributes){
+        try {
+            pro.setId(id);
+            productService.updateProduct(pro, id);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật sản phẩm thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+        }
         return "redirect:/products/list";
     }
 
     @GetMapping("/delete/{id}")
     //Xóa sản phẩm
-    public String deleteProduct(@PathVariable Long id){
-        productService.deleteProduct(id);
+    public String deleteProduct(@PathVariable Long id,
+                               RedirectAttributes redirectAttributes){
+        try {
+            productService.deleteProduct(id);
+            redirectAttributes.addFlashAttribute("success", "Xóa sản phẩm thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+        }
         return "redirect:/products/list";
     }
 }

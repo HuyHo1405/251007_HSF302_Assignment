@@ -6,6 +6,7 @@ import com.example.demo.model.entity.OrderItem;
 import com.example.demo.model.entity.Product;
 import com.example.demo.model.entity.User;
 import com.example.demo.service.OrderService;
+import com.example.demo.service.ProductService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +27,7 @@ import java.util.Map;
 @RequestMapping("/cart")
 public class CartController {
 
-//    private final ProductService productService; // Đã tiêm qua constructor
+    private final ProductService productService; // Đã tiêm qua constructor
     private final OrderService orderService;
 
     @GetMapping("")
@@ -58,7 +60,8 @@ public class CartController {
     @PostMapping("/add")
     public String addToCart(@RequestParam("productId") Long productId,
                             @RequestParam("quantity") int quantity,
-                            HttpSession session) {
+                            HttpSession session,
+                            RedirectAttributes redirectAttributes) {
 
         // Lấy giỏ hàng từ session, nếu chưa có thì tạo mới
         Map<Long, OrderItemDTO> cart = (Map<Long, OrderItemDTO>) session.getAttribute("cart");
@@ -66,34 +69,36 @@ public class CartController {
             cart = new HashMap<>();
         }
 
-        // Tìm sản phẩm
-        Product product =
-        null;
-//                productService.findById(productId);
-        if (product == null) {
-            // Có thể redirect về trang báo lỗi hoặc homepage tuỳ bạn
-            return "redirect:/home?error=notfound";
-        }
+        try {
+            // Tìm sản phẩm
+            Product product = productService.getProductById(productId);
 
-        // Kiểm tra đã có item đó trong giỏ chưa
-        if (cart.containsKey(productId)) {
-            OrderItemDTO item = cart.get(productId);
-            item.setQuantity(item.getQuantity() + quantity);
-        } else {
-            OrderItemDTO newItem = new OrderItemDTO();
-            newItem.setProductId(product.getId());
-            newItem.setProductName(product.getName());
-            newItem.setUnitPrice(product.getUnitPrice());
-            newItem.setQuantity(quantity);
-            newItem.setSubtotal(product.getUnitPrice()*quantity);
-            cart.put(productId, newItem);
-        }
+            // Kiểm tra đã có item đó trong giỏ chưa
+            if (cart.containsKey(productId)) {
+                OrderItemDTO item = cart.get(productId);
+                item.setQuantity(item.getQuantity() + quantity);
+                item.setSubtotal(item.getUnitPrice() * item.getQuantity()); // Cập nhật subtotal
+            } else {
+                OrderItemDTO newItem = new OrderItemDTO();
+                newItem.setProductId(product.getId());
+                newItem.setProductName(product.getName());
+                newItem.setUnitPrice(product.getUnitPrice());
+                newItem.setQuantity(quantity);
+                newItem.setSubtotal(product.getUnitPrice() * quantity);
+                cart.put(productId, newItem);
+            }
 
-        // Cập nhật lại session
-        session.setAttribute("cart", cart);
+            // Cập nhật lại session
+            session.setAttribute("cart", cart);
+            redirectAttributes.addFlashAttribute("success", "Đã thêm sản phẩm vào giỏ hàng!");
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Không tìm thấy sản phẩm!");
+            return "redirect:/home";
+        }
 
         // Redirect về trang giỏ hàng hoặc homepage tuỳ bạn
-        return "redirect:/home";
+        return "redirect:/cart";
     }
 
     @PostMapping("/update")
@@ -112,7 +117,7 @@ public class CartController {
 
     @PostMapping("/remove")
     public String removeFromCart(@RequestParam("productId") Long productId, HttpSession session) {
-        Map<Long, OrderItem> cart = (Map<Long, OrderItem>) session.getAttribute("cart");
+        Map<Long, OrderItemDTO> cart = (Map<Long, OrderItemDTO>) session.getAttribute("cart");
         if (cart != null) {
             cart.remove(productId);
             session.setAttribute("cart", cart);

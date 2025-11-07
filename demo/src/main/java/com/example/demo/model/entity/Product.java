@@ -36,6 +36,9 @@ public class Product {
     @Column(name = "unit_price")
     private Double unitPrice;
 
+    @Column(name = "stock_quantity")
+    private Integer stockQuantity; // Số lượng còn trong kho
+
     @Column(name = "warranty_months")
     private Integer warrantyMonths;
 

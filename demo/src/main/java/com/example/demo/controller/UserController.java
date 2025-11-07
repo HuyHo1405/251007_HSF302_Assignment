@@ -90,7 +90,7 @@ public class UserController {
 
     // Danh sách người dùng (admin/staff) - mặc định hiển thị customers
     @GetMapping("/list")
-    public String listUsers(@RequestParam(defaultValue = "CUSTOMER") String role,
+    public String listUsers(@RequestParam(required = false) String role,
                             @AuthenticationPrincipal User currentUser,
                             Model model,
                             RedirectAttributes redirectAttributes) {
@@ -101,17 +101,34 @@ public class UserController {
         }
 
         try {
-            User.Role requestedRole = User.Role.valueOf(role);
-            List<UserDTO> users = userService.getUserByRole(requestedRole);
+            // Lấy tất cả users
+            List<UserDTO> allUsers = userService.getAllUsers();
+            List<UserDTO> displayUsers = allUsers;
 
-            model.addAttribute("users", users);
-            model.addAttribute("selectedRole", role);
+            // Nếu có filter theo role
+            if (role != null && !role.isEmpty()) {
+                User.Role requestedRole = User.Role.valueOf(role);
+                displayUsers = userService.getUserByRole(requestedRole);
+                model.addAttribute("selectedRole", role);
+            }
+
+            // Tính toán statistics
+            long totalUsers = allUsers.size();
+            long adminCount = allUsers.stream().filter(u -> u.getRole() == User.Role.ADMIN).count();
+            long staffCount = allUsers.stream().filter(u -> u.getRole() == User.Role.STAFF).count();
+            long customerCount = allUsers.stream().filter(u -> u.getRole() == User.Role.CUSTOMER).count();
+
+            model.addAttribute("users", displayUsers);
+            model.addAttribute("totalUsers", totalUsers);
+            model.addAttribute("adminCount", adminCount);
+            model.addAttribute("staffCount", staffCount);
+            model.addAttribute("customerCount", customerCount);
             model.addAttribute("currentUser", currentUser);
 
             return "user/userList";
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", "Role không hợp lệ");
-            return "redirect:/users/list?role=CUSTOMER";
+            return "redirect:/users/list";
         }
     }
 

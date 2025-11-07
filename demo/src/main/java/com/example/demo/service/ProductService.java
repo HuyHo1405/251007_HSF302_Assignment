@@ -64,4 +64,54 @@ public class ProductService {
         productRepo.deleteById(id);
     }
 
+    // ===== STOCK MANAGEMENT METHODS (Simplified - No Reserved Logic) =====
+
+    /**
+     * Decrease stock khi giao hàng (delivered)
+     * Trừ trực tiếp từ stockQuantity
+     */
+    public void decreaseStock(Long productId, Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Số lượng phải lớn hơn 0");
+        }
+
+        Product product = getProductById(productId);
+
+        int currentStock = product.getStockQuantity() != null ? product.getStockQuantity() : 0;
+        if (currentStock < quantity) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Không đủ hàng trong kho. Còn: " + currentStock + ", Yêu cầu: " + quantity);
+        }
+
+        product.setStockQuantity(currentStock - quantity);
+        productRepo.save(product);
+    }
+
+    /**
+     * Restore stock khi hủy đơn hàng
+     * Cộng lại vào stockQuantity
+     */
+    public void restoreStock(Long productId, Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Số lượng phải lớn hơn 0");
+        }
+
+        Product product = getProductById(productId);
+        int currentStock = product.getStockQuantity() != null ? product.getStockQuantity() : 0;
+        product.setStockQuantity(currentStock + quantity);
+        productRepo.save(product);
+    }
+
+    /**
+     * Check stock availability (chỉ check stockQuantity)
+     */
+    public boolean isStockAvailable(Long productId, Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            return false;
+        }
+        Product product = getProductById(productId);
+        int currentStock = product.getStockQuantity() != null ? product.getStockQuantity() : 0;
+        return currentStock >= quantity;
+    }
+
 }

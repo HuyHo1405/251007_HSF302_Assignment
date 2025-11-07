@@ -20,7 +20,35 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/auth/register", "/auth/login", "/css/**", "/js/**", "/images/**").permitAll()
+                        // Public access
+                        .requestMatchers("/auth/register", "/auth/login", "/css/**", "/js/**", "/images/**", "/img/**").permitAll()
+
+                        // Home - accessible to all authenticated users
+                        .requestMatchers("/", "/home").authenticated()
+
+                        // Product management - ADMIN & STAFF only can create/update/delete
+                        .requestMatchers("/products/create", "/products/update/**", "/products/delete/**").hasAnyRole("ADMIN", "STAFF")
+                        // Product list & detail - accessible to all authenticated users
+                        .requestMatchers("/products/**").authenticated()
+
+                        // Cart - accessible to all authenticated users (mainly CUSTOMER)
+                        .requestMatchers("/cart/**").authenticated()
+
+                        // Order management
+                        .requestMatchers("/orders").authenticated() // Tất cả user đã login đều truy cập được, tự động lọc theo role
+                        .requestMatchers("/orders/statistics").hasRole("ADMIN") // Chỉ Admin xem thống kê
+                        .requestMatchers("/orders/*/status", "/orders/*/delete").hasAnyRole("ADMIN", "STAFF") // Staff/Admin quản lý đơn
+                        .requestMatchers("/orders/**").authenticated() // Các endpoint khác cần đăng nhập
+
+                        // User management
+                        .requestMatchers("/users/profile", "/users/profile/edit", "/users/dashboard").authenticated() // Tất cả user xem/sửa profile
+                        .requestMatchers("/users/list", "/users/admin/**").hasAnyRole("ADMIN", "STAFF") // Chỉ Admin/Staff xem danh sách user
+                        .requestMatchers("/users/**").authenticated()
+
+                        // Payment
+                        .requestMatchers("/payments/**").authenticated()
+
+                        // Default - require authentication
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
@@ -38,6 +66,9 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll()
+                )
+                .exceptionHandling((exception) -> exception
+                        .accessDeniedPage("/access-denied") // Trang báo lỗi khi không có quyền
                 );
 
         return http.build();
@@ -60,4 +91,3 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 }
-

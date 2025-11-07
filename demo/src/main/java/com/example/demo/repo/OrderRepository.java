@@ -13,10 +13,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Long countByUserId(Long userId);
 
-    @Query("SELECT oi.product.id as productId, p.name as productName, SUM(oi.quantity) as totalQuantity " +
+    @Query("SELECT p.name as productName, " +
+            "SUM(oi.quantity) as totalQuantity, " +
+            "SUM(oi.quantity * oi.unitPrice) as totalRevenue " +
             "FROM OrderItem oi " +
             "JOIN oi.product p " +
-            "GROUP BY oi.product.id, p.name " +
+            "GROUP BY p.id, p.name " +
             "ORDER BY totalQuantity DESC")
     List<Map<String, Object>> findTop10Products();
 }

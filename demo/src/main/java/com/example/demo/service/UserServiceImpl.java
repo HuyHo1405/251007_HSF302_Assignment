@@ -8,7 +8,6 @@ import com.example.demo.repo.OrderRepository;
 import com.example.demo.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -85,6 +84,15 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với ID: " + id));
 
         return convertToDTO(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserDTO> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -206,8 +214,13 @@ public class UserServiceImpl implements UserService {
 
     private UserDTO convertToDTO(User user) {
         Long orderCount = 0L;
-        if (user.getRole() == User.Role.CUSTOMER) {
-            orderCount = orderRepository.countByUserId(user.getId());
+        try {
+            if (user.getRole() == User.Role.CUSTOMER) {
+                orderCount = orderRepository.countByUserId(user.getId());
+            }
+        } catch (Exception e) {
+            // Ignore if orderRepository not available yet
+            orderCount = 0L;
         }
 
         return UserDTO.builder()

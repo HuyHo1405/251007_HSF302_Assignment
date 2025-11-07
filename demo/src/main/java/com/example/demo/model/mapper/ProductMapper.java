@@ -28,6 +28,12 @@ public class ProductMapper {
 
 
     public static ProductDetailDTO toDetailDTO(Product pro){
+        // Lấy URL ảnh đầu tiên, nếu không có thì để null hoặc placeholder
+        String imageUrl = Optional.ofNullable(pro.getProductImages())
+                .filter(list -> !list.isEmpty())
+                .map(list -> list.get(0).getUrl())
+                .orElse(null); // hoặc dùng "/images/no-image.png" làm placeholder
+
         return ProductDetailDTO.builder()
                 .id(pro.getId())
                 .name(pro.getName())
@@ -40,9 +46,7 @@ public class ProductMapper {
                 .warrantyMonths(pro.getWarrantyMonths())
                 .status(pro.getStatus())
                 .createdAt(pro.getCreatedAt())
-                .imageUrl(pro.getProductImages().get(0).getUrl())
+                .imageUrl(imageUrl)
                 .build();
     }
  }
-
-

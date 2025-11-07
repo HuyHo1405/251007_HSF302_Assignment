@@ -21,7 +21,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepo;
     private final OrderItemRepository itemRepo;
     private final ProductRepository productRepo;
-    private final UserRepository userRepo; // Thêm repo user!
+    private final UserRepository userRepo;
+    private final ProductService productService; // Thêm ProductService
 
     // Helper convert
     private OrderDTO toDTO(Order order) {
@@ -106,14 +107,40 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void updateStatus(Long id, String status) {
-        Order order = orderRepo.findById(id).orElseThrow();
+        Order order = orderRepo.findById(id).orElseThrow(() -> new RuntimeException("Order not found: " + id));
+        String oldStatus = order.getStatus();
+
+        // Logic trừ stock khi chuyển sang DELIVERED
+        if ("delivered".equalsIgnoreCase(status) && !"delivered".equalsIgnoreCase(oldStatus)) {
+            // Trừ stock cho tất cả items trong order
+            for (OrderItem item : order.getOrderItems()) {
+                productService.decreaseStock(item.getProduct().getId(), item.getQuantity());
+            }
+        }
+
+        // Logic hoàn stock khi chuyển sang CANCELLED (nếu đã delivered trước đó)
+        if ("cancelled".equalsIgnoreCase(status) && "delivered".equalsIgnoreCase(oldStatus)) {
+            // Hoàn lại stock
+            for (OrderItem item : order.getOrderItems()) {
+                productService.restoreStock(item.getProduct().getId(), item.getQuantity());
+            }
+        }
+
         order.setStatus(status);
         orderRepo.save(order);
     }
 
     @Override
     public void cancelOrder(Long id) {
-        Order order = orderRepo.findById(id).orElseThrow();
+        Order order = orderRepo.findById(id).orElseThrow(() -> new RuntimeException("Order not found: " + id));
+
+        // Nếu đơn đã delivered thì hoàn stock khi cancel
+        if ("delivered".equalsIgnoreCase(order.getStatus())) {
+            for (OrderItem item : order.getOrderItems()) {
+                productService.restoreStock(item.getProduct().getId(), item.getQuantity());
+            }
+        }
+
         order.setStatus("cancelled");
         orderRepo.save(order);
     }

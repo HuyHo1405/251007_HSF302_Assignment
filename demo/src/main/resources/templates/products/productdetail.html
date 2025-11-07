@@ -2,52 +2,139 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" th:href="@{/css.css}" />
+    <title>Product Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .main-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            margin: 30px 0;
+            overflow: hidden; /* Đảm bảo card bo góc đẹp */
+        }
+        .btn-primary {
+            background-color: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #5a6fdc;
+            border-color: #5a6fdc;
+            color: white;
+        }
+
+        /* Cải thiện style cho trang chi tiết */
+        .product-media img {
+            width: 100%;
+            height: auto;
+            max-height: 450px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: #f8f9fa;
+            border: 1px solid #eee;
+        }
+        .product-body .title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        .product-body .price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea; /* Dùng màu primary cho giá */
+        }
+        .badge-row {
+            display: flex;
+            gap: 10px;
+            margin: 1rem 0;
+        }
+        .badge {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .badge-ok {
+            background: #d1ecf1; /* Style xanh dương của bạn */
+            color: #0c5460;
+        }
+        .badge-warn {
+            background: #f8d7da; /* Style đỏ của bạn */
+            color: #721c24;
+        }
+        .badge-light {
+            background: #f8f9fa;
+            color: #6c757d;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <a class="back-link" th:href="@{/products/list}">← Back to list</a>
-
-    <div class="product-card">
-        <div class="product-media">
-            <img th:src="${productdetail.imageUrl} ?: '@{/img/placeholder.webp}'"
-                 th:alt="${productdetail.name}" class="media-img" loading="lazy" />
-        </div>
-
-        <div class="product-body">
-            <h1 class="title" th:text="${productdetail.name}">Product name</h1>
-          <!--  <p class="subtitle" th:text="${productdetail.brand} + ' • ' + ${productdetail.model}">Brand • Model</p>-->
-
-            <div class="badge-row">
-                <span class="badge" th:text="${#strings.capitalize(productdetail.type)}">Laptop</span>
-                <span class="badge" th:classappend="${productdetail.status} == 'available' ? ' badge--ok' : ' badge--warn'"
-                      th:text="${productdetail.status}">available</span>
-                <span class="badge light" th:text="'SKU: ' + ${productdetail.sku}">SKU</span>
+    <div class="main-card">
+        <div class="row g-4 g-lg-5">
+            <div class="col-md-6">
+                <div class="product-media">
+                    <img th:src="${productdetail.imageUrl} ?: 'https://via.placeholder.com/600x600.png?text=No+Image'"
+                         th:alt="${productdetail.name}" loading="lazy" />
+                </div>
             </div>
 
-            <p class="desc" th:text="${productdetail.description}">Description…</p>
+            <div class="col-md-6">
+                <div class="product-body">
+                    <a class="btn btn-outline-secondary btn-sm mb-3" th:href="@{/products/list}">
+                        <i class="bi bi-arrow-left"></i> Back to list
+                    </a>
 
-            <div class="kv-grid">
-                <div class="kv">
-                    <div class="k">Price</div>
-                    <div class="v price" th:text="${#numbers.formatDecimal(productdetail.unitPrice, 0, 'COMMA', 0, 'POINT')}"></div>
-                </div>
-                <div class="kv">
-                    <div class="k">Warranty</div>
-                    <div class="v" th:text="${productdetail.warrantyMonths} + ' months'">24 months</div>
-                </div>
-               <!-- <div class="kv">
-                    <div class="k">Created at</div>
-                    <div class="v" th:text="${#temporals.format(productdetail.createdAt, 'dd/MM/yyyy')}">15/02/2023</div>
-                </div>-->
-            </div>
+                    <h1 class="title" th:text="${productdetail.name}">Product name</h1>
+                    <p class="text-muted" th:text="${productdetail.brand} + ' • ' + ${productdetail.model}">Brand • Model</p>
 
-            <div class="btn-row">
-                <a class="btn primary" href="#">Add to cart</a>
-                <a class="btn ghost" th:href="@{/products/list}">Back</a>
+                    <div class="badge-row">
+                        <span class="badge badge-light" th:text="${#strings.capitalize(productdetail.type)}">Laptop</span>
+                        <span class="badge" th:classappend="${productdetail.status} == 'available' ? 'badge-ok' : 'badge-warn'"
+                              th:text="${productdetail.status}">available</span>
+                        <span class="badge badge-light" th:text="'SKU: ' + ${productdetail.sku}">SKU</span>
+                    </div>
+
+                    <p class="lead" th:text="${productdetail.description}">Description…</p>
+
+                    <div class="my-4">
+                        <small class="text-muted">Price</small>
+                        <div class="price" th:text="${#numbers.formatDecimal(productdetail.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></div>
+                    </div>
+                    <div class="mb-4">
+                        <small class="text-muted">Warranty</small>
+                        <div class="h5" th:text="${productdetail.warrantyMonths} + ' months'">24 months</div>
+                    </div>
+
+                    <form th:action="@{/cart/add}" method="post">
+                        <input type="hidden" name="productId" th:value="${productdetail.id}" />
+
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label fw-bold">Số lượng:</label>
+                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="99" class="form-control" style="max-width: 100px;" required />
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-cart-plus-fill"></i> Add to cart
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -6,6 +6,7 @@ import com.example.demo.model.dto.PaymentDTO;
 import com.example.demo.model.entity.User;
 import com.example.demo.repo.OrderRepository;
 import com.example.demo.repo.ProductRepository;
+import com.example.demo.repo.UserRepository;
 import com.example.demo.service.OrderItemService;
 import com.example.demo.service.OrderService;
 import com.example.demo.service.PaymentServiceImpl;
@@ -16,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,30 +31,48 @@ public class OrderController {
     private final ProductRepository productRepo;
     private final PaymentServiceImpl paymentService;
     private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
 
-    // Xem tất cả đơn (staff/admin, có thể filter status)
+    // Xem đơn hàng - Tự động lọc theo role
     @GetMapping
-    public String listOrders(@RequestParam(required = false) String status, Model model) {
-        List<OrderDTO> orders = (status == null || status.isEmpty())
-                ? orderService.getAllOrders()
-                : orderService.findByStatus(status);
+    public String listOrders(@RequestParam(required = false) String status,
+                            @AuthenticationPrincipal User currentUser,
+                            Model model) {
+        List<OrderDTO> orders;
+
+        // CUSTOMER chỉ xem đơn của mình, STAFF/ADMIN xem tất cả
+        if (currentUser.getRole() == User.Role.CUSTOMER) {
+            orders = (status == null || status.isEmpty())
+                    ? orderService.findByUser(currentUser.getId())
+                    : orderService.findByUser(currentUser.getId()).stream()
+                    .filter(o -> o.getStatus().equals(status))
+                    .collect(Collectors.toList());
+        } else {
+            // STAFF/ADMIN xem tất cả đơn
+            orders = (status == null || status.isEmpty())
+                    ? orderService.getAllOrders()
+                    : orderService.findByStatus(status);
+        }
+
         model.addAttribute("orders", orders);
         model.addAttribute("status", status);
-        return "orders/list"; // Thymeleaf template
-    }
-
-    // Xem đơn hàng của tôi (customer)
-    @GetMapping("/my")
-    public String myOrders(@AuthenticationPrincipal User currentUser, Model model) {
-        List<OrderDTO> orders = orderService.findByUser(currentUser.getId());
-        model.addAttribute("orders", orders);
-        return "orders/my"; // Thymeleaf template
+        model.addAttribute("currentUser", currentUser);
+        return "orders/list";
     }
 
     // Xem chi tiết đơn hàng
     @GetMapping("/{id}")
-    public String orderDetail(@PathVariable Long id, Model model) {
+    public String orderDetail(@PathVariable Long id,
+                             @AuthenticationPrincipal User currentUser,
+                             Model model,
+                             RedirectAttributes redirectAttributes) {
         OrderDTO dto = orderService.getOrderById(id);
+
+        // Check quyền: Customer chỉ xem đơn của mình, Staff/Admin xem tất cả
+        if (currentUser.getRole() == User.Role.CUSTOMER && !dto.getUserId().equals(currentUser.getId())) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền xem đơn hàng này");
+            return "redirect:/orders/my";
+        }
 
         // Danh sách các item (cho table lặp)
         model.addAttribute("items", dto.getItems() == null ? List.of() : dto.getItems());
@@ -72,77 +92,240 @@ public class OrderController {
         // CHỐT QUAN TRỌNG: truyền một OrderItemDTO rỗng cho form thêm/sửa
         model.addAttribute("orderItem", new OrderItemDTO());
 
+        model.addAttribute("currentUser", currentUser);
+
         return "orders/detail"; // Thymeleaf template
     }
 
     // Tạo đơn mua hàng (POST form)
     @PostMapping("/create")
-    public String createOrder(@ModelAttribute OrderDTO orderDTO) {
-        OrderDTO created = orderService.createOrder(orderDTO);
-        return "redirect:/orders/" + created.getId();
+    public String createOrder(@ModelAttribute OrderDTO orderDTO,
+                             @AuthenticationPrincipal User currentUser,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            // Set user ID from current user
+            orderDTO.setUserId(currentUser.getId());
+            OrderDTO created = orderService.createOrder(orderDTO);
+            redirectAttributes.addFlashAttribute("success", "Tạo đơn hàng thành công!");
+            return "redirect:/orders/" + created.getId();
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+            return "redirect:/cart";
+        }
     }
 
-    // Cập nhật trạng thái đơn hàng (staff)
+    // Cập nhật trạng thái đơn hàng (staff/admin)
     @PostMapping("/{id}/status")
-    public String updateStatus(@PathVariable Long id, @RequestParam String status) {
-        orderService.updateStatus(id, status);
+    public String updateStatus(@PathVariable Long id,
+                              @RequestParam String status,
+                              @AuthenticationPrincipal User currentUser,
+                              RedirectAttributes redirectAttributes) {
+        // Check quyền: chỉ STAFF và ADMIN mới update được status
+        if (currentUser.getRole() == User.Role.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền cập nhật trạng thái đơn hàng");
+            return "redirect:/orders/" + id;
+        }
+
+        try {
+            orderService.updateStatus(id, status);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật trạng thái thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+        }
         return "redirect:/orders/" + id;
     }
 
-    // Cancel đơn (customer) hoặc xóa đơn (staff/admin)
+    // Cancel đơn (customer chỉ cancel đơn của mình)
     @PostMapping("/{id}/cancel")
-    public String cancelOrder(@PathVariable Long id) {
-        orderService.cancelOrder(id);
+    public String cancelOrder(@PathVariable Long id,
+                             @AuthenticationPrincipal User currentUser,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            OrderDTO order = orderService.getOrderById(id);
+
+            // Customer chỉ cancel đơn của mình
+            if (currentUser.getRole() == User.Role.CUSTOMER && !order.getUserId().equals(currentUser.getId())) {
+                redirectAttributes.addFlashAttribute("error", "Bạn không có quyền hủy đơn hàng này");
+                return "redirect:/orders/my";
+            }
+
+            orderService.cancelOrder(id);
+            redirectAttributes.addFlashAttribute("success", "Đã hủy đơn hàng!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+        }
         return "redirect:/orders/" + id;
     }
 
+    // Xóa đơn (staff/admin only)
     @PostMapping("/{id}/delete")
-    public String deleteOrder(@PathVariable Long id) {
-        orderService.deleteOrder(id);
+    public String deleteOrder(@PathVariable Long id,
+                             @AuthenticationPrincipal User currentUser,
+                             RedirectAttributes redirectAttributes) {
+        // Check quyền: chỉ STAFF và ADMIN mới xóa được
+        if (currentUser.getRole() == User.Role.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền xóa đơn hàng");
+            return "redirect:/orders/my";
+        }
+
+        try {
+            orderService.deleteOrder(id);
+            redirectAttributes.addFlashAttribute("success", "Xóa đơn hàng thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+        }
         return "redirect:/orders";
     }
 
     @GetMapping("/{orderId}/items/{itemId}/edit")
-    public String showEditItem(@PathVariable Long orderId, @PathVariable Long itemId, Model model) {
+    public String showEditItem(@PathVariable Long orderId,
+                              @PathVariable Long itemId,
+                              @AuthenticationPrincipal User currentUser,
+                              Model model,
+                              RedirectAttributes redirectAttributes) {
+        // Check quyền: chỉ STAFF và ADMIN
+        if (currentUser.getRole() == User.Role.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền sửa order item");
+            return "redirect:/orders/" + orderId;
+        }
+
         OrderItemDTO dto = orderItemService.getItemById(itemId);
         model.addAttribute("orderItem", dto);
         model.addAttribute("products", productRepo.findAll());
+        model.addAttribute("currentUser", currentUser);
         return "order_items/edit";
     }
 
     @PostMapping("/{orderId}/items/{itemId}/edit")
-    public String updateOrderItem(@PathVariable Long orderId, @PathVariable Long itemId, @ModelAttribute OrderItemDTO dto) {
-        dto.setOrderId(orderId);
-        orderItemService.updateOrderItem(itemId, dto);
+    public String updateOrderItem(@PathVariable Long orderId,
+                                 @PathVariable Long itemId,
+                                 @ModelAttribute OrderItemDTO dto,
+                                 @AuthenticationPrincipal User currentUser,
+                                 RedirectAttributes redirectAttributes) {
+        // Check quyền: chỉ STAFF và ADMIN
+        if (currentUser.getRole() == User.Role.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền sửa order item");
+            return "redirect:/orders/" + orderId;
+        }
+
+        try {
+            dto.setOrderId(orderId);
+            orderItemService.updateOrderItem(itemId, dto);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật item thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+        }
         return "redirect:/orders/" + orderId;
     }
 
     @PostMapping("/{orderId}/items/{itemId}/delete")
-    public String deleteOrderItem(@PathVariable Long orderId, @PathVariable Long itemId) {
-        orderItemService.deleteOrderItem(itemId);
+    public String deleteOrderItem(@PathVariable Long orderId,
+                                 @PathVariable Long itemId,
+                                 @AuthenticationPrincipal User currentUser,
+                                 RedirectAttributes redirectAttributes) {
+        // Check quyền: chỉ STAFF và ADMIN
+        if (currentUser.getRole() == User.Role.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền xóa order item");
+            return "redirect:/orders/" + orderId;
+        }
+
+        try {
+            orderItemService.deleteOrderItem(itemId);
+            redirectAttributes.addFlashAttribute("success", "Xóa item thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+        }
         return "redirect:/orders/" + orderId;
     }
 
     // Tạo payment mới (GET form)
     @GetMapping("/{orderId}/payments/create")
-    public String createPaymentForm(@PathVariable Long orderId, Model model) {
+    public String createPaymentForm(@PathVariable Long orderId,
+                                   @AuthenticationPrincipal User currentUser,
+                                   Model model) {
         PaymentDTO payment = new PaymentDTO();
         payment.setOrderId(orderId);
         model.addAttribute("payment", payment);
+        model.addAttribute("currentUser", currentUser);
         return "orders/payment-create"; // Thymeleaf template
     }
 
-    // Thêm vào OrderController
     @GetMapping("/statistics")
-    public String viewStatistics(@AuthenticationPrincipal User currentUser, Model model, RedirectAttributes redirectAttributes) {
+    public String viewStatistics(@AuthenticationPrincipal User currentUser,
+                                 Model model,
+                                 RedirectAttributes redirectAttributes) {
         // Chỉ admin được xem
         if (currentUser.getRole() != User.Role.ADMIN) {
             redirectAttributes.addFlashAttribute("error", "Bạn không có quyền xem thống kê");
             return "redirect:/orders";
         }
 
-        List<Map<String, Object>> topProducts = orderRepository.findTop10Products();
-        model.addAttribute("topProducts", topProducts.stream().limit(10).collect(Collectors.toList()));
+        // Lấy tất cả đơn hàng (Bạn đã có)
+        List<OrderDTO> allOrders = orderService.getAllOrders();
+
+        // === 1. BỔ SUNG DỮ LIỆU CHO 4 THẺ (Sửa lại logic cho khớp) ===
+
+        // Chỉ tính doanh thu của đơn "delivered"
+        double totalRevenue = allOrders.stream()
+                .filter(o -> "delivered".equals(o.getStatus()))
+                .mapToDouble(OrderDTO::getTotalPrice)
+                .sum();
+
+        long totalOrders = allOrders.size();
+
+        long completedOrders = allOrders.stream()
+                .filter(o -> "delivered".equals(o.getStatus()))
+                .count();
+
+        // Đơn đang xử lý là (Pending, Paid, Shipping)
+        long pendingOrders = allOrders.stream()
+                .filter(o -> "pending".equals(o.getStatus()) || "paid".equals(o.getStatus()) || "shipping".equals(o.getStatus()))
+                .count();
+
+        // === 2. BỔ SUNG DỮ LIỆU CHO BIỂU ĐỒ TRÒN (statusCounts) ===
+        Map<String, Long> statusCounts = allOrders.stream()
+                .collect(Collectors.groupingBy(
+                        OrderDTO::getStatus,
+                        Collectors.counting()
+                ));
+
+        // === 3. BỔ SUNG DỮ LIỆU CHO BIỂU ĐỒ CỘT (monthlyRevenue) ===
+        // Chú ý: Đây là phần phức tạp nhất, bạn nên tạo 1 hàm trong Service
+        // để truy vấn CSDL cho tối ưu.
+        // Tạm thời, tôi sẽ hardcode dữ liệu MẪU để bạn thấy biểu đồ chạy:
+        List<Double> monthlyRevenue = List.of(
+                1500000.0, 3200000.0, 2100000.0, 4500000.0, 4200000.0, 6000000.0
+        );
+        // Khi làm thật, bạn hãy thay thế bằng:
+        // List<Double> monthlyRevenue = orderService.getMonthlyRevenueLast6Months();
+
+
+        // === 4. BỔ SUNG DỮ LIỆU CHO BẢNG (recentOrders) ===
+        List<OrderDTO> recentOrders = allOrders.stream()
+                .sorted(Comparator.comparing(OrderDTO::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+                .limit(10) // Lấy 10 đơn hàng mới nhất
+                .collect(Collectors.toList());
+
+
+        // === 5. THÊM TẤT CẢ VÀO MODEL ===
+
+        // Dữ liệu cho 4 thẻ
+        model.addAttribute("totalRevenue", totalRevenue);
+        model.addAttribute("totalOrders", totalOrders);
+        model.addAttribute("completedOrders", completedOrders); // ĐÃ THÊM
+        model.addAttribute("pendingOrders", pendingOrders);     // ĐÃ THÊM
+
+        // Dữ liệu cho 2 biểu đồ
+        model.addAttribute("statusCounts", statusCounts);       // ĐÃ THÊM
+        model.addAttribute("monthlyRevenue", monthlyRevenue);   // ĐÃ THÊM
+
+        // Dữ liệu cho bảng
+        model.addAttribute("recentOrders", recentOrders);       // ĐÃ THÊM
+
+        // Các dữ liệu cũ bạn có (vẫn giữ lại)
+        model.addAttribute("totalProducts", productRepo.count());
+        model.addAttribute("totalCustomers", userRepository.countByRole(User.Role.CUSTOMER));
+        model.addAttribute("topProducts", orderRepository.findTop10Products().stream().limit(10).collect(Collectors.toList()));
         model.addAttribute("currentUser", currentUser);
 
         return "orders/statistics";

@@ -1,85 +1,233 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Product List</title>
-    <link rel="stylesheet" th:href="@{/css.css}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC Shop - Danh sách sản phẩm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+        .main-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            margin: 30px 0;
+        }
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .page-header h2 {
+            color: #333;
+            font-weight: bold;
+        }
+        .alert-custom {
+            border-radius: 10px;
+            border: none;
+        }
+
+        /* STYLE MỚI CHO CÁC THÀNH PHẦN TRANG LIST */
+        .filter-section {
+            background: #f8f9fa; /* Màu nền filter giống file orders */
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+        .product-card img {
+            width: 100%;
+            height: 200px; /* Cố định chiều cao ảnh */
+            object-fit: cover; /* Hiển thị ảnh đẹp */
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+        .product-card .card-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .product-card .product-name {
+            font-weight: 600;
+            color: #333;
+            flex-grow: 1; /* Đẩy giá và nút xuống dưới */
+        }
+        .product-card .product-price {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #667eea; /* Dùng màu primary */
+            margin-bottom: 15px;
+        }
+
+        /* === NÚT CHÍNH CỦA BẠN === */
+        .btn-primary {
+            background-color: #667eea;
+            border-color: #667eea;
+            color: white;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #5a6fdc;
+            border-color: #5a6fdc;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* === NÚT XEM (KIỂU OUTLINE PRIMARY) === */
+        .btn-view {
+            background-color: transparent;
+            border: 1px solid #667eea;
+            color: #667eea;
+            transition: all 0.3s;
+        }
+        .btn-view:hover {
+            background-color: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        /* === NÚT XÓA (KIỂU OUTLINE DANGER) === */
+        .btn-delete {
+            background-color: transparent;
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            transition: all 0.3s;
+        }
+        .btn-delete:hover {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-    <h1>Product List</h1>
-    <a class="btn create-btn" th:href="@{/products/create}">Create Product</a>
-    <form class="filter" th:action="@{/products/list}" method="get">
-        <div class="filter-item">
-            <label for="name">Name:</label>
-            <input id="name" type="text" name="name" th:value="${name}" />
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="/home">
+            <i class="bi bi-pc-display-horizontal"></i> PC Shop
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <form th:action="@{/auth/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-danger btn-sm ms-2">
+                            <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                        </button>
+                    </form>
+                </li>
+            </ul>
         </div>
-        <div class="filter-item">
-            <label for="brand">Brand:</label>
-            <input id="brand" type="text" name="brand" th:value="${brand}" />
-        </div>
-        <div class="filter-item">
-            <label for="unitPrice">Unit Price:</label>
-            <input id="unitPrice" type="number" step="0.01" name="unitPrice" th:value="${unitPrice}" />
-        </div>
-
-        <input type="hidden" name="sortBy" th:value="${sortBy}" />
-        <input type="hidden" name="sortDir" th:value="${sortDir}" />
-        <button type="submit" class="filter-btn">Filter</button>
-    </form>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Brand</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody>
-
-            <tr th:each="product : ${productsList}"
-                th:onclick="'window.location.href=\'' + @{/products/detail/{id}(id=${product.id})} + '\';'"
-                class="clickable-row">
-                <td class="col-id" th:text="${product.id}">1</td>
-                <td class="col-name" th:text="${product.name}"></td>
-                <td class="col-brand" th:text="${product.brand}"></td>
-                <td class="col-price" th:text="${product.unitPrice}"></td>
-                <td class="col-image">
-                    <img class="product-image"
-                         th:src="${product.imageUrl}"
-                         th:alt="${product.name}"
-                         loading="lazy" width="240" height="180" />
-                </td>
-                <td class="actions">
-                    <a class="btn btn-delete"
-                       th:href="@{'/products/delete/' + ${product.id}}"
-                       onclick="return confirm('Do you want to delete this item')">Delete</a>
-                    <a class="btn btn-update"
-                       th:href="@{'/products/update/' + ${product.id}}">Update</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    <div class="pager">
-        <form th:action="@{/products/list}" method="get" style="display:inline;">
-            <input type="hidden" name="pageNo" th:value="${currentPage - 1}" />
-            <input type="hidden" name="pageSize" th:value="${pageSize}" />
-            <input type="hidden" name="sortBy" th:value="${sortBy}" />
-            <input type="hidden" name="sortDir" th:value="${sortDir}" />
-            <button type="submit" th:hidden="${currentPage <= 1}">Previous</button>
-        </form>
-
-        <span> Page <span th:text="${currentPage}">1</span> </span>
-
-        <form th:action="@{/products/list}" method="get" style="display:inline;">
-            <input type="hidden" name="pageNo" th:value="${currentPage + 1}" />
-            <input type="hidden" name="pageSize" th:value="${pageSize}" />
-            <input type="hidden" name="sortBy" th:value="${sortBy}" />
-            <input type="hidden" name="sortDir" th:value="${sortDir}" />
-            <button type="submit">Next</button>
-        </form>
     </div>
+</nav>
+
+<div class="container my-5">
+    <div class="main-card">
+        <div class="page-header d-flex justify-content-between align-items-center">
+            <h2><i class="bi bi-box-seam"></i> Danh sách sản phẩm</h2>
+            <a th:href="@{/products/create}" class="btn btn-primary" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
+                <i class="bi bi-plus-circle"></i> Thêm sản phẩm
+            </a>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-custom" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-custom" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+        </div>
+
+        <div class="filter-section">
+            <h5 class="mb-3"><i class="bi bi-funnel"></i> Lọc sản phẩm</h5>
+            <form th:action="@{/products/list}" method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="name" class="form-label">Tên sản phẩm:</label>
+                    <input id="name" type="text" name="name" th:value="${name}" class="form-control" placeholder="Nhập tên..."/>
+                </div>
+                <div class="col-md-4">
+                    <label for="brand" class="form-label">Thương hiệu:</label>
+                    <input id="brand" type="text" name="brand" th:value="${brand}" class="form-control" placeholder="Nhập thương hiệu..."/>
+                </div>
+                <div class="col-md-4">
+                    <label for="unitPrice" class="form-label">Giá (VNĐ):</label>
+                    <input id="unitPrice" type="number" step="0.01" name="unitPrice" th:value="${unitPrice}" class="form-control" placeholder="Nhập giá..."/>
+                </div>
+                <input type="hidden" name="sortBy" th:value="${sortBy}" />
+                <input type="hidden" name="sortDir" th:value="${sortDir}" />
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Tìm kiếm
+                    </button>
+                    <a th:href="@{/products/list}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise"></i> Đặt lại
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div> <div class="row g-4 mt-3">
+    <div class="col-md-6 col-lg-4 col-xl-3" th:each="product : ${productsList}">
+        <div class="product-card">
+            <img th:src="${product.imageUrl}" th:alt="${product.name}" />
+            <div class="card-body">
+                <h5 class="product-name" th:text="${product.name}">Product Name</h5>
+                <p class="text-muted small mb-2" th:text="${product.brand}">Brand</p>
+                <div class="product-price" th:text="${#numbers.formatDecimal(product.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</div>
+
+                <div class="d-flex gap-2 mt-auto">
+                    <a th:href="@{/products/detail/{id}(id=${product.id})}" class="btn btn-view btn-sm flex-fill">
+                        <i class="bi bi-eye"></i> Xem
+                    </a>
+                    <div class="btn-group" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
+                        <a th:href="@{'/products/update/' + ${product.id}}" class="btn btn-outline-warning btn-sm" title="Sửa">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <a href="#"
+                           onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')"
+                           th:href="@{'/products/delete/' + ${product.id}}"
+                           class="btn btn-delete btn-sm" title="Xóa">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <nav class="mt-5" th:if="${totalPages > 1}">
+        <ul class="pagination pagination-custom justify-content-center">
+        </ul>
+    </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

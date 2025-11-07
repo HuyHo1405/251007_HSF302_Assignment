@@ -183,7 +183,7 @@
         <div class="logo">🛍️ HSF302 Shop</div>
         <div class="nav-links">
             <a href="/home">🏠 Trang chủ</a>
-            <a href="/orders/my">📦 Đơn hàng</a>
+            <a href="/orders" sec:authorize="hasAnyRole('CUSTOMER')">📦 Đơn hàng</a>
             <a href="/users/profile">👤 Hồ sơ</a>
             <!-- Admin/Staff menu -->
             <a href="/users/list" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">👥 Quản lý User</a>

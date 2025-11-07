@@ -23,6 +23,8 @@ public interface UserService extends UserDetailsService {
 
     UserDTO getUserById(Long id);
 
+    List<UserDTO> getAllUsers();
+
     List<UserDTO> getUserByRole(User.Role role);
 
     UserDTO updateProfile(Long userId, UpdateUserDTO dto, Long currentUserId, User.Role currentUserRole);

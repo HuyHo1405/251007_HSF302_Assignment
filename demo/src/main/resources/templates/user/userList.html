@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSF302 Shop - Quản lý User</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        /* (CSS style giữ nguyên như trước) */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+        .main-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            margin: 30px 0;
+        }
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .page-header h2 {
+            color: #333;
+            font-weight: bold;
+        }
+        .custom-table {
+            margin-bottom: 0;
+        }
+        .custom-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .custom-table thead th {
+            border: none;
+            padding: 15px;
+            font-weight: 600;
+        }
+        .custom-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        .custom-table tbody td {
+            padding: 15px;
+            vertical-align: middle;
+        }
+        .role-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .role-ADMIN {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .role-STAFF {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .role-CUSTOMER {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .btn-action {
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            border: none;
+            transition: all 0.3s;
+            margin-right: 5px;
+        }
+        .btn-view {
+            background-color: transparent;
+            border: 1px solid #667eea;
+            color: #667eea;
+        }
+        .btn-view:hover {
+            background-color: #667eea;
+            border-color: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        .btn-delete {
+            background-color: transparent;
+            border: 1px solid #dc3545;
+            color: #dc3545;
+        }
+        .btn-delete:hover {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+            transform: translateY(-2px);
+        }
+        .alert-custom {
+            border-radius: 10px;
+            border: none;
+            margin-top: 20px;
+        }
+        .nav-tabs {
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .nav-tabs .nav-link {
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #888;
+            font-weight: 600;
+            padding: 15px 20px;
+        }
+        .nav-tabs .nav-link:hover {
+            color: #667eea;
+        }
+        .nav-tabs .nav-link.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+            background: none;
+        }
+        .tab-content {
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-custom">
+</nav>
+
+<div class="container my-5">
+    <div th:if="${success}" class="alert alert-success alert-custom alert-dismissible fade show" role="alert">...</div>
+    <div th:if="${error}" class="alert alert-danger alert-custom alert-dismissible fade show" role="alert">...</div>
+
+    <div class="main-card">
+        <div class="page-header">
+            <h2><i class="bi bi-people-fill"></i> Quản lý người dùng</h2>
+            <p class="text-muted mb-0 fst-italic">Danh sách tất cả người dùng trong hệ thống</p>
+        </div>
+
+        <ul class="nav nav-tabs nav-fill" id="userRoleTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="customer-tab" data-bs-toggle="tab" data-bs-target="#customer-pane" type="button" role="tab" aria-controls="customer-pane" aria-selected="true">
+                    <i class="bi bi-person"></i> Customers
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="staff-tab" data-bs-toggle="tab" data-bs-target="#staff-pane" type="button" role="tab" aria-controls="staff-pane" aria-selected="false">
+                    <i class="bi bi-person-badge"></i> Staff
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin-pane" type="button" role="tab" aria-controls="admin-pane" aria-selected="false">
+                    <i class="bi bi-shield-check"></i> Admins
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="userRoleTabsContent">
+
+            <div class="tab-pane fade show active" id="customer-pane" role="tabpanel" aria-labelledby="customer-tab"
+                 th:with="customerUsers=${users.?[#strings.equals(role, 'CUSTOMER')]}">
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle custom-table">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Họ tên</th>
+                            <th>Số điện thoại</th>
+                            <th>Email</th>
+                            <th>Vai trò</th>
+                            <th>Ngày tạo</th>
+                            <th sec:authorize="hasRole('ADMIN')">Hành động</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="user : ${customerUsers}">
+                            <td th:text="${user.id}">#1</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center me-2"
+                                         style="width: 40px; height: 40px; background-color: #667eea; color: white;">
+                                        <i class="bi bi-person"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold" th:text="${user.fullName}">Full Name</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td th:text="${user.phoneNumber}">0123456789</td>
+                            <td th:text="${user.emailAddress ?: 'Chưa có'}">email@example.com</td>
+                            <td>
+                                <span class="role-badge" th:classappend="'role-' + ${user.role}" th:text="${user.role}">CUSTOMER</span>
+                            </td>
+                            <td th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2025</td>
+                            <td sec:authorize="hasRole('ADMIN')">
+                                <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-action btn-view" title="Chỉnh sửa">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a th:href="@{/users/delete/{id}(id=${user.id})}"
+                                   class="btn btn-action btn-delete"
+                                   onclick="return confirm('Bạn có chắc muốn xóa user này?')"
+                                   title="Xóa">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(customerUsers)}">
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                Chưa có người dùng nào thuộc nhóm Customer
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="staff-pane" role="tabpanel" aria-labelledby="staff-tab"
+                 th:with="staffUsers=${users.?[#strings.equals(role, 'STAFF')]}">
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle custom-table">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Họ tên</th>
+                            <th>Số điện thoại</th>
+                            <th>Email</th>
+                            <th>Vai trò</th>
+                            <th>Ngày tạo</th>
+                            <th sec:authorize="hasRole('ADMIN')">Hành động</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="user : ${staffUsers}">
+                            <td th:text="${user.id}">#1</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center me-2"
+                                         style="width: 40px; height: 40px; background-color: #667eea; color: white;">
+                                        <i class="bi bi-person"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold" th:text="${user.fullName}">Full Name</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td th:text="${user.phoneNumber}">0123456789</td>
+                            <td th:text="${user.emailAddress ?: 'Chưa có'}">email@example.com</td>
+                            <td>
+                                <span class="role-badge" th:classappend="'role-' + ${user.role}" th:text="${user.role}">STAFF</span>
+                            </td>
+                            <td th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2025</td>
+                            <td sec:authorize="hasRole('ADMIN')">
+                                <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-action btn-view" title="Chỉnh sửa">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a th:href="@{/users/delete/{id}(id=${user.id})}"
+                                   class="btn btn-action btn-delete"
+                                   onclick="return confirm('Bạn có chắc muốn xóa user này?')"
+                                   title="Xóa">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(staffUsers)}">
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                Chưa có người dùng nào thuộc nhóm Staff
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="admin-pane" role="tabpanel" aria-labelledby="admin-tab"
+                 th:with="adminUsers=${users.?[#strings.equals(role, 'ADMIN')]}">
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle custom-table">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Họ tên</th>
+                            <th>Số điện thoại</th>
+                            <th>Email</th>
+                            <th>Vai trò</th>
+                            <th>Ngày tạo</th>
+                            <th sec:authorize="hasRole('ADMIN')">Hành động</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="user : ${adminUsers}">
+                            <td th:text="${user.id}">#1</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center me-2"
+                                         style="width: 40px; height: 40px; background-color: #667eea; color: white;">
+                                        <i class="bi bi-person"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold" th:text="${user.fullName}">Full Name</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td th:text="${user.phoneNumber}">0123456789</td>
+                            <td th:text="${user.emailAddress ?: 'Chưa có'}">email@example.com</td>
+                            <td>
+                                <span class="role-badge" th:classappend="'role-' + ${user.role}" th:text="${user.role}">ADMIN</span>
+                            </td>
+                            <td th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2025</td>
+                            <td sec:authorize="hasRole('ADMIN')">
+                                <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-action btn-view" title="Chỉnh sửa">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a th:href="@{/users/delete/{id}(id=${user.id})}"
+                                   class="btn btn-action btn-delete"
+                                   onclick="return confirm('Bạn có chắc muốn xóa user này?')"
+                                   title="Xóa">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(adminUsers)}">
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                Chưa có người dùng nào thuộc nhóm Admin
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div> </div>
+
+    <div class="row g-4 mt-1">
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
