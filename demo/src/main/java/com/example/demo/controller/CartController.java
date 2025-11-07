@@ -1,0 +1,135 @@
+package com.example.demo.controller;
+
+import com.example.demo.model.dto.OrderDTO;
+import com.example.demo.model.dto.OrderItemDTO;
+import com.example.demo.model.entity.Order;
+import com.example.demo.model.entity.OrderItem;
+import com.example.demo.model.entity.Product;
+import com.example.demo.model.entity.User;
+import com.example.demo.service.OrderService;
+import com.example.demo.service.ProductService;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Controller
+@RequiredArgsConstructor
+@RequestMapping("/cart")
+public class CartController {
+
+//    private final ProductService productService; // Đã tiêm qua constructor
+    private final OrderService orderService;
+
+    @GetMapping("")
+    public String viewCart(HttpSession session, Model model) {
+        Map<Long, OrderItemDTO> cart = (Map<Long, OrderItemDTO>) session.getAttribute("cart");
+        if (cart == null) cart = new HashMap<>();
+        model.addAttribute("cart", cart.values());
+        return "cart/view";
+    }
+
+    @GetMapping("/checkout-form")
+    public String showOrderCreateForm(HttpSession session, Model model, @AuthenticationPrincipal User user) {
+        Map<Long, OrderItemDTO> cart = (Map<Long, OrderItemDTO>) session.getAttribute("cart");
+        if (cart == null || cart.isEmpty()) {
+            model.addAttribute("error", "Giỏ hàng trống!");
+            return "cart/view";
+        }
+        // Build OrderDTO để truyền sang view
+        OrderDTO orderDTO = OrderDTO.builder()
+                .userId(user.getId())
+                .userFullName(user.getFullName())
+                .status("PENDING")
+                .items(new ArrayList<>(cart.values()))
+                .build();
+
+        model.addAttribute("order", orderDTO); // Truyền đúng là DTO!
+        return "orders/create";
+    }
+
+    @PostMapping("/add")
+    public String addToCart(@RequestParam("productId") Long productId,
+                            @RequestParam("quantity") int quantity,
+                            HttpSession session) {
+
+        // Lấy giỏ hàng từ session, nếu chưa có thì tạo mới
+        Map<Long, OrderItemDTO> cart = (Map<Long, OrderItemDTO>) session.getAttribute("cart");
+        if (cart == null) {
+            cart = new HashMap<>();
+        }
+
+        // Tìm sản phẩm
+        Product product =
+        null;
+//                productService.findById(productId);
+        if (product == null) {
+            // Có thể redirect về trang báo lỗi hoặc homepage tuỳ bạn
+            return "redirect:/home?error=notfound";
+        }
+
+        // Kiểm tra đã có item đó trong giỏ chưa
+        if (cart.containsKey(productId)) {
+            OrderItemDTO item = cart.get(productId);
+            item.setQuantity(item.getQuantity() + quantity);
+        } else {
+            OrderItemDTO newItem = new OrderItemDTO();
+            newItem.setProductId(product.getId());
+            newItem.setProductName(product.getName());
+            newItem.setUnitPrice(product.getUnitPrice());
+            newItem.setQuantity(quantity);
+            newItem.setSubtotal(product.getUnitPrice()*quantity);
+            cart.put(productId, newItem);
+        }
+
+        // Cập nhật lại session
+        session.setAttribute("cart", cart);
+
+        // Redirect về trang giỏ hàng hoặc homepage tuỳ bạn
+        return "redirect:/home";
+    }
+
+    @PostMapping("/update")
+    public String updateCart(@RequestParam("productId") Long productId,
+                             @RequestParam("quantity") int quantity,
+                             HttpSession session) {
+        Map<Long, OrderItemDTO> cart = (Map<Long, OrderItemDTO>) session.getAttribute("cart");
+        if (cart != null && cart.containsKey(productId)) {
+            OrderItemDTO item = cart.get(productId);
+            item.setQuantity(quantity);
+             item.setSubtotal(item.getUnitPrice() * quantity);
+            session.setAttribute("cart", cart);
+        }
+        return "redirect:/cart";
+    }
+
+    @PostMapping("/remove")
+    public String removeFromCart(@RequestParam("productId") Long productId, HttpSession session) {
+        Map<Long, OrderItem> cart = (Map<Long, OrderItem>) session.getAttribute("cart");
+        if (cart != null) {
+            cart.remove(productId);
+            session.setAttribute("cart", cart);
+        }
+        return "redirect:/cart";
+    }
+
+
+    // 5. Xóa toàn bộ giỏ hàng
+    @PostMapping("/clear")
+    public String clearCart(HttpSession session) {
+        session.removeAttribute("cart");
+        return "redirect:/cart";
+    }
+
+
+}

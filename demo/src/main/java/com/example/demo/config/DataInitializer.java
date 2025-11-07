@@ -1,3 +1,4 @@
+
 package com.example.demo.config;
 
 import com.example.demo.model.entity.*;
@@ -20,11 +21,19 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+
+        if(userRepository.count()!=0){
+            return;
+        }
+
         // USERS
         User user1 = new User();
         user1.setFullName("Nguyen Van A");
         user1.setEmailAddress("a@test.com");
         user1.setPhoneNumber("0123456789");
+
+        user1.setPassword("$2a$10$1NjnEoPQbAh7nEQIkbwjquKpIbLL3.A9U1WLeogFy9qW3rlo1R29q");
+
         user1.setCreatedAt(LocalDateTime.now());
         userRepository.save(user1);
 
@@ -32,6 +41,8 @@ public class DataInitializer implements CommandLineRunner {
         user2.setFullName("Tran Thi B");
         user2.setEmailAddress("b@test.com");
         user2.setPhoneNumber("0987654321");
+        user2.setPassword("$2a$10$1NjnEoPQbAh7nEQIkbwjquKpIbLL3.A9U1WLeogFy9qW3rlo1R29q");
+
         user2.setCreatedAt(LocalDateTime.now());
         userRepository.save(user2);
 

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin cá nhân</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            margin-top: 50px;
+        }
+        .profile-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 48px;
+            color: white;
+        }
+        .profile-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .profile-role {
+            display: inline-block;
+            padding: 5px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .role-admin {
+            background: #dc3545;
+            color: white;
+        }
+        .role-staff {
+            background: #ffc107;
+            color: #333;
+        }
+        .role-customer {
+            background: #28a745;
+            color: white;
+        }
+        .info-row {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            font-size: 24px;
+            color: #667eea;
+        }
+        .info-content {
+            flex: 1;
+        }
+        .info-label {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            font-size: 16px;
+            color: #333;
+            font-weight: 500;
+        }
+        .action-buttons {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn-custom {
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white !important;
+        }
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white !important;
+        }
+        .btn-danger-custom {
+            background: #dc3545;
+            color: white !important;
+        }
+        .btn-danger-custom:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            color: white !important;
+        }
+        .alert-custom {
+            border-radius: 10px;
+            border: none;
+            padding: 15px 20px;
+        }
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="/home">
+                <i class="bi bi-shop"></i> HSF302 Shop
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/home"><i class="bi bi-house"></i> Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/orders/my"><i class="bi bi-bag"></i> Đơn hàng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/users/profile"><i class="bi bi-person"></i> Hồ sơ</a>
+                    </li>
+                    <!-- Admin/Staff menu -->
+                    <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
+                        <a class="nav-link" href="/users/list"><i class="bi bi-people"></i> Quản lý User</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
+                        <a class="nav-link" href="/orders"><i class="bi bi-clipboard-data"></i> Quản lý Đơn hàng</a>
+                    </li>
+                    <li class="nav-item">
+                        <form th:action="@{/auth/logout}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Success/Error Messages -->
+                <div th:if="${success}" class="alert alert-success alert-custom mt-3">
+                    <i class="bi bi-check-circle-fill"></i> <span th:text="${success}"></span>
+                </div>
+                <div th:if="${error}" class="alert alert-danger alert-custom mt-3">
+                    <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${error}"></span>
+                </div>
+
+                <!-- Profile Card -->
+                <div class="profile-card">
+                    <!-- Profile Header -->
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <div class="profile-name" th:text="${user.fullName}">Tên người dùng</div>
+                        <span class="profile-role" 
+                              th:classappend="${user.role.name() == 'ADMIN'} ? 'role-admin' : (${user.role.name() == 'STAFF'} ? 'role-staff' : 'role-customer')">
+                            <i class="bi bi-shield-check"></i>
+                            <span th:text="${user.role.name()}">CUSTOMER</span>
+                        </span>
+                    </div>
+
+                    <!-- Profile Information -->
+                    <div class="profile-info">
+                        <div class="info-row">
+                            <div class="info-icon">
+                                <i class="bi bi-envelope"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Email</div>
+                                <div class="info-value" th:text="${user.emailAddress} ?: 'Chưa cập nhật'">email@example.com</div>
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-icon">
+                                <i class="bi bi-telephone"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Số điện thoại</div>
+                                <div class="info-value" th:text="${user.phoneNumber}">0123456789</div>
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-icon">
+                                <i class="bi bi-calendar"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Ngày tạo tài khoản</div>
+                                <div class="info-value" th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2024</div>
+                            </div>
+                        </div>
+
+                        <!-- Order Count (only for CUSTOMER) -->
+                        <div class="info-row" th:if="${user.role.name() == 'CUSTOMER'}">
+                            <div class="info-icon">
+                                <i class="bi bi-bag-check"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Tổng số đơn hàng</div>
+                                <div class="info-value">
+                                    <span th:text="${user.orderCount} ?: 0">0</span> đơn hàng
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <a th:href="@{/users/profile/edit}" class="btn-custom btn-primary-custom">
+                            <i class="bi bi-pencil-square"></i> Chỉnh sửa thông tin
+                        </a>
+                        <button type="button" class="btn-custom btn-danger-custom" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="bi bi-trash"></i> Xóa tài khoản
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle"></i> Xác nhận xóa tài khoản
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Bạn có chắc chắn muốn xóa tài khoản của mình?</p>
+                    <p class="text-danger mb-0"><strong>Lưu ý:</strong> Hành động này không thể hoàn tác!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <form th:action="@{/users/{id}/delete(id=${user.id})}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Xóa tài khoản
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

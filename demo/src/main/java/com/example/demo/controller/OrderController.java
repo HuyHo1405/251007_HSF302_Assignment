@@ -3,16 +3,22 @@ package com.example.demo.controller;
 import com.example.demo.model.dto.OrderDTO;
 import com.example.demo.model.dto.OrderItemDTO;
 import com.example.demo.model.dto.PaymentDTO;
+import com.example.demo.model.entity.User;
+import com.example.demo.repo.OrderRepository;
 import com.example.demo.repo.ProductRepository;
 import com.example.demo.service.OrderItemService;
 import com.example.demo.service.OrderService;
-import com.example.demo.service.PaymentService;
+import com.example.demo.service.PaymentServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -21,22 +27,24 @@ public class OrderController {
     private final OrderService orderService;
     private final OrderItemService orderItemService;
     private final ProductRepository productRepo;
-    private final PaymentService paymentService;
+    private final PaymentServiceImpl paymentService;
+    private final OrderRepository orderRepository;
 
     // Xem tất cả đơn (staff/admin, có thể filter status)
     @GetMapping
     public String listOrders(@RequestParam(required = false) String status, Model model) {
-        List<OrderDTO> orders = (status == null)
+        List<OrderDTO> orders = (status == null || status.isEmpty())
                 ? orderService.getAllOrders()
                 : orderService.findByStatus(status);
         model.addAttribute("orders", orders);
+        model.addAttribute("status", status);
         return "orders/list"; // Thymeleaf template
     }
 
     // Xem đơn hàng của tôi (customer)
     @GetMapping("/my")
-    public String myOrders(@RequestParam Long userId, Model model) {
-        List<OrderDTO> orders = orderService.findByUser(userId);
+    public String myOrders(@AuthenticationPrincipal User currentUser, Model model) {
+        List<OrderDTO> orders = orderService.findByUser(currentUser.getId());
         model.addAttribute("orders", orders);
         return "orders/my"; // Thymeleaf template
     }
@@ -49,13 +57,13 @@ public class OrderController {
         // Danh sách các item (cho table lặp)
         model.addAttribute("items", dto.getItems() == null ? List.of() : dto.getItems());
 
-            // Sản phẩm (dropdown, dùng form thêm)
+        // Sản phẩm (dropdown, dùng form thêm)
         model.addAttribute("products", productRepo.findAll());
 
         // Thông tin đơn
         model.addAttribute("order", dto);
 
-        List<PaymentDTO> paymentList = paymentService.getPaymentsByOrderId(id);
+        List<PaymentDTO> paymentList = paymentService.getPaymentDTOsByOrderId(id); // SỬA ĐÂY!
         model.addAttribute("payments", paymentList);
 
         // Truyền 1 payment rỗng cho form tạo payment mới nếu muốn dùng binding
@@ -65,14 +73,6 @@ public class OrderController {
         model.addAttribute("orderItem", new OrderItemDTO());
 
         return "orders/detail"; // Thymeleaf template
-    }
-
-    // Tạo đơn mua hàng (GET form)
-    @GetMapping("/create")
-    public String createForm(Model model) {
-        model.addAttribute("order", new OrderDTO());
-        // cần load thêm dữ liệu products/customer nếu cần
-        return "orders/create"; // Thymeleaf template
     }
 
     // Tạo đơn mua hàng (POST form)
@@ -102,13 +102,6 @@ public class OrderController {
         return "redirect:/orders";
     }
 
-    @PostMapping("/{orderId}/items/add")
-    public String addOrderItem(@PathVariable Long orderId, @ModelAttribute OrderItemDTO dto) {
-        dto.setOrderId(orderId); // truyền id đơn đang thao tác
-        orderItemService.addOrderItem(dto);
-        return "redirect:/orders/" + orderId;
-    }
-
     @GetMapping("/{orderId}/items/{itemId}/edit")
     public String showEditItem(@PathVariable Long orderId, @PathVariable Long itemId, Model model) {
         OrderItemDTO dto = orderItemService.getItemById(itemId);
@@ -130,14 +123,6 @@ public class OrderController {
         return "redirect:/orders/" + orderId;
     }
 
-    @GetMapping("/{orderId}/payments")
-    public String viewPayments(@PathVariable Long orderId, Model model) {
-        List<PaymentDTO> payments = paymentService.getPaymentsByOrderId(orderId);
-        model.addAttribute("payments", payments);
-        model.addAttribute("orderId", orderId);
-        return "orders/payments"; // Thymeleaf template
-    }
-
     // Tạo payment mới (GET form)
     @GetMapping("/{orderId}/payments/create")
     public String createPaymentForm(@PathVariable Long orderId, Model model) {
@@ -147,18 +132,19 @@ public class OrderController {
         return "orders/payment-create"; // Thymeleaf template
     }
 
-    // Tạo payment mới (POST form)
-    @PostMapping("/{orderId}/payments/create")
-    public String createPayment(@PathVariable Long orderId, @ModelAttribute PaymentDTO dto) {
-        dto.setOrderId(orderId);
-        paymentService.createPayment(dto);
-        return "redirect:/orders/" + orderId;
-    }
+    // Thêm vào OrderController
+    @GetMapping("/statistics")
+    public String viewStatistics(@AuthenticationPrincipal User currentUser, Model model, RedirectAttributes redirectAttributes) {
+        // Chỉ admin được xem
+        if (currentUser.getRole() != User.Role.ADMIN) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền xem thống kê");
+            return "redirect:/orders";
+        }
 
-    // Hoàn thành payment (chuyển pending -> completed)
-    @PostMapping("/{orderId}/payments/{paymentId}/complete")
-    public String completePayment(@PathVariable Long orderId, @PathVariable Long paymentId) {
-        paymentService.completePayment(paymentId);
-        return "redirect:/orders/" + orderId;
+        List<Map<String, Object>> topProducts = orderRepository.findTop10Products();
+        model.addAttribute("topProducts", topProducts.stream().limit(10).collect(Collectors.toList()));
+        model.addAttribute("currentUser", currentUser);
+
+        return "orders/statistics";
     }
 }
