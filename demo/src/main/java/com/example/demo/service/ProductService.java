@@ -1,10 +1,66 @@
-package com.example.demo.service;
+package fa25.studentcode.demoproduct.service;
 
-import com.example.demo.model.dto.ProductDTO;
-import com.example.demo.model.entity.Product;
+import fa25.studentcode.demoproduct.entity.Product;
+import fa25.studentcode.demoproduct.model.dto.ProductDetailDTO;
+import fa25.studentcode.demoproduct.model.dto.ProductListDTO;
+import fa25.studentcode.demoproduct.model.mapper.ProductMapper;
+import fa25.studentcode.demoproduct.repo.ProductRepo;
+import fa25.studentcode.demoproduct.specification.ProductSpecification;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-public interface ProductService {
-    public List<Product> getAllProducts();
+@Service
+public class ProductService {
+    @Autowired
+    private ProductRepo productRepo;
+
+    //Xem tất cả sản phẩm, filter, paginate
+    public List<ProductListDTO> getProductList(Pageable pageable, String name, String brand, Double unitPrice){
+        Specification<Product> spec = ProductSpecification.searchBy(name, brand, unitPrice);
+         return productRepo.findAll(spec, pageable).map(ProductMapper::toListDTO).getContent();
+    }
+
+    //Xem chi tiết sản phẩm
+    public ProductDetailDTO getProductDetail(Long id){
+        return productRepo.findById(id).map(ProductMapper::toDetailDTO).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found" + id));
+    }
+
+    //Thêm sản phẩm
+    public void createProduct(Product pro){
+        productRepo.save(pro);
+    }
+    //Get product by id
+    public Product getProductById(Long id){
+        return productRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found" + id));
+    }
+    //Sửa
+    public void updateProduct(Product pro, Long id){
+        Product productExist = productRepo.findById(id).orElse(null);
+        if(productExist != null){
+            productExist.setId(pro.getId());
+            productExist.setName(pro.getName());
+            productExist.setSku(pro.getSku());
+            productExist.setType(pro.getType());
+            productExist.setBrand(pro.getBrand());
+            productExist.setModel(pro.getModel());
+            productExist.setUnitPrice(pro.getUnitPrice());
+            productExist.setDescription(pro.getDescription());
+            productExist.setStatus(pro.getStatus());
+            productExist.setWarrantyMonths(pro.getWarrantyMonths());
+            productExist.setCreatedAt(pro.getCreatedAt());
+        }
+        productRepo.save(productExist);
+    }
+
+    //Xóa
+    public void deleteProduct(Long id) {
+        productRepo.deleteById(id);
+    }
+
 }

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" th:href="@{/css.css}" />
+</head>
+<body>
+<div class="container">
+    <a class="back-link" th:href="@{/products/list}">← Back to list</a>
+
+    <div class="product-card">
+        <div class="product-media">
+            <img th:src="${productdetail.imageUrl} ?: '@{/img/placeholder.webp}'"
+                 th:alt="${productdetail.name}" class="media-img" loading="lazy" />
+        </div>
+
+        <div class="product-body">
+            <h1 class="title" th:text="${productdetail.name}">Product name</h1>
+          <!--  <p class="subtitle" th:text="${productdetail.brand} + ' • ' + ${productdetail.model}">Brand • Model</p>-->
+
+            <div class="badge-row">
+                <span class="badge" th:text="${#strings.capitalize(productdetail.type)}">Laptop</span>
+                <span class="badge" th:classappend="${productdetail.status} == 'available' ? ' badge--ok' : ' badge--warn'"
+                      th:text="${productdetail.status}">available</span>
+                <span class="badge light" th:text="'SKU: ' + ${productdetail.sku}">SKU</span>
+            </div>
+
+            <p class="desc" th:text="${productdetail.description}">Description…</p>
+
+            <div class="kv-grid">
+                <div class="kv">
+                    <div class="k">Price</div>
+                    <div class="v price" th:text="${#numbers.formatDecimal(productdetail.unitPrice, 0, 'COMMA', 0, 'POINT')}"></div>
+                </div>
+                <div class="kv">
+                    <div class="k">Warranty</div>
+                    <div class="v" th:text="${productdetail.warrantyMonths} + ' months'">24 months</div>
+                </div>
+               <!-- <div class="kv">
+                    <div class="k">Created at</div>
+                    <div class="v" th:text="${#temporals.format(productdetail.createdAt, 'dd/MM/yyyy')}">15/02/2023</div>
+                </div>-->
+            </div>
+
+            <div class="btn-row">
+                <a class="btn primary" href="#">Add to cart</a>
+                <a class="btn ghost" th:href="@{/products/list}">Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
