@@ -14,6 +14,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .auth-card {
             background: white;
@@ -37,19 +38,10 @@
             color: #666;
             font-size: 0.95rem;
         }
-        .btn-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px;
-            font-weight: 600;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-        .btn-gradient:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-            color: white;
+        .form-control {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
         }
         .form-control:focus {
             border-color: #667eea;
@@ -60,6 +52,21 @@
         }
         .invalid-feedback {
             display: block;
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            border-radius: 8px;
+        }
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            color: white;
         }
         .divider {
             text-align: center;
@@ -94,90 +101,130 @@
         .login-link a:hover {
             text-decoration: underline;
         }
+        .alert {
+            border-radius: 8px;
+            border: none;
+        }
+        .input-group-text {
+            background: white;
+            border-right: none;
+            color: #667eea;
+        }
+        .input-group .form-control {
+            border-left: none;
+        }
+        .input-group:focus-within .input-group-text {
+            border-color: #667eea;
+        }
     </style>
 </head>
 <body>
-    <div class="auth-card">
-        <!-- Logo & Header -->
-        <div class="logo">
-            <h1><i class="bi bi-shop"></i> HSF302 Shop</h1>
-            <p>Tạo tài khoản mới</p>
-        </div>
-
-        <!-- Error Message -->
-        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${errorMessage}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-
-        <!-- Register Form -->
-        <form th:action="@{/auth/register}" method="post" th:object="${registerDTO}">
-            <div class="mb-3">
-                <label for="fullName" class="form-label fw-semibold">
-                    <i class="bi bi-person-fill text-primary"></i> Họ và tên <span class="text-danger">*</span>
-                </label>
-                <input type="text" class="form-control" id="fullName" th:field="*{fullName}"
-                       th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid'"
-                       placeholder="Nhập họ và tên">
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
-            </div>
-
-            <div class="mb-3">
-                <label for="phoneNumber" class="form-label fw-semibold">
-                    <i class="bi bi-telephone-fill text-primary"></i> Số điện thoại <span class="text-danger">*</span>
-                </label>
-                <input type="tel" class="form-control" id="phoneNumber" th:field="*{phoneNumber}"
-                       th:classappend="${#fields.hasErrors('phoneNumber')} ? 'is-invalid'"
-                       placeholder="Nhập số điện thoại">
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
-            </div>
-
-            <div class="mb-3">
-                <label for="emailAddress" class="form-label fw-semibold">
-                    <i class="bi bi-envelope-fill text-primary"></i> Email
-                </label>
-                <input type="email" class="form-control" id="emailAddress" th:field="*{emailAddress}"
-                       th:classappend="${#fields.hasErrors('emailAddress')} ? 'is-invalid'"
-                       placeholder="Nhập email (không bắt buộc)">
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('emailAddress')}" th:errors="*{emailAddress}"></div>
-            </div>
-
-            <div class="mb-3">
-                <label for="password" class="form-label fw-semibold">
-                    <i class="bi bi-lock-fill text-primary"></i> Mật khẩu <span class="text-danger">*</span>
-                </label>
-                <input type="password" class="form-control" id="password" th:field="*{password}"
-                       th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'"
-                       placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)">
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-            </div>
-
-            <div class="mb-4">
-                <label for="confirmPassword" class="form-label fw-semibold">
-                    <i class="bi bi-lock-fill text-primary"></i> Xác nhận mật khẩu <span class="text-danger">*</span>
-                </label>
-                <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}"
-                       th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid'"
-                       placeholder="Nhập lại mật khẩu">
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
-            </div>
-
-            <button type="submit" class="btn btn-gradient w-100">
-                <i class="bi bi-person-plus"></i> Đăng ký
-            </button>
-        </form>
-
-        <!-- Divider -->
-        <div class="divider">
-            <span>HOẶC</span>
-        </div>
-
-        <!-- Login Link -->
-        <div class="login-link">
-            Đã có tài khoản? <a th:href="@{/auth/login}">Đăng nhập ngay</a>
-        </div>
+<div class="auth-card">
+    <!-- Logo & Header -->
+    <div class="logo">
+        <h1><i class="bi bi-shop"></i> HSF302 Shop</h1>
+        <p>Tạo tài khoản mới</p>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Error Message -->
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+        <i class="bi bi-exclamation-triangle"></i> <span th:text="${errorMessage}"></span>
+    </div>
+
+    <!-- Register Form -->
+    <form th:action="@{/auth/register}" method="post" th:object="${registerDTO}">
+        <div class="mb-3">
+            <label for="fullName" class="form-label">Họ và tên</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                <input type="text"
+                       class="form-control"
+                       id="fullName"
+                       th:field="*{fullName}"
+                       th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''"
+                       placeholder="Nhập họ và tên"
+                       required>
+            </div>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="phoneNumber" class="form-label">Số điện thoại</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                <input type="text"
+                       class="form-control"
+                       id="phoneNumber"
+                       th:field="*{phoneNumber}"
+                       th:classappend="${#fields.hasErrors('phoneNumber')} ? 'is-invalid' : ''"
+                       placeholder="Nhập số điện thoại"
+                       required>
+            </div>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="emailAddress" class="form-label">Email</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                <input type="email"
+                       class="form-control"
+                       id="emailAddress"
+                       th:field="*{emailAddress}"
+                       th:classappend="${#fields.hasErrors('emailAddress')} ? 'is-invalid' : ''"
+                       placeholder="Nhập email"
+                       required>
+            </div>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('emailAddress')}" th:errors="*{emailAddress}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Mật khẩu</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                <input type="password"
+                       class="form-control"
+                       id="password"
+                       th:field="*{password}"
+                       th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
+                       placeholder="Nhập mật khẩu"
+                       required>
+            </div>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            <small class="text-muted">Mật khẩu phải có ít nhất 6 ký tự</small>
+        </div>
+
+        <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Xác nhận mật khẩu</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                <input type="password"
+                       class="form-control"
+                       id="confirmPassword"
+                       th:field="*{confirmPassword}"
+                       th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''"
+                       placeholder="Nhập lại mật khẩu"
+                       required>
+            </div>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-gradient">
+                <i class="bi bi-person-plus"></i> Đăng ký
+            </button>
+        </div>
+    </form>
+
+    <div class="divider">
+        <span>hoặc</span>
+    </div>
+
+    <div class="login-link">
+        <p>Đã có tài khoản? <a href="/auth/login">Đăng nhập ngay</a></p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

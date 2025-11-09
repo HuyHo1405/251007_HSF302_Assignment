@@ -85,240 +85,260 @@
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold" href="/home" style="color: #667eea; font-size: 1.3rem;">
-                <i class="bi bi-shop"></i> HSF302 Shop
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/home"><i class="bi bi-house-door"></i> Trang chủ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/products/list"><i class="bi bi-box-seam"></i> Sản phẩm</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/orders/my"><i class="bi bi-bag-check"></i> Đơn hàng</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/users/profile"><i class="bi bi-person-circle"></i> Hồ sơ</a></li>
-                    <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
-                        <a class="nav-link" href="/users/list"><i class="bi bi-people"></i> Quản lý User</a>
-                    </li>
-                    <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
-                        <a class="nav-link" href="/orders"><i class="bi bi-clipboard-data"></i> Quản lý Đơn hàng</a>
-                    </li>
-                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                        <a class="nav-link active" href="/orders/statistics"><i class="bi bi-graph-up"></i> Thống kê</a>
-                    </li>
-                    <li class="nav-item">
-                        <form th:action="@{/auth/logout}" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-danger btn-sm ms-2">
-                                <i class="bi bi-box-arrow-right"></i> Đăng xuất
-                            </button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fw-bold" href="/home" style="color: #667eea; font-size: 1.3rem;">
+            <i class="bi bi-shop"></i> HSF302 Shop
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/home"><i class="bi bi-house-door"></i> Trang chủ</a></li>
+                <li class="nav-item"><a class="nav-link" href="/products/list"><i class="bi bi-box-seam"></i> Sản phẩm</a></li>
+                <li class="nav-item"><a class="nav-link" href="/cart"><i class="bi bi-cart3"></i> Giỏ hàng</a></li>
+                <li class="nav-item"><a class="nav-link" href="/orders"><i class="bi bi-receipt"></i> Đơn hàng</a></li>
+
+                <!-- Link Thống kê - CHỈ ADMIN -->
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link active" href="/orders/statistics"><i class="bi bi-graph-up-arrow"></i> Thống kê</a>
+                </li>
+
+                <!-- Link Quản lý User - ADMIN & STAFF -->
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','STAFF')">
+                    <a class="nav-link" href="/users/list"><i class="bi bi-people"></i> Quản lý User</a>
+                </li>
+
+                <li class="nav-item"><a class="nav-link" href="/users/profile"><i class="bi bi-person-circle"></i> Profile</a></li>
+                <li class="nav-item">
+                    <form th:action="@{/auth/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-danger btn-sm ms-2">
+                            <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                        </button>
+                    </form>
+                </li>
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    <div class="container my-5">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h2><i class="bi bi-graph-up-arrow"></i> Thống kê doanh thu & đơn hàng</h2>
-            <p class="text-muted mb-0">Tổng quan về hoạt động kinh doanh</p>
-        </div>
+<div class="container my-5">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h2><i class="bi bi-graph-up-arrow"></i> Thống kê doanh thu & đơn hàng</h2>
+        <p class="text-muted mb-0">Tổng quan về hoạt động kinh doanh</p>
+    </div>
 
-        <!-- Statistics Cards -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-6 col-lg-3">
-                <div class="stats-card">
-                    <div class="stats-icon primary">
-                        <i class="bi bi-cash-stack"></i>
-                    </div>
-                    <div class="stats-label">Tổng doanh thu</div>
-                    <div class="stats-value" th:text="${#numbers.formatDecimal(totalRevenue ?: 0, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</div>
-                    <small class="text-muted">Tất cả đơn hàng đã giao</small>
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <!-- Card 1: Tổng doanh thu -->
+        <div class="col-md-6 col-lg-3">
+            <div class="stats-card">
+                <div class="stats-icon primary">
+                    <i class="bi bi-cash-stack"></i>
                 </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="stats-card">
-                    <div class="stats-icon success">
-                        <i class="bi bi-check-circle"></i>
-                    </div>
-                    <div class="stats-label">Đơn hàng hoàn thành</div>
-                    <div class="stats-value" th:text="${completedOrders ?: 0}">0</div>
-                    <small class="text-muted">Đơn đã giao thành công</small>
+                <div class="stats-label">Tổng doanh thu</div>
+                <div class="stats-value">
+                        <span th:if="${totalRevenue != null}"
+                              th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                    <span th:if="${totalRevenue == null}">0 ₫</span>
                 </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="stats-card">
-                    <div class="stats-icon warning">
-                        <i class="bi bi-hourglass-split"></i>
-                    </div>
-                    <div class="stats-label">Đơn hàng đang xử lý</div>
-                    <div class="stats-value" th:text="${pendingOrders ?: 0}">0</div>
-                    <small class="text-muted">Đơn chưa hoàn thành</small>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="stats-card">
-                    <div class="stats-icon info">
-                        <i class="bi bi-box-seam"></i>
-                    </div>
-                    <div class="stats-label">Tổng đơn hàng</div>
-                    <div class="stats-value" th:text="${totalOrders ?: 0}">0</div>
-                    <small class="text-muted">Tất cả đơn hàng</small>
-                </div>
+                <small class="text-muted">Tất cả đơn hàng đã giao</small>
             </div>
         </div>
 
-        <!-- Charts Row -->
-        <div class="row g-4">
-            <!-- Order Status Chart -->
-            <div class="col-lg-6">
-                <div class="chart-card">
-                    <h5 class="chart-title"><i class="bi bi-pie-chart"></i> Trạng thái đơn hàng</h5>
-                    <canvas id="orderStatusChart"></canvas>
+        <!-- Card 2: Đơn hàng hoàn thành -->
+        <div class="col-md-6 col-lg-3">
+            <div class="stats-card">
+                <div class="stats-icon success">
+                    <i class="bi bi-check-circle"></i>
                 </div>
-            </div>
-
-            <!-- Revenue Chart -->
-            <div class="col-lg-6">
-                <div class="chart-card">
-                    <h5 class="chart-title"><i class="bi bi-bar-chart"></i> Doanh thu theo tháng</h5>
-                    <canvas id="revenueChart"></canvas>
+                <div class="stats-label">Đơn hàng hoàn thành</div>
+                <div class="stats-value">
+                    <span th:if="${completedOrders != null}" th:text="${completedOrders}">0</span>
+                    <span th:if="${completedOrders == null}">0</span>
                 </div>
+                <small class="text-muted">Đơn đã giao thành công</small>
             </div>
         </div>
 
-        <!-- Recent Orders Table -->
-        <div class="chart-card">
-            <h5 class="chart-title"><i class="bi bi-list-check"></i> Đơn hàng gần đây</h5>
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Mã đơn</th>
-                            <th>Khách hàng</th>
-                            <th>Tổng tiền</th>
-                            <th>Trạng thái</th>
-                            <th>Ngày tạo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="order : ${recentOrders}" th:if="${recentOrders != null}">
-                            <td><a th:href="@{/orders/detail/{id}(id=${order.id})}" th:text="'#' + ${order.id}">#1</a></td>
-                            <td th:text="${order.userFullName}">Customer</td>
-                            <td th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</td>
-                            <td>
-                                <span class="badge"
-                                      th:classappend="${order.status == 'delivered'} ? 'bg-success' :
-                                                      (${order.status == 'cancelled'} ? 'bg-danger' :
-                                                      (${order.status == 'shipping'} ? 'bg-primary' :
-                                                      (${order.status == 'paid'} ? 'bg-info' : 'bg-warning')))"
-                                      th:text="${order.status}">Status</span>
-                            </td>
-                            <td th:text="${order.createdAt}">01/01/2025</td>
-                        </tr>
-                        <tr th:if="${recentOrders == null || #lists.isEmpty(recentOrders)}">
-                            <td colspan="5" class="text-center text-muted">Chưa có đơn hàng nào</td>
-                        </tr>
-                    </tbody>
-                </table>
+        <!-- Card 3: Đơn hàng đang xử lý -->
+        <div class="col-md-6 col-lg-3">
+            <div class="stats-card">
+                <div class="stats-icon warning">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div class="stats-label">Đơn hàng đang xử lý</div>
+                <div class="stats-value">
+                    <span th:if="${pendingOrders != null}" th:text="${pendingOrders}">0</span>
+                    <span th:if="${pendingOrders == null}">0</span>
+                </div>
+                <small class="text-muted">Đơn chưa hoàn thành</small>
+            </div>
+        </div>
+
+        <!-- Card 4: Tổng đơn hàng -->
+        <div class="col-md-6 col-lg-3">
+            <div class="stats-card">
+                <div class="stats-icon info">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+                <div class="stats-label">Tổng đơn hàng</div>
+                <div class="stats-value">
+                    <span th:if="${totalOrders != null}" th:text="${totalOrders}">0</span>
+                    <span th:if="${totalOrders == null}">0</span>
+                </div>
+                <small class="text-muted">Tất cả đơn hàng</small>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script th:inline="javascript">
-        // Order Status Pie Chart
-        const statusCtx = document.getElementById('orderStatusChart').getContext('2d');
-        const statusData = {
-            pending: /*[[${statusCounts != null ? statusCounts.pending : 0}]]*/ 0,
-            paid: /*[[${statusCounts != null ? statusCounts.paid : 0}]]*/ 0,
-            shipping: /*[[${statusCounts != null ? statusCounts.shipping : 0}]]*/ 0,
-            delivered: /*[[${statusCounts != null ? statusCounts.delivered : 0}]]*/ 0,
-            cancelled: /*[[${statusCounts != null ? statusCounts.cancelled : 0}]]*/ 0
-        };
+    <!-- Charts Row -->
+    <div class="row g-4">
+        <!-- Order Status Chart -->
+        <div class="col-lg-6">
+            <div class="chart-card">
+                <h5 class="chart-title"><i class="bi bi-pie-chart"></i> Trạng thái đơn hàng</h5>
+                <canvas id="orderStatusChart"></canvas>
+            </div>
+        </div>
 
-        new Chart(statusCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Chờ xử lý', 'Đã thanh toán', 'Đang giao', 'Đã giao', 'Đã hủy'],
-                datasets: [{
-                    data: [statusData.pending, statusData.paid, statusData.shipping, statusData.delivered, statusData.cancelled],
-                    backgroundColor: [
-                        '#fff3cd', // pending
-                        '#d1ecf1', // paid
-                        '#d1ecf1', // shipping
-                        '#d1ecf1', // delivered (THEO STYLE CỦA BẠN)
-                        '#f8d7da'  // cancelled
-                    ],
-                    borderColor: [
-                        '#856404',
-                        '#0c5460',
-                        '#0c5460',
-                        '#0c5460',
-                        '#721c24'
-                    ],
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                // THÊM DÒNG NÀY ĐỂ BUỘC TỶ LỆ 1:1
-                aspectRatio: 1,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                    }
+        <!-- Revenue Chart -->
+        <div class="col-lg-6">
+            <div class="chart-card">
+                <h5 class="chart-title"><i class="bi bi-bar-chart"></i> Doanh thu theo tháng</h5>
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="chart-card">
+        <h5 class="chart-title"><i class="bi bi-list-check"></i> Đơn hàng gần đây</h5>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Khách hàng</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày tạo</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${recentOrders}" th:if="${recentOrders != null}">
+                    <td><a th:href="@{/orders/{id}(id=${order.id})}" th:text="'#' + ${order.id}">#1</a></td>
+                    <td th:text="${order.userFullName}">Customer</td>
+                    <td th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</td>
+                    <td>
+                                <span class="badge"
+                                      th:classappend="${order.status == 'DELIVERED'} ? 'bg-success' :
+                                                      (${order.status == 'CANCELLED'} ? 'bg-danger' :
+                                                      (${order.status == 'SHIPPING'} ? 'bg-primary' :
+                                                      (${order.status == 'PAID'} ? 'bg-info' : 'bg-warning')))"
+                                      th:text="${order.status}">Status</span>
+                    </td>
+                    <td th:text="${order.createdAt}">01/01/2025</td>
+                </tr>
+                <tr th:if="${recentOrders == null || #lists.isEmpty(recentOrders)}">
+                    <td colspan="5" class="text-center text-muted">Chưa có đơn hàng nào</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+    // Order Status Pie Chart
+    const statusCtx = document.getElementById('orderStatusChart').getContext('2d');
+    const statusCounts = /*[[${statusCounts}]]*/ {};
+
+    const statusData = {
+        pending: statusCounts['PENDING'] || statusCounts['pending'] || 0,
+        paid: statusCounts['PAID'] || statusCounts['paid'] || 0,
+        shipping: statusCounts['SHIPPING'] || statusCounts['shipping'] || 0,
+        delivered: statusCounts['DELIVERED'] || statusCounts['delivered'] || 0,
+        cancelled: statusCounts['CANCELLED'] || statusCounts['cancelled'] || 0
+    };
+
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Chờ xử lý', 'Đã thanh toán', 'Đang giao', 'Đã giao', 'Đã hủy'],
+            datasets: [{
+                data: [statusData.pending, statusData.paid, statusData.shipping, statusData.delivered, statusData.cancelled],
+                backgroundColor: [
+                    '#fff3cd', // pending
+                    '#cfe2ff', // paid
+                    '#cfe2ff', // shipping
+                    '#d1e7dd', // delivered
+                    '#f8d7da'  // cancelled
+                ],
+                borderColor: [
+                    '#856404',
+                    '#084298',
+                    '#084298',
+                    '#0f5132',
+                    '#721c24'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1,
+            plugins: {
+                legend: {
+                    position: 'bottom',
                 }
             }
-        });
+        }
+    });
 
-        // Revenue Bar Chart
-        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-        const monthlyRevenue = /*[[${monthlyRevenue}]]*/ [0, 0, 0, 0, 0, 0];
+    // Revenue Bar Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    const monthlyRevenue = /*[[${monthlyRevenue}]]*/ [0, 0, 0, 0, 0, 0];
 
-        new Chart(revenueCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'], // Cần thay bằng dữ liệu động
-                datasets: [{
-                    label: 'Doanh thu (VNĐ)',
-                    data: monthlyRevenue,
-                    backgroundColor: 'rgba(102, 126, 234, 0.8)', // Màu primary
-                    borderColor: 'rgba(102, 126, 234, 1)',
-                    borderWidth: 2,
-                    borderRadius: 8
-                }]
+    new Chart(revenueCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
+            datasets: [{
+                label: 'Doanh thu (VNĐ)',
+                data: monthlyRevenue,
+                backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                borderColor: 'rgba(102, 126, 234, 1)',
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1,
+            plugins: {
+                legend: {
+                    display: false
+                }
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                // THÊM DÒNG NÀY ĐỂ BUỘC TỶ LỆ 1:1
-                aspectRatio: 1,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return value.toLocaleString('vi-VN') + ' ₫';
-                            }
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString('vi-VN') + ' ₫';
                         }
                     }
                 }
             }
-        });
-    </script>
+        }
+    });
+</script>
 </body>
 </html>
