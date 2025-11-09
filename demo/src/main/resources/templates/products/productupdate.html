@@ -1,124 +1,291 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Update Product</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cập nhật sản phẩm</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-top: 20px;
-            padding-bottom: 20px;
         }
-        .main-card {
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+        .form-card {
             background: white;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            padding: 30px;
+            padding: 40px;
             margin: 30px 0;
         }
-        .page-header {
-            margin-bottom: 30px;
+        .form-header {
+            text-align: center;
+            margin-bottom: 40px;
             padding-bottom: 20px;
             border-bottom: 2px solid #f0f0f0;
         }
-        .page-header h2 {
+        .form-header h2 {
             color: #333;
             font-weight: bold;
         }
-        .btn-primary {
-            background-color: #667eea;
+        .form-label {
+            font-weight: 600;
+            color: #555;
+        }
+        .form-control:focus, .form-select:focus {
             border-color: #667eea;
-            color: white;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
         }
         .btn-primary:hover {
-            background-color: #5a6fdc;
-            border-color: #5a6fdc;
-            color: white;
+            background: linear-gradient(135deg, #5a6fdc 0%, #6842a0 100%);
+        }
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="main-card">
-        <a th:href="@{/products/list}" class="btn btn-outline-secondary mb-3">
-            <i class="bi bi-arrow-left"></i> Back to list
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-primary" href="/home">
+            <i class="bi bi-shop"></i> HSF302 Shop
         </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/home">Trang chủ</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/products/list">Sản phẩm</a></li>
+                <li class="nav-item"><a class="nav-link" href="/cart">Giỏ hàng</a></li>
+                <li class="nav-item"><a class="nav-link" href="/orders">Đơn hàng</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
-        <div class="page-header">
-            <h2><i class="bi bi-pencil-square-fill"></i> Update Product</h2>
-            <p class="subtitle text-muted fst-italic">Edit the fields below and click <b>Update</b> to save.</p>
+<div class="container">
+    <div class="form-card col-md-8 mx-auto">
+        <div class="form-header">
+            <h2>
+                <i class="bi bi-pencil-square"></i> Cập nhật sản phẩm
+            </h2>
+            <p class="text-muted mb-0">ID: <span class="badge-info" th:text="${product.id}"></span></p>
         </div>
 
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Form -->
         <form th:action="@{/products/update/{id}(id=${product.id})}"
-              th:object="${product}"
-              method="post">
+              method="post"
+              th:object="${product}">
 
-            <input type="hidden" th:field="*{id}"/>
+            <input type="hidden" th:field="*{id}">
+            <input type="hidden" th:field="*{createdAt}">
 
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label for="name" class="form-label">Name</label>
-                    <input id="name" type="text" th:field="*{name}" class="form-control" placeholder="Product name" required>
+            <!-- Tên sản phẩm -->
+            <div class="mb-3">
+                <label for="name" class="form-label">
+                    <i class="bi bi-box"></i> Tên sản phẩm <span class="text-danger">*</span>
+                </label>
+                <input type="text"
+                       class="form-control"
+                       id="name"
+                       th:field="*{name}"
+                       placeholder="Nhập tên sản phẩm"
+                       required>
+            </div>
+
+            <div class="row">
+                <!-- SKU -->
+                <div class="col-md-6 mb-3">
+                    <label for="sku" class="form-label">
+                        <i class="bi bi-upc-scan"></i> SKU (Mã sản phẩm)
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           id="sku"
+                           th:field="*{sku}"
+                           placeholder="VD: LAPTOP-001">
                 </div>
 
-                <div class="col-md-6">
-                    <label for="sku" class="form-label">Sku</label>
-                    <input id="sku" type="text" th:field="*{sku}" class="form-control" placeholder="SKU-12345" required>
-                </div>
-
-                <div class="col-md-6">
-                    <label for="type" class="form-label">Type</label>
-                    <input id="type" type="text" th:field="*{type}" class="form-control" placeholder="Laptop / Phone / ..." required>
-                </div>
-
-                <div class="col-md-6">
-                    <label for="brand" class="form-label">Brand</label>
-                    <input id="brand" type="text" th:field="*{brand}" class="form-control" placeholder="Dell / Apple / ..." required>
-                </div>
-
-                <div class="col-md-12">
-                    <label for="model" class="form-label">Model</label>
-                    <input id="model" type="text" th:field="*{model}" class="form-control" placeholder="Inspiron 15 3520" required>
-                </div>
-
-                <div class="col-md-12">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea id="description" th:field="*{description}" class="form-control" rows="3" placeholder="Short product description" required></textarea>
-                </div>
-
-                <div class="col-md-4">
-                    <label for="unitPrice" class="form-label">Price</label>
-                    <div class="input-group">
-                        <span class="input-group-text">$</span>
-                        <input id="unitPrice" type="number" step="0.01" th:field="*{unitPrice}" class="form-control" placeholder="0.00" required>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <label for="warrantyMonths" class="form-label">Warranty (months)</label>
-                    <input id="warrantyMonths" type="number" min="0" th:field="*{warrantyMonths}" class="form-control" placeholder="24" required>
-                </div>
-
-                <div class="col-md-4">
-                    <label for="status" class="form-label">Status</label>
-                    <input id="status" type="text" th:field="*{status}" class="form-control" placeholder="available / out-of-stock" required>
+                <!-- Brand -->
+                <div class="col-md-6 mb-3">
+                    <label for="brand" class="form-label">
+                        <i class="bi bi-tag"></i> Thương hiệu <span class="text-danger">*</span>
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           id="brand"
+                           th:field="*{brand}"
+                           placeholder="VD: Dell, HP, Apple..."
+                           required>
                 </div>
             </div>
 
-            <div class="mt-4 d-flex justify-content-end gap-2">
-                <a class="btn btn-outline-secondary" th:href="@{/products/list}">Cancel</a>
-                <button class="btn btn-primary" type="submit">
-                    <i class="bi bi-check-lg"></i> Update
+            <div class="row">
+                <!-- Type -->
+                <div class="col-md-6 mb-3">
+                    <label for="type" class="form-label">
+                        <i class="bi bi-grid"></i> Loại sản phẩm
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           id="type"
+                           th:field="*{type}"
+                           placeholder="VD: Laptop, Desktop, Monitor...">
+                </div>
+
+                <!-- Model -->
+                <div class="col-md-6 mb-3">
+                    <label for="model" class="form-label">
+                        <i class="bi bi-cpu"></i> Model
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           id="model"
+                           th:field="*{model}"
+                           placeholder="VD: XPS 13, MacBook Pro...">
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+                <label for="description" class="form-label">
+                    <i class="bi bi-file-text"></i> Mô tả sản phẩm
+                </label>
+                <textarea class="form-control"
+                          id="description"
+                          th:field="*{description}"
+                          rows="5"
+                          placeholder="Nhập mô tả chi tiết về sản phẩm"></textarea>
+            </div>
+
+            <div class="row">
+                <!-- Unit Price -->
+                <div class="col-md-6 mb-3">
+                    <label for="unitPrice" class="form-label">
+                        <i class="bi bi-currency-dollar"></i> Đơn giá (VNĐ) <span class="text-danger">*</span>
+                    </label>
+                    <input type="number"
+                           class="form-control"
+                           id="unitPrice"
+                           th:field="*{unitPrice}"
+                           placeholder="Nhập giá"
+                           min="0"
+                           step="1000"
+                           required>
+                </div>
+
+                <!-- Stock Quantity -->
+                <div class="col-md-6 mb-3">
+                    <label for="stockQuantity" class="form-label">
+                        <i class="bi bi-box-seam"></i> Số lượng tồn kho <span class="text-danger">*</span>
+                    </label>
+                    <input type="number"
+                           class="form-control"
+                           id="stockQuantity"
+                           th:field="*{stockQuantity}"
+                           placeholder="Số lượng"
+                           min="0"
+                           required>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Warranty Months -->
+                <div class="col-md-6 mb-3">
+                    <label for="warrantyMonths" class="form-label">
+                        <i class="bi bi-shield-check"></i> Bảo hành (tháng)
+                    </label>
+                    <input type="number"
+                           class="form-control"
+                           id="warrantyMonths"
+                           th:field="*{warrantyMonths}"
+                           placeholder="VD: 12, 24, 36..."
+                           min="0">
+                </div>
+
+                <!-- Status -->
+                <div class="col-md-6 mb-3">
+                    <label for="status" class="form-label">
+                        <i class="bi bi-info-circle"></i> Trạng thái
+                    </label>
+                    <select class="form-select"
+                            id="status"
+                            th:field="*{status}">
+                        <option value="">-- Chọn trạng thái --</option>
+                        <option value="AVAILABLE">Còn hàng</option>
+                        <option value="OUT_OF_STOCK">Hết hàng</option>
+                        <option value="DISCONTINUED">Ngừng kinh doanh</option>
+                        <option value="PRE_ORDER">Đặt trước</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Thông tin thời gian -->
+            <div class="alert alert-info" th:if="${product.createdAt != null}">
+                <i class="bi bi-clock-history"></i>
+                <strong>Ngày tạo:</strong>
+                <span th:text="${#temporals.format(product.createdAt, 'dd/MM/yyyy HH:mm:ss')}"></span>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-save"></i> Lưu thay đổi
                 </button>
+                <a th:href="@{/products/detail/{id}(id=${product.id})}" class="btn btn-outline-secondary">
+                    <i class="bi bi-eye"></i> Xem chi tiết
+                </a>
+                <a href="/products/list" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Quay lại danh sách
+                </a>
             </div>
         </form>
+
+        <!-- Delete Product -->
+        <div class="mt-4 pt-4 border-top">
+            <h5 class="text-danger"><i class="bi bi-exclamation-triangle"></i> Vùng nguy hiểm</h5>
+            <p class="text-muted">Xóa sản phẩm này sẽ không thể khôi phục</p>
+            <form th:action="@{/products/delete/{id}(id=${product.id})}"
+                  method="post"
+                  onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác!')">
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Xóa sản phẩm
+                </button>
+            </form>
+        </div>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

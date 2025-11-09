@@ -21,6 +21,30 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
+    // Xem profile của user khác (ADMIN và STAFF)
+    @GetMapping("/{id}")
+    public String viewUserProfile(@PathVariable Long id,
+                                  @AuthenticationPrincipal User currentUser,
+                                  Model model,
+                                  RedirectAttributes redirectAttributes) {
+        // Check quyền: ADMIN và STAFF mới xem được profile người khác
+        if (currentUser.getRole() != User.Role.ADMIN && currentUser.getRole() != User.Role.STAFF) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền xem thông tin người dùng này");
+            return "redirect:/users/profile";
+        }
+
+        try {
+            UserDTO userDTO = userService.getUserById(id);
+            model.addAttribute("user", userDTO);
+            model.addAttribute("currentUser", currentUser);
+            model.addAttribute("viewingOtherUser", true); // Flag để phân biệt
+            return "user/profile";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Không tìm thấy người dùng");
+            return "redirect:/users/list";
+        }
+    }
+
     // Xem thông tin hồ sơ
     @GetMapping("/profile")
     public String profile(@AuthenticationPrincipal User currentUser, Model model) {

@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xác nhận đơn hàng</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -30,49 +28,29 @@
             margin-bottom: 30px;
             padding-bottom: 20px;
             border-bottom: 2px solid #f0f0f0;
+            text-align: center;
         }
         .page-header h2 {
             color: #333;
             font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
-        .filter-section {
+        .summary-section {
             background: #f8f9fa;
-            padding: 20px;
+            padding: 25px;
             border-radius: 10px;
             margin-bottom: 25px;
         }
-        .status-badge {
-            padding: 6px 20px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
         }
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-        .status-paid {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-        .status-shipping {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-        .status-delivered {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-        .status-cancelled {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        .custom-table {
-            margin-bottom: 0;
+        .summary-row:last-child {
+            border-bottom: none;
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
         }
         .custom-table thead {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -83,260 +61,114 @@
             padding: 15px;
             font-weight: 600;
         }
-        .custom-table tbody tr {
-            transition: all 0.3s;
-        }
-        .custom-table tbody tr:hover {
-            background: #f8f9fa;
-        }
         .custom-table tbody td {
             padding: 15px;
             vertical-align: middle;
         }
-        .btn-action {
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-size: 14px;
-            border: none;
-            transition: all 0.3s;
-            margin-right: 5px;
-        }
-        .btn-view {
-            background: #17a2b8;
-            color: white;
-        }
-        .btn-view:hover {
-            background: #138496;
-            transform: translateY(-2px);
-        }
-        .btn-delete {
-            background: #dc3545;
-            color: white;
-        }
-        .btn-delete:hover {
-            background: #c82333;
-            transform: translateY(-2px);
-        }
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #999;
-        }
-        .empty-state i {
-            font-size: 80px;
-            margin-bottom: 20px;
-            color: #ddd;
-        }
-        .alert-custom {
-            border-radius: 10px;
-            border: none;
-        }
-        .total-price {
-            font-weight: bold;
-            color: #212529;
-        }
-        .summary-box {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-        }
-
         .btn-primary {
-            background-color: #667eea;
-            border-color: #667eea;
-            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 600;
         }
-
         .btn-primary:hover {
-            background-color: #5a6fdc;
-            border-color: #5a6fdc;
-            color: white;
-        }
-
-        /* Style cho input số lượng */
-        .quantity-input {
-            width: 75px;
-            text-align: center;
+            background: linear-gradient(135deg, #5a6fdc 0%, #6842a0 100%);
         }
     </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-primary" href="/home">
+            <i class="bi bi-shop"></i> HSF302 Shop
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/home">Trang chủ</a></li>
+                <li class="nav-item"><a class="nav-link" href="/products/list">Sản phẩm</a></li>
+                <li class="nav-item"><a class="nav-link" href="/cart">Giỏ hàng</a></li>
+                <li class="nav-item"><a class="nav-link" href="/orders">Đơn hàng</a></li>
+            </ul>
+        </div>
+    </div>
 </nav>
 
 <div class="container">
     <div class="main-card">
-
         <div class="page-header">
-            <h2>
-                <i class="bi bi-patch-check-fill"></i>
-                Xác nhận đơn hàng
-            </h2>
-            <p class="text-muted mb-0 fst-italic">Vui lòng kiểm tra lại thông tin trước khi tạo đơn.</p>
+            <h2><i class="bi bi-clipboard-check"></i> Xác nhận đơn hàng</h2>
+            <p class="text-muted">Vui lòng kiểm tra thông tin đơn hàng trước khi xác nhận</p>
         </div>
 
-        <form method="post" th:action="@{/orders/create}" th:object="${order}" class="row g-3">
-
-            <input type="hidden" th:field="*{userId}" />
-            <input type="hidden" th:field="*{status}" />
-
-            <div class="col-12">
-                <label for="shippingAddress" class="form-label fw-bold">Địa chỉ giao hàng:</label>
-                <input type="text" id="shippingAddress" th:field="*{shippingAddress}" class="form-control" required placeholder="Nhập địa chỉ của bạn..."/>
+        <!-- Thông tin khách hàng -->
+        <div class="summary-section">
+            <h5 class="mb-3"><i class="bi bi-person"></i> Thông tin khách hàng</h5>
+            <div class="summary-row">
+                <span>Họ tên:</span>
+                <span th:text="${order.userFullName}"></span>
             </div>
+        </div>
 
-            <div class="page-header mt-4">
-                <h2>
-                    <i class="bi bi-box-seam-fill"></i>
-                    Chi tiết sản phẩm
-                </h2>
-                <p class="text-muted mb-0 fst-italic">Đây là các sản phẩm từ giỏ hàng của bạn.</p>
-            </div>
+        <!-- Chi tiết sản phẩm -->
+        <h5 class="mb-3"><i class="bi bi-box-seam"></i> Sản phẩm trong đơn hàng</h5>
+        <table class="table custom-table mb-4">
+            <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tên sản phẩm</th>
+                <th>Đơn giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item, iterStat : ${order.items}">
+                <td th:text="${iterStat.count}"></td>
+                <td th:text="${item.productName}"></td>
+                <td th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                <td th:text="${item.quantity}"></td>
+                <td th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+            </tr>
+            </tbody>
+        </table>
 
-            <div class="table-responsive">
-                <table class="table custom-table table-hover align-middle">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Tên sản phẩm</th>
-                        <th>ID sản phẩm</th>
-                        <th>Số lượng</th>
-                        <th>Đơn giá</th>
-                        <th>Tạm tính</th>
-                        <th>Thao tác</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="item,iterStat: *{items}">
+        <!-- SỬA: Tổng cộng - Tính bằng th:with -->
+        <div class="summary-section">
+            <th:block th:with="orderTotal=${0}">
+                <th:block th:each="item : ${order.items}" th:with="orderTotal=${orderTotal + item.subtotal}">
+                    <!-- Vòng lặp để cộng dồn -->
+                </th:block>
+                <div class="summary-row">
+                    <span>Tổng tiền hàng:</span>
+                    <span th:text="${#numbers.formatDecimal(orderTotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+                </div>
+                <div class="summary-row">
+                    <span>Phí vận chuyển:</span>
+                    <span>0 ₫</span>
+                </div>
+                <div class="summary-row">
+                    <span>Tổng thanh toán:</span>
+                    <span th:text="${#numbers.formatDecimal(orderTotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+                </div>
+            </th:block>
+        </div>
 
-                        <input type="hidden" th:field="*{items[__${iterStat.index}__].productId}" />
-                        <input type="hidden" th:field="*{items[__${iterStat.index}__].productName}" />
-                        <input type="hidden" th:field="*{items[__${iterStat.index}__].unitPrice}" />
-                        <input type="hidden" th:field="*{items[__${iterStat.index}__].subtotal}" />
-                        <td th:text="${iterStat.count}"></td>
-                        <td th:text="${item.productName}"></td>
-                        <td th:text="${item.productId}"></td>
-
-                        <td>
-                            <input type="number" class="form-control form-control-sm quantity-input"
-                                   th:field="*{items[__${iterStat.index}__].quantity}" min="1"
-                                   th:onchange="updateQuantity(this, [[${item.productId}]])" />
-                        </td>
-
-                        <td class="item-price" th:data-price="${item.unitPrice}"
-                            th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
-                        </td>
-
-                        <td class="fw-bold item-subtotal"
-                            th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
-                        </td>
-
-                        <td>
-                            <button type="button" class="btn btn-outline-danger btn-sm"
-                                    th:onclick="removeItem(this, [[${item.productId}]])">
-                                <i class="bi bi-trash"></i> Xóa
-                            </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="col-12 mt-4 pt-4 border-top">
-                <button type="submit" class="btn btn-primary btn-lg">
-                    <i class="bi bi-check-circle"></i> Tạo đơn
-                </button>
-                <a href="/cart" class="btn btn-outline-danger btn-lg ms-2">
-                    <i class="bi bi-x-circle"></i> Hủy tạo đơn
-                </a>
-            </div>
+        <!-- Form xác nhận -->
+        <form th:action="@{/orders/create}" method="post" class="text-center mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-check-circle"></i> Xác nhận đặt hàng
+            </button>
+            <a href="/cart" class="btn btn-secondary btn-lg ms-3">
+                <i class="bi bi-arrow-left"></i> Quay lại giỏ hàng
+            </a>
         </form>
-
-    </div> </div>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-    // === LẤY CSRF TOKEN (NẾU DÙNG SPRING SECURITY) ===
-    // Bỏ comment nếu bạn cần
-    // const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
-    // const csrfHeader = document.querySelector('input[name="_csrf"]')?.name;
-    // const fetchHeaders = {
-    //     'Content-Type': 'application/json',
-    //     'Accept': 'application/json'
-    // };
-    // if (csrfHeader && csrfToken) {
-    //     fetchHeaders[csrfHeader] = csrfToken;
-    // }
-
-    // Hàm này để định dạng tiền tệ (cho đẹp)
-    function formatCurrency(number) {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(number);
-    }
-
-    // === HÀM CẬP NHẬT SỐ LƯỢNG ===
-    function updateQuantity(inputElement, productId) {
-        const newQuantity = inputElement.valueAsNumber;
-        if (newQuantity < 1) {
-            inputElement.value = 1; // Ngăn người dùng nhập số < 1
-            return;
-        }
-
-        const row = inputElement.closest('tr');
-        const priceCell = row.querySelector('.item-price');
-        const subtotalCell = row.querySelector('.item-subtotal');
-
-        // Lấy giá trị số từ data-price
-        const unitPrice = parseFloat(priceCell.dataset.price);
-
-        // Tính toán và cập nhật Tạm tính (subtotal)
-        const newSubtotal = newQuantity * unitPrice;
-        subtotalCell.textContent = formatCurrency(newSubtotal);
-
-        // Gọi server ngầm để cập nhật session
-        // URL '/cart/update/' phải khớp với @PostMapping trong Controller
-        // Gửi số lượng mới dưới dạng query parameter
-        fetch('/cart/update/' + productId + '?quantity=' + newQuantity, {
-            method: 'POST'
-            // headers: fetchHeaders // Bỏ comment nếu dùng CSRF
-        })
-            .then(response => {
-                if (!response.ok) {
-                    alert('Lỗi! Không thể cập nhật số lượng. Vui lòng tải lại trang.');
-                }
-                // Không cần làm gì thêm nếu thành công, UI đã được cập nhật
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Đã xảy ra lỗi kết nối. Vui lòng thử lại.');
-            });
-    }
-
-    // === HÀM XÓA SẢN PHẨM ===
-    function removeItem(buttonElement, productId) {
-        if (!confirm('Bạn chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?')) {
-            return;
-        }
-
-        // URL '/cart/remove/' phải khớp với @PostMapping hoặc @DeleteMapping
-        fetch('/cart/remove/' + productId, {
-            method: 'POST' // Hoặc 'DELETE'
-            // headers: fetchHeaders // Bỏ comment nếu dùng CSRF
-        })
-            .then(response => {
-                if (response.ok) {
-                    // Xóa hàng (row) khỏi bảng
-                    buttonElement.closest('tr').remove();
-                } else {
-                    alert('Lỗi! Không thể xóa sản phẩm. Vui lòng thử lại.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Đã xảy ra lỗi kết nối. Vui lòng thử lại.');
-            });
-    }
-</script>
-
 </body>
 </html>

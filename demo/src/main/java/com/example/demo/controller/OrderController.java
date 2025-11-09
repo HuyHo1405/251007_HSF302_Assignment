@@ -36,8 +36,8 @@ public class OrderController {
     // Xem đơn hàng - Tự động lọc theo role
     @GetMapping
     public String listOrders(@RequestParam(required = false) String status,
-                            @AuthenticationPrincipal User currentUser,
-                            Model model) {
+                             @AuthenticationPrincipal User currentUser,
+                             Model model) {
         List<OrderDTO> orders;
 
         // CUSTOMER chỉ xem đơn của mình, STAFF/ADMIN xem tất cả
@@ -45,7 +45,10 @@ public class OrderController {
             orders = (status == null || status.isEmpty())
                     ? orderService.findByUser(currentUser.getId())
                     : orderService.findByUser(currentUser.getId()).stream()
-                    .filter(o -> o.getStatus().equals(status))
+                    .filter(o -> {
+                        System.out.println("Order status: '" + o.getStatus() + "', Filter status: '" + status + "'");
+                        return o.getStatus().equalsIgnoreCase(status); // SỬA: Thêm equalsIgnoreCase
+                    })
                     .collect(Collectors.toList());
         } else {
             // STAFF/ADMIN xem tất cả đơn
@@ -53,6 +56,8 @@ public class OrderController {
                     ? orderService.getAllOrders()
                     : orderService.findByStatus(status);
         }
+
+        System.out.println("Total orders found: " + orders.size()); // Debug log
 
         model.addAttribute("orders", orders);
         model.addAttribute("status", status);

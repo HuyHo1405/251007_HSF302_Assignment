@@ -26,29 +26,34 @@ public class SecurityConfig {
                         // Home - accessible to all authenticated users
                         .requestMatchers("/", "/home").authenticated()
 
-                        // Product management - ADMIN & STAFF only can create/update/delete
+                        // Product management
                         .requestMatchers("/products/create", "/products/update/**", "/products/delete/**").hasAnyRole("ADMIN", "STAFF")
-                        // Product list & detail - accessible to all authenticated users
                         .requestMatchers("/products/**").authenticated()
 
-                        // Cart - accessible to all authenticated users (mainly CUSTOMER)
+                        // Cart - Tất cả user đều được mua hàng
                         .requestMatchers("/cart/**").authenticated()
 
                         // Order management
-                        .requestMatchers("/orders").authenticated() // Tất cả user đã login đều truy cập được, tự động lọc theo role
-                        .requestMatchers("/orders/statistics").hasRole("ADMIN") // Chỉ Admin xem thống kê
-                        .requestMatchers("/orders/*/status", "/orders/*/delete").hasAnyRole("ADMIN", "STAFF") // Staff/Admin quản lý đơn
-                        .requestMatchers("/orders/**").authenticated() // Các endpoint khác cần đăng nhập
+                        .requestMatchers("/orders/statistics").hasRole("ADMIN")
+                        .requestMatchers("/orders/{id}/status").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/orders/{id}/delete").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/orders/{id}/items/{itemId}/delete").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/orders/{id}/items/{itemId}/edit").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/orders/{id}/items/add").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/orders/{id}/cancel").authenticated()
+                        .requestMatchers("/orders/**").authenticated()
 
                         // User management
-                        .requestMatchers("/users/profile", "/users/profile/edit", "/users/dashboard").authenticated() // Tất cả user xem/sửa profile
-                        .requestMatchers("/users/list", "/users/admin/**").hasAnyRole("ADMIN", "STAFF") // Chỉ Admin/Staff xem danh sách user
+                        .requestMatchers("/users/profile", "/users/profile/edit").authenticated()
+                        .requestMatchers("/users/list").hasAnyRole("ADMIN", "STAFF") // SỬA: STAFF được xem danh sách
+                        .requestMatchers("/users/{id}").hasAnyRole("ADMIN", "STAFF") // SỬA: STAFF được xem profile user khác
+                        .requestMatchers("/users/{id}/delete").hasRole("ADMIN") // CHỈ ADMIN xóa user
                         .requestMatchers("/users/**").authenticated()
 
                         // Payment
                         .requestMatchers("/payments/**").authenticated()
 
-                        // Default - require authentication
+                        // Default
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
@@ -68,7 +73,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .exceptionHandling((exception) -> exception
-                        .accessDeniedPage("/access-denied") // Trang báo lỗi khi không có quyền
+                        .accessDeniedPage("/access-denied")
                 );
 
         return http.build();
