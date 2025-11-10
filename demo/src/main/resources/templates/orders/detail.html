@@ -29,48 +29,48 @@
             padding-bottom: 20px;
             border-bottom: 2px solid #f0f0f0;
         }
-        .info-section {
+        .page-header h2 {
+            color: #333;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .filter-section {
             background: #f8f9fa;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 25px;
         }
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        .info-row:last-child {
-            border-bottom: none;
-        }
         .status-badge {
-            padding: 8px 20px;
+            padding: 6px 20px;
             border-radius: 20px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             text-transform: uppercase;
-            display: inline-block;
         }
         .status-pending {
             background: #fff3cd;
             color: #856404;
         }
         .status-paid {
-            background: #cfe2ff;
-            color: #084298;
+            background: #d1ecf1;
+            color: #0c5460;
         }
         .status-shipping {
-            background: #cfe2ff;
-            color: #084298;
+            background: #d1ecf1;
+            color: #0c5460;
         }
         .status-delivered {
-            background: #d1e7dd;
-            color: #0f5132;
+            background: #d1ecf1;
+            color: #0c5460;
         }
         .status-cancelled {
             background: #f8d7da;
             color: #721c24;
+        }
+        .custom-table {
+            margin-bottom: 0;
         }
         .custom-table thead {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -81,6 +81,9 @@
             padding: 15px;
             font-weight: 600;
         }
+        .custom-table tbody tr {
+            transition: all 0.3s;
+        }
         .custom-table tbody tr:hover {
             background: #f8f9fa;
         }
@@ -88,21 +91,62 @@
             padding: 15px;
             vertical-align: middle;
         }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .btn-action {
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            border: none;
+            transition: all 0.3s;
+            margin-right: 5px;
+        }
+        .btn-view {
+            background: #17a2b8;
+            color: white;
+        }
+        .btn-view:hover {
+            background: #138496;
+            transform: translateY(-2px);
+        }
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-delete:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        .empty-state i {
+            font-size: 80px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        .alert-custom {
+            border-radius: 10px;
             border: none;
         }
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #5a6fdc 0%, #6842a0 100%);
-        }
-        .section-title {
-            font-size: 18px;
+        .total-price {
             font-weight: bold;
-            color: #333;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
+            color: #212529;
+        }
+        .summary-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .btn-primary {
+            background-color: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #5a6fdc;
+            border-color: #5a6fdc;
+            color: white;
         }
     </style>
 </head>
@@ -117,11 +161,27 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="/home">Trang chủ</a></li>
-                <li class="nav-item"><a class="nav-link" href="/products/list">Sản phẩm</a></li>
-                <li class="nav-item"><a class="nav-link" href="/cart">Giỏ hàng</a></li>
-                <li class="nav-item"><a class="nav-link active" href="/orders">Đơn hàng</a></li>
-                <li class="nav-item"><a class="nav-link" href="/users/profile">Profile</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/home"><i class="bi bi-house"></i> Trang chủ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/products/list"><i class="bi bi-box-seam"></i> Sản phẩm</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/cart"><i class="bi bi-cart3"></i> Giỏ hàng</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/orders"><i class="bi bi-receipt"></i> Đơn hàng</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" href="/orders/statistics"><i class="bi bi-graph-up-arrow"></i> Thống kê</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','STAFF')">
+                    <a class="nav-link" href="/users/list"><i class="bi bi-people"></i> Quản lý User</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/users/profile"><i class="bi bi-person-circle"></i> Profile</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -131,167 +191,194 @@
     <div class="main-card">
         <div class="page-header">
             <h2>
-                <i class="bi bi-receipt-cutoff"></i> Chi tiết đơn hàng #<span th:text="${order != null ? order.id : 'N/A'}">1</span>
+                <i class="bi bi-clipboard-check-fill"></i>
+                Chi tiết đơn hàng <span class="text-primary" th:text="'#' + ${order.id}">#123</span>
             </h2>
+            <p class="text-muted mb-0 fst-italic">Xem và quản lý thông tin chi tiết của đơn hàng.</p>
         </div>
 
-        <!-- Thông tin đơn hàng -->
-        <div class="info-section" th:if="${order != null}">
-            <h5 class="mb-3"><i class="bi bi-info-circle"></i> Thông tin đơn hàng</h5>
+        <a th:href="@{/orders}" class="btn btn-secondary mb-4">
+            <i class="bi bi-arrow-left"></i> Quay lại danh sách
+        </a>
 
-            <div class="info-row">
-                <span class="info-label">Khách hàng:</span>
-                <span class="info-value" th:text="${order.userFullName}">Nguyễn Văn A</span>
-            </div>
-
-            <div class="info-row">
-                <span class="info-label">Ngày tạo:</span>
-                <span class="info-value" th:text="${order.createdAt}">01/01/2025</span>
-            </div>
-
-            <div class="info-row">
-                <span class="info-label">Trạng thái:</span>
-                <span class="status-badge"
-                      th:classappend="${order.status != null ? 'status-' + #strings.toLowerCase(order.status) : ''}"
-                      th:text="${order.status != null ? order.status : 'N/A'}">PENDING</span>
-            </div>
-
-            <div class="info-row">
-                <span class="info-label">Tổng tiền:</span>
-                <span class="info-value fw-bold text-primary"
-                      th:text="${order.totalPrice != null ? #numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT') + ' ₫' : '0 ₫'}">1,000,000 ₫</span>
+        <div class="summary-box mb-4">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <strong>Khách hàng:</strong>
+                    <p class="mb-0" th:text="${order.userFullName}"></p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Trạng thái:</strong>
+                    <p class="mt-2">
+        <span class="status-badge"
+              th:classappend="${'status-' + #strings.toLowerCase(order.status)}">
+            <span th:switch="${#strings.toLowerCase(order.status)}">
+                <span th:case="'pending'">Chờ xử lý</span>
+                <span th:case="'paid'">Đã thanh toán</span>
+                <span th:case="'shipping'">Đang giao hàng</span>
+                <span th:case="'delivered'">Đã giao hàng</span>
+                <span th:case="'cancelled'">Đã hủy</span>
+                <span th:case="*" th:text="${order.status}"></span>
+            </span>
+        </span>
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Địa chỉ giao hàng:</strong>
+                    <p class="mb-0" th:text="${order.shippingAddress != null ? order.shippingAddress : 'Chưa có'}"></p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Tổng tiền:</strong>
+                    <p class="mb-0 total-price" th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></p>
+                </div>
             </div>
         </div>
 
-        <!-- Danh sách sản phẩm -->
-        <h5 class="section-title"><i class="bi bi-box-seam"></i> Sản phẩm trong đơn hàng</h5>
-        <div th:if="${items != null and not #lists.isEmpty(items)}">
-            <table class="table custom-table">
+        <div class="page-header mt-5">
+            <h2>
+                <i class="bi bi-credit-card-fill"></i> Thông tin thanh toán
+            </h2>
+            <p class="text-muted mb-0 fst-italic">Quản lý các giao dịch thanh toán của đơn hàng.</p>
+        </div>
+
+        <div th:if="${payments != null and !payments.isEmpty()}">
+            <div class="table-responsive">
+                <table class="table custom-table table-hover">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Mã giao dịch</th>
+                        <th>Phương thức</th>
+                        <th>Số tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày thanh toán</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="payment : ${payments}">
+                        <td th:text="${payment.id}"></td>
+                        <td th:text="${payment.orderCode != null ? payment.orderCode : '-'}"></td>
+                        <td th:text="${payment.paymentMethod}"></td>
+                        <td th:text="${#numbers.formatDecimal(payment.amount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
+                        <td>
+                            <span class="status-badge"
+                                  th:classappend="${payment.status == 'pending' ? 'status-pending' : (payment.status == 'successful' ? 'status-paid' : 'status-cancelled')}"
+                                  th:text="${payment.status}">
+                            </span>
+                        </td>
+                        <td>
+                            <!-- SỬA: Tách riêng th:if cho #temporals.format -->
+                            <span th:if="${payment.paidAt != null}"
+                                  th:text="${#temporals.format(payment.paidAt, 'dd/MM/yyyy HH:mm')}">10/11/2025 09:30</span>
+                            <span th:if="${payment.paidAt == null}">Chưa thanh toán</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div th:if="${payments == null or payments.isEmpty()}" class="alert alert-info">
+            <i class="bi bi-info-circle"></i> Chưa có giao dịch thanh toán nào cho đơn hàng này.
+        </div>
+
+        <a th:href="@{/payments/create/{id}(id=${order.id})}" class="btn btn-primary mt-3" th:if="${#strings.equalsIgnoreCase(order.status, 'pending')}">
+            <i class="bi bi-plus-circle"></i> Tạo thanh toán
+        </a>
+
+        <div class="page-header mt-5">
+            <h2>
+                <i class="bi bi-box-seam-fill"></i> Danh sách sản phẩm
+            </h2>
+            <p class="text-muted mb-0 fst-italic">Các sản phẩm có trong đơn hàng.</p>
+        </div>
+        <div class="table-responsive">
+            <table class="table custom-table table-hover">
                 <thead>
                 <tr>
-                    <th>STT</th>
+                    <th>Id</th>
                     <th>Tên sản phẩm</th>
-                    <th>Đơn giá</th>
                     <th>Số lượng</th>
+                    <th>Đơn giá</th>
                     <th>Thành tiền</th>
-                    <th sec:authorize="hasAnyRole('ADMIN','STAFF')">Thao tác</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="item, iterStat : ${items}">
-                    <td th:text="${iterStat.count}">1</td>
-                    <td th:text="${item.productName}">Laptop Dell</td>
-                    <td th:text="${item.unitPrice != null ? #numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT') + ' ₫' : '0 ₫'}">10,000,000 ₫</td>
-                    <td th:text="${item.quantity}">1</td>
-                    <td th:text="${item.subtotal != null ? #numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT') + ' ₫' : '0 ₫'}">10,000,000 ₫</td>
-                    <td sec:authorize="hasAnyRole('ADMIN','STAFF')">
-                        <form th:action="@{/orders/{orderId}/items/{itemId}/delete(orderId=${order.id}, itemId=${item.id})}"
-                              method="post" style="display:inline;">
-                            <button type="submit" class="btn btn-sm btn-danger"
-                                    onclick="return confirm('Xác nhận xóa sản phẩm này?')">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
-                    </td>
+                <tr th:each="item : ${order.items}">
+                    <td th:text="${item.id}"></td>
+                    <td th:text="${item.productName}"></td>
+                    <td th:text="${item.quantity}"></td>
+                    <td th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
+                    <td class="fw-bold" th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
                 </tr>
                 </tbody>
             </table>
         </div>
 
-        <div th:if="${items == null or #lists.isEmpty(items)}" class="alert alert-info">
-            <i class="bi bi-info-circle"></i> Đơn hàng chưa có sản phẩm nào
+        <!-- Phần Quản lý đơn hàng - CHỈ STAFF VÀ ADMIN MỚI THẤY -->
+        <div class="mt-5 border-top pt-4" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
+            <div class="page-header mt-5">
+                <h2>
+                    <i class="bi bi-gear-fill"></i> Quản lý đơn hàng
+                </h2>
+                <p class="text-muted mb-0 fst-italic">Chỉ dành cho Staff và Admin.</p>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 align-items-end">
+                <form method="post" th:action="@{'/orders/' + ${order.id} + '/status'}" class="d-flex gap-2 align-items-end">
+                    <select class="form-select" id="status" name="status">
+                        <option value="PENDING" th:selected="${#strings.equalsIgnoreCase(order.status, 'pending')}">Chờ xử lý</option>
+                        <option value="PAID" th:selected="${#strings.equalsIgnoreCase(order.status, 'paid')}">Đã thanh toán</option>
+                        <option value="SHIPPING" th:selected="${#strings.equalsIgnoreCase(order.status, 'shipping')}">Đang giao hàng</option>
+                        <option value="DELIVERED" th:selected="${#strings.equalsIgnoreCase(order.status, 'delivered')}">Đã giao hàng</option>
+                        <option value="CANCELLED" th:selected="${#strings.equalsIgnoreCase(order.status, 'cancelled')}">Đã hủy</option>
+                    </select>
+
+                    <button type="submit" class="btn btn-primary text-nowrap">
+                        <i class="bi bi-check-lg"></i> Cập nhật
+                    </button>
+                </form>
+
+                <form method="post" th:action="@{'/orders/' + ${order.id} + '/cancel'}" class="d-inline">
+                    <button type="submit" class="btn btn-outline-warning" th:if="${#strings.equalsIgnoreCase(order.status, 'pending')}">
+                        <i class="bi bi-x-circle"></i> Hủy đơn
+                    </button>
+                </form>
+
+                <button type="button"
+                        class="btn btn-outline-danger" data-bs-toggle="modal"
+                        th:attr="data-bs-target='#deleteOrderModal' + ${order.id}"
+                        th:if="${#strings.equalsIgnoreCase(order.status, 'pending')}">
+                    <i class="bi bi-trash"></i> Xóa đơn
+                </button>
+            </div>
         </div>
 
-        <!-- Form thêm sản phẩm (chỉ ADMIN/STAFF) -->
-        <div sec:authorize="hasAnyRole('ADMIN','STAFF')" class="mt-4" th:if="${products != null and order != null}">
-            <h5 class="section-title"><i class="bi bi-plus-circle"></i> Thêm sản phẩm vào đơn</h5>
-            <form th:action="@{/orders/{id}/items/add(id=${order.id})}" method="post">
-                <div class="row g-3">
-                    <div class="col-md-5">
-                        <select class="form-select" name="productId" required>
-                            <option value="">-- Chọn sản phẩm --</option>
-                            <option th:each="product : ${products}"
-                                    th:value="${product.id}"
-                                    th:text="${product.name + ' - ' + (product.unitPrice != null ? #numbers.formatDecimal(product.unitPrice, 0, 'COMMA', 0, 'POINT') + ' ₫' : '0 ₫')}">
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <input type="number" class="form-control" name="quantity" placeholder="Số lượng" min="1" value="1" required>
-                    </div>
-                    <div class="col-md-4">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-plus"></i> Thêm
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
+    </div>
+</div>
 
-        <!-- Danh sách thanh toán -->
-        <div th:if="${payments != null and not #lists.isEmpty(payments)}">
-            <h5 class="section-title"><i class="bi bi-credit-card"></i> Lịch sử thanh toán</h5>
-            <table class="table custom-table">
-                <thead>
-                <tr>
-                    <th>Mã thanh toán</th>
-                    <th>Phương thức</th>
-                    <th>Số tiền</th>
-                    <th>Trạng thái</th>
-                    <th>Ngày thanh toán</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="payment : ${payments}">
-                    <td th:text="${payment.orderCode}">PAY001</td>
-                    <td th:text="${payment.method}">VNPAY</td>
-                    <td th:text="${payment.amount != null ? #numbers.formatDecimal(payment.amount, 0, 'COMMA', 0, 'POINT') + ' ₫' : '0 ₫'}">1,000,000 ₫</td>
-                    <td>
-                            <span class="badge"
-                                  th:classappend="${payment.status == 'SUCCESS' ? 'bg-success' : 'bg-warning'}"
-                                  th:text="${payment.status}">SUCCESS</span>
-                    </td>
-                    <td th:text="${payment.paidAt}">01/01/2025</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Cập nhật trạng thái (ADMIN/STAFF) -->
-        <div sec:authorize="hasAnyRole('ADMIN','STAFF')" class="mt-4" th:if="${order != null}">
-            <h5 class="section-title"><i class="bi bi-arrow-repeat"></i> Cập nhật trạng thái đơn hàng</h5>
-            <form th:action="@{/orders/{id}/status(id=${order.id})}" method="post">
-                <div class="row g-3">
-                    <div class="col-md-8">
-                        <select class="form-select" name="status" required>
-                            <option value="PENDING" th:selected="${order.status == 'PENDING'}">PENDING</option>
-                            <option value="PAID" th:selected="${order.status == 'PAID'}">PAID</option>
-                            <option value="SHIPPING" th:selected="${order.status == 'SHIPPING'}">SHIPPING</option>
-                            <option value="DELIVERED" th:selected="${order.status == 'DELIVERED'}">DELIVERED</option>
-                            <option value="CANCELLED" th:selected="${order.status == 'CANCELLED'}">CANCELLED</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="bi bi-save"></i> Cập nhật
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <!-- Nút thanh toán (CUSTOMER chưa thanh toán) -->
-        <div th:if="${order != null and order.status == 'PENDING'}" class="mt-4 text-center">
-            <a th:href="@{/payments/create/{id}(id=${order.id})}" class="btn btn-success btn-lg">
-                <i class="bi bi-credit-card"></i> Thanh toán ngay
-            </a>
-        </div>
-
-        <!-- Nút quay lại -->
-        <div class="mt-4">
-            <a href="/orders" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Quay lại danh sách
-            </a>
+<!-- Modal xóa đơn hàng - CHỈ STAFF VÀ ADMIN MỚI THẤY -->
+<div class="modal fade" th:id="'deleteOrderModal' + ${order.id}" tabindex="-1" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle"></i> Xác nhận xóa
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa đơn hàng <strong th:text="'#' + ${order.id}">#1</strong>?</p>
+                <p class="text-danger mb-0"><small>Hành động này không thể hoàn tác!</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form th:action="@{'/orders/' + ${order.id} + '/delete'}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Xóa
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
