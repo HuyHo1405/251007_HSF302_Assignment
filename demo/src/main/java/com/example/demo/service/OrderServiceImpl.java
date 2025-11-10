@@ -12,6 +12,7 @@ import com.example.demo.repo.ProductRepository;
 import com.example.demo.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,23 +27,40 @@ public class OrderServiceImpl implements OrderService {
 
     // Helper convert
     private OrderDTO toDTO(Order order) {
-        List<OrderItemDTO> items = order.getOrderItems().stream().map(item -> {
-            Product p = item.getProduct();
-            return OrderItemDTO.builder()
-                    .id(item.getId())
-                    .productId(p.getId())
-                    .productName(p.getName())
-                    .quantity(item.getQuantity())
-                    .unitPrice(item.getUnitPrice())
-                    .subtotal(item.getUnitPrice() * item.getQuantity())
-                    .build();
-        }).collect(Collectors.toList());
+        System.out.println("Converting Order #" + order.getId() + " to DTO");
+        System.out.println("Order items count: " + (order.getOrderItems() != null ? order.getOrderItems().size() : "null"));
+
+        List<OrderItemDTO> items = List.of();
+        if (order.getOrderItems() != null && !order.getOrderItems().isEmpty()) {
+            items = order.getOrderItems().stream().map(item -> {
+                Product p = item.getProduct();
+                return OrderItemDTO.builder()
+                        .id(item.getId())
+                        .productId(p.getId())
+                        .productName(p.getName())
+                        .quantity(item.getQuantity())
+                        .unitPrice(item.getUnitPrice())
+                        .subtotal(item.getUnitPrice() * item.getQuantity())
+                        .build();
+            }).collect(Collectors.toList());
+        }
+
+        // Tính totalPrice từ items nếu order.totalPrice = 0 hoặc null
+        Double totalPrice = order.getTotalPrice();
+        if (totalPrice == null || totalPrice == 0.0) {
+            totalPrice = items.stream()
+                    .mapToDouble(OrderItemDTO::getSubtotal)
+                    .sum();
+        }
+
+        System.out.println("Total price: " + totalPrice + ", Items count: " + items.size());
+
         return OrderDTO.builder()
                 .id(order.getId())
                 .userId(order.getUser() != null ? order.getUser().getId() : null)
                 .userFullName(order.getUser() != null ? order.getUser().getFullName() : null)
                 .status(order.getStatus())
-                .totalPrice(order.getTotalPrice())
+                .totalPrice(totalPrice)
                 .shippingAddress(order.getShippingAddress())
                 .createdAt(order.getCreatedAt() + "")
                 .updatedAt(order.getUpdatedAt() + "")
@@ -85,8 +103,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OrderDTO getOrderById(Long id) {
-        Order order = orderRepo.findById(id).orElseThrow();
+        Order order = orderRepo.findByIdWithItems(id)
+                .orElseThrow(() -> new RuntimeException("Order not found: " + id));
         return toDTO(order);
     }
 

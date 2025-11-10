@@ -281,11 +281,14 @@
         </div>
 
         <!-- Nút thanh toán (CUSTOMER chưa thanh toán) -->
-        <div th:if="${order != null and order.status == 'PENDING'}" class="mt-4 text-center">
+<!--        <div th:if="${order != null and order.status == 'PENDING'}" >-->
+        <div class="mt-4 text-center">
             <a th:href="@{/payments/create/{id}(id=${order.id})}" class="btn btn-success btn-lg">
                 <i class="bi bi-credit-card"></i> Thanh toán ngay
             </a>
         </div>
+
+<!--        </div>-->
 
         <!-- Nút quay lại -->
         <div class="mt-4">
