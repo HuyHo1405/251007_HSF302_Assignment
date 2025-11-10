@@ -67,12 +67,23 @@ public class PaymentController {
             model.addAttribute("message", result.get("message"));
             model.addAttribute("orderCode", result.get("orderCode"));
 
+            Payment payment = null;
+            if (result.get("orderCode") != null) {
+                try {
+                    payment = paymentService.getPaymentByOrderCode(result.get("orderCode"));
+                    model.addAttribute("payment", payment);
+                    model.addAttribute("order", payment.getOrder());
+                } catch (Exception ex) {
+                    log.warn("Could not load payment by order code {}: {}", result.get("orderCode"), ex.getMessage());
+                }
+            }
+
             if ("success".equals(result.get("status"))) {
-                Payment payment = paymentService.getPaymentByOrderCode(result.get("orderCode"));
-                model.addAttribute("payment", payment);
-                model.addAttribute("order", payment.getOrder());
                 return "orders/payment-success";
             } else {
+                if (payment != null && payment.getOrder() != null) {
+                    model.addAttribute("retryOrderId", payment.getOrder().getId());
+                }
                 return "orders/payment-failed";
             }
 
@@ -90,7 +101,7 @@ public class PaymentController {
     @PostMapping("/cod/create")
     public String createCODPayment(@RequestParam Long orderId, RedirectAttributes redirectAttributes) {
         try {
-            Payment payment = paymentService.createCODPayment(orderId);
+            paymentService.createCODPayment(orderId);
             log.info("Created COD payment for order {}", orderId);
             redirectAttributes.addFlashAttribute("success", "Đã tạo đơn COD! Vui lòng chuẩn bị tiền mặt khi nhận hàng.");
             return "redirect:/orders/detail/" + orderId;

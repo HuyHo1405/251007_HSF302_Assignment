@@ -68,6 +68,27 @@ public class OrderController {
         return "orders/list";
     }
 
+    @GetMapping("/my")
+    public String viewMyOrders(@RequestParam(required = false) String status,
+                               @AuthenticationPrincipal User currentUser,
+                               Model model) {
+        List<OrderDTO> myOrders = orderService.findByUser(currentUser.getId());
+
+        if (status != null && !status.isBlank()) {
+            String filter = status.trim();
+            myOrders = myOrders.stream()
+                    .filter(order -> order.getStatus() != null && order.getStatus().equalsIgnoreCase(filter))
+                    .collect(Collectors.toList());
+        }
+
+        myOrders.sort(Comparator.comparing(OrderDTO::getId, Comparator.nullsLast(Comparator.naturalOrder())).reversed());
+
+        model.addAttribute("orders", myOrders);
+        model.addAttribute("status", status);
+        model.addAttribute("currentUser", currentUser);
+        return "orders/my";
+    }
+
     // Xem chi tiết đơn hàng
     @GetMapping("/{id}")
     public String orderDetail(@PathVariable Long id,

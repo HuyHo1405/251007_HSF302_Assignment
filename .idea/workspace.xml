@@ -4,12 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c1fd29f7-f5a2-4567-a11b-df5d1584feec" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" />
+    <list default="true" id="c1fd29f7-f5a2-4567-a11b-df5d1584feec" name="Changes" comment="newupdate">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/CartController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/CartController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/OrderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/PaymentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/PaymentController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/my.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/my.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/payment-create.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/payment-create.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/payment-failed.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/payment-failed.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/payment-success.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/payment-success.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,6 +41,10 @@
     &quot;accountId&quot;: &quot;d6fec5cd-5c88-40dc-b2cb-5411f8f5aa8f&quot;
   }
 }</component>
+  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
+  <component name="KubernetesApiProvider"><![CDATA[{
+  "isMigrated": true
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
 }</component>
@@ -133,19 +140,32 @@
       <workItem from="1762694381343" duration="1714000" />
       <workItem from="1762713153947" duration="13639000" />
       <workItem from="1762738528038" duration="1274000" />
-      <workItem from="1762740250798" duration="1969000" />
+      <workItem from="1762740250798" duration="4333000" />
     </task>
+    <task id="LOCAL-00001" summary="newupdate">
+      <option name="closed" value="true" />
+      <created>1762742244830</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1762742244831</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="newupdate" />
+    <option name="LAST_COMMIT_MESSAGE" value="newupdate" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/OrderServiceImpl.java</url>
-          <line>78</line>
+          <line>96</line>
           <properties>
             <option name="lambda-ordinal" value="-1" />
           </properties>

@@ -136,7 +136,7 @@
 
         <!-- Filter Section -->
         <div class="filter-section">
-            <form th:action="@{/orders}" method="get">
+            <form th:action="@{/orders/my}" method="get">
                 <div class="row g-3">
                     <div class="col-md-10">
                         <select class="form-select" name="status">
@@ -172,13 +172,13 @@
                 <tbody>
                 <tr th:each="order : ${orders}">
                     <td th:text="'#' + ${order.id}"></td>
-                    <td th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td th:text="${order.createdAt != null ? order.createdAt : '---'}"></td>
                     <td class="fw-bold text-primary"
-                        th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                        th:text="${order.totalPrice != null ? #numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT') + ' ₫' : '0 ₫'}"></td>
                     <td>
                             <span class="status-badge"
                                   th:classappend="${'status-' + #strings.toLowerCase(order.status)}"
-                                  th:text="${order.status}"></span>
+                                  th:text="${order.status != null ? order.status : '---'}"></span>
                     </td>
                     <td>
                         <a th:href="@{/orders/{id}(id=${order.id})}" class="btn btn-sm btn-outline-primary">
