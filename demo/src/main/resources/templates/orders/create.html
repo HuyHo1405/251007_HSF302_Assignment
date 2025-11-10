@@ -138,10 +138,10 @@
 
         <!-- SỬA: Tổng cộng - Tính bằng th:with -->
         <div class="summary-section">
-            <th:block th:with="orderTotal=${0}">
-                <th:block th:each="item : ${order.items}" th:with="orderTotal=${orderTotal + item.subtotal}">
-                    <!-- Vòng lặp để cộng dồn -->
-                </th:block>
+<!--            <th:block th:with="orderTotal=${0}">-->
+<!--                <th:block th:each="item : ${order.items}" th:with="orderTotal=${orderTotal + item.subtotal}">-->
+<!--                    &lt;!&ndash; Vòng lặp để cộng dồn &ndash;&gt;-->
+<!--                </th:block>-->
                 <div class="summary-row">
                     <span>Tổng tiền hàng:</span>
                     <span th:text="${#numbers.formatDecimal(orderTotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
@@ -154,7 +154,7 @@
                     <span>Tổng thanh toán:</span>
                     <span th:text="${#numbers.formatDecimal(orderTotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
                 </div>
-            </th:block>
+<!--            </th:block>-->
         </div>
 
         <!-- Form xác nhận -->

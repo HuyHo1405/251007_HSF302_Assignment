@@ -34,7 +34,13 @@ public class CartController {
     public String viewCart(HttpSession session, Model model) {
         Map<Long, OrderItemDTO> cart = (Map<Long, OrderItemDTO>) session.getAttribute("cart");
         if (cart == null) cart = new HashMap<>();
-        model.addAttribute("cart", cart.values());
+        // Compute total server-side and pass it to the view. Handle possible null subtotals.
+        java.util.Collection<OrderItemDTO> items = cart.values();
+        double total = items.stream()
+                .mapToDouble(i -> i.getSubtotal() != null ? i.getSubtotal() : 0.0)
+                .sum();
+        model.addAttribute("cart", items);
+        model.addAttribute("total", total);
         return "cart/view";
     }
 
@@ -52,7 +58,11 @@ public class CartController {
                 .status("PENDING")
                 .items(new ArrayList<>(cart.values()))
                 .build();
-
+        java.util.Collection<OrderItemDTO> items = cart.values();
+        double total = items.stream()
+                .mapToDouble(i -> i.getSubtotal() != null ? i.getSubtotal() : 0.0)
+                .sum();
+        model.addAttribute("orderTotal", total); //truền tổng tiền tu controller ve chu k tinh trong form
         model.addAttribute("order", orderDTO); // Truyền đúng là DTO!
         return "orders/create";
     }

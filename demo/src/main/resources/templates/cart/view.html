@@ -132,14 +132,9 @@
 
             <!-- SỬA: Tính tổng bằng th:with -->
             <div class="d-flex justify-content-between align-items-center mt-4">
-                <th:block th:with="total=${0}">
-                    <th:block th:each="item : ${cart}" th:with="total=${total + item.subtotal}">
-                        <!-- Vòng lặp để cộng dồn -->
-                    </th:block>
-                    <h4>Tổng cộng:
-                        <span class="text-primary" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
-                    </h4>
-                </th:block>
+                <h4>Tổng cộng:
+                    <span class="text-primary" th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+                </h4>
                 <div>
                     <a href="/products/list" class="btn btn-secondary me-2">Tiếp tục mua hàng</a>
                     <a href="/cart/checkout-form" class="btn btn-primary">Thanh toán</a>
