@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.model.dto.OrderDTO;
 import com.example.demo.model.dto.OrderItemDTO;
 import com.example.demo.model.dto.PaymentDTO;
+import com.example.demo.model.entity.Product;
 import com.example.demo.model.entity.User;
 import com.example.demo.repo.OrderRepository;
 import com.example.demo.repo.ProductRepository;
@@ -11,12 +12,14 @@ import com.example.demo.service.OrderItemService;
 import com.example.demo.service.OrderService;
 import com.example.demo.service.PaymentServiceImpl;
 import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -104,13 +107,35 @@ public class OrderController {
 
     // Tạo đơn mua hàng (POST form)
     @PostMapping("/create")
+    @SuppressWarnings("unchecked")
     public String createOrder(@ModelAttribute OrderDTO orderDTO,
                              @AuthenticationPrincipal User currentUser,
-                             RedirectAttributes redirectAttributes) {
+                             RedirectAttributes redirectAttributes,
+                             HttpSession session) {
         try {
             // Set user ID from current user
             orderDTO.setUserId(currentUser.getId());
+            Map<Long, OrderItemDTO> cart = (Map<Long, OrderItemDTO>) session.getAttribute("cart");
+            if (cart == null || cart.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Giỏ hàng trống, không thể tạo đơn hàng.");
+                return "redirect:/cart";
+            }
+            orderDTO.setItems(new ArrayList<>(cart.values()));
+            double total = orderDTO.getItems().stream()
+                    .mapToDouble(item -> {
+                        if (item.getSubtotal() != null) {
+                            return item.getSubtotal();
+                        }
+                        double unitPrice = item.getUnitPrice() != null ? item.getUnitPrice() : 0.0;
+                        int quantity = item.getQuantity() != null ? item.getQuantity() : 0;
+                        return unitPrice * quantity;
+                    })
+                    .sum();
+            orderDTO.setTotalPrice(total);
             OrderDTO created = orderService.createOrder(orderDTO);
+            if (session != null) {
+                session.removeAttribute("cart");
+            }
             redirectAttributes.addFlashAttribute("success", "Tạo đơn hàng thành công!");
             return "redirect:/orders/" + created.getId();
         } catch (Exception e) {
@@ -334,5 +359,41 @@ public class OrderController {
         model.addAttribute("currentUser", currentUser);
 
         return "orders/statistics";
+    }
+
+    @PostMapping("/{orderId}/items/add")
+    public String addOrderItem(@PathVariable Long orderId,
+                               @RequestParam Long productId,
+                               @RequestParam Integer quantity,
+                               @AuthenticationPrincipal User currentUser,
+                               RedirectAttributes redirectAttributes) {
+        if (currentUser.getRole() == User.Role.CUSTOMER) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền thêm sản phẩm vào đơn hàng.");
+            return "redirect:/orders/" + orderId;
+        }
+
+        if (quantity == null || quantity < 1) {
+            redirectAttributes.addFlashAttribute("error", "Số lượng phải lớn hơn 0.");
+            return "redirect:/orders/" + orderId;
+        }
+
+        try {
+            Product product = productRepo.findById(productId)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm."));
+
+            OrderItemDTO dto = OrderItemDTO.builder()
+                    .orderId(orderId)
+                    .productId(productId)
+                    .quantity(quantity)
+                    .unitPrice(product.getUnitPrice() != null ? product.getUnitPrice() : 0.0)
+                    .build();
+
+            orderItemService.addOrderItem(dto);
+            redirectAttributes.addFlashAttribute("success", "Đã thêm sản phẩm vào đơn hàng.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Không thể thêm sản phẩm: " + e.getMessage());
+        }
+
+        return "redirect:/orders/" + orderId;
     }
 }

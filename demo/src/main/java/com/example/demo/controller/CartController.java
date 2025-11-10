@@ -142,6 +142,4 @@ public class CartController {
         session.removeAttribute("cart");
         return "redirect:/cart";
     }
-
-
 }
