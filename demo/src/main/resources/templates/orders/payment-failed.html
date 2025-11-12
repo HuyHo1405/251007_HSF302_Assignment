@@ -1,204 +1,43 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thanh toán thất bại</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            align-items: center;
-            padding: 20px;
-        }
-        .failed-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 60px 50px;
-            margin: 0 auto;
-            max-width: 700px;
-            text-align: center;
-            animation: shake 0.5s ease;
-        }
-        @keyframes shake {
-            0%, 100% {
-                transform: translateX(0);
-            }
-            10%, 30%, 50%, 70%, 90% {
-                transform: translateX(-10px);
-            }
-            20%, 40%, 60%, 80% {
-                transform: translateX(10px);
-            }
-        }
-        .failed-icon {
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 30px;
-            animation: fadeIn 0.8s ease;
-        }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.5);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        .failed-icon i {
-            font-size: 64px;
-            color: white;
-        }
-        .failed-card h1 {
-            color: #eb3349;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        .failed-card p {
-            color: #666;
-            font-size: 18px;
-            margin-bottom: 30px;
-        }
-        .error-details {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 30px 0;
-            text-align: left;
-        }
-        .error-details h5 {
-            color: #856404;
-            margin-bottom: 10px;
-        }
-        .error-details p {
-            color: #856404;
-            margin: 0;
-            font-size: 16px;
-        }
-        .suggestions {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 30px 0;
-            text-align: left;
-        }
-        .suggestions h5 {
-            color: #333;
-            margin-bottom: 15px;
-        }
-        .suggestions ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .suggestions li {
-            padding: 10px 0;
-            color: #666;
-        }
-        .suggestions li i {
-            color: #eb3349;
-            margin-right: 10px;
-        }
-        .action-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 15px 46px;
-            border-radius: 14px;
-            font-weight: 700;
-            letter-spacing: .3px;
-            transition: transform .18s ease, box-shadow .22s ease;
-            text-decoration: none;
-        }
-        .action-btn.retry {
-            background: linear-gradient(135deg, #ff512f 0%, #dd2476 100%);
-            color: white;
-            border: none;
-            box-shadow: 0 20px 38px rgba(221, 36, 118, 0.35);
-        }
-        .action-btn.retry:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 24px 46px rgba(221, 36, 118, 0.45);
-        }
-        .action-btn.outline {
-            background: white;
-            border: 2px solid rgba(235, 51, 73, 0.85);
-            color: #eb3349;
-            box-shadow: 0 14px 28px rgba(235, 51, 73, 0.18);
-        }
-        .action-btn.outline:hover {
-            background: #eb3349;
-            color: white;
-            transform: translateY(-3px);
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <div class="failed-card">
-        <div class="failed-icon">
-            <i class="bi bi-x-circle-fill"></i>
+<head th:replace="~{layout/base :: head('Thanh toán thất bại')}"></head>
+<body th:replace="~{layout/base :: layout(~{::content}, 'Thanh toán thất bại', 'Giao dịch chưa được hoàn tất, hãy thử lại hoặc chọn phương án khác')}">
+<main th:fragment="content">
+    <div class="glass-card text-center">
+        <div class="avatar-ring mx-auto mb-3" style="color:#ef4444;border-color:rgba(239,68,68,0.45);background:rgba(239,68,68,0.15)">
+            <i class="bi bi-x-circle"></i>
+        </div>
+        <h2 class="mb-2">Thanh toán thất bại!</h2>
+        <p class="text-secondary">Rất tiếc, giao dịch của bạn chưa thể hoàn tất. Vui lòng kiểm tra chi tiết bên dưới.</p>
+
+        <div class="alert-glass alert-danger mt-4" th:if="${message != null}">
+            <i class="bi bi-exclamation-triangle"></i>
+            <span th:text="${message}">Có lỗi xảy ra trong quá trình thanh toán.</span>
         </div>
 
-        <h1>Thanh toán thất bại!</h1>
-        <p>Rất tiếc, giao dịch của bạn không thể hoàn tất.</p>
-
-        <div class="error-details" th:if="${message != null}">
-            <h5><i class="bi bi-exclamation-triangle"></i> Lỗi</h5>
-            <p th:text="${message}">Giao dịch bị hủy bởi người dùng</p>
-        </div>
-
-        <div class="suggestions">
-            <h5><i class="bi bi-lightbulb"></i> Vui lòng thử lại với các cách sau:</h5>
-            <ul>
-                <li><i class="bi bi-check-circle"></i> Kiểm tra lại thông tin thẻ ngân hàng</li>
-                <li><i class="bi bi-check-circle"></i> Đảm bảo tài khoản có đủ số dư</li>
-                <li><i class="bi bi-check-circle"></i> Kiểm tra kết nối internet của bạn</li>
-                <li><i class="bi bi-check-circle"></i> Thử chọn phương thức thanh toán khác</li>
-                <li><i class="bi bi-check-circle"></i> Liên hệ ngân hàng nếu vấn đề tiếp tục xảy ra</li>
+        <div class="summary-item mt-4 text-start">
+            <h4><i class="bi bi-lightbulb me-2"></i>Gợi ý khắc phục</h4>
+            <ul class="list-inline">
+                <li><i class="bi bi-check-circle text-danger"></i> Kiểm tra lại thông tin thẻ hoặc tài khoản ngân hàng.</li>
+                <li><i class="bi bi-check-circle text-danger"></i> Đảm bảo tài khoản của bạn đủ số dư.</li>
+                <li><i class="bi bi-check-circle text-danger"></i> Kiểm tra kết nối internet và thực hiện lại giao dịch.</li>
+                <li><i class="bi bi-check-circle text-danger"></i> Thử chọn phương thức thanh toán khác hoặc liên hệ ngân hàng.</li>
             </ul>
         </div>
 
-        <div class="d-flex gap-3 justify-content-center mt-4 flex-wrap">
-            <a th:if="${retryOrderId != null}"
-               th:href="@{/payments/create/{id}(id=${retryOrderId})}"
-               class="action-btn retry">
-                <i class="bi bi-arrow-repeat"></i>
-                Thử lại thanh toán
+        <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+            <a th:href="${retryOrderId != null} ? @{'/payments/create/' + ${retryOrderId}} : '/orders'" class="btn-primary">
+                <i class="bi bi-arrow-repeat"></i> Thử lại thanh toán
             </a>
-            <a th:if="${retryOrderId == null}"
-               th:href="@{/orders}"
-               class="action-btn retry">
-                <i class="bi bi-arrow-repeat"></i>
-                Thử lại thanh toán
-            </a>
-            <a href="/orders" class="action-btn outline">
+            <a href="/orders" class="btn-secondary">
                 <i class="bi bi-list-ul"></i> Danh sách đơn hàng
             </a>
         </div>
 
-        <div class="mt-4">
-            <small class="text-muted">
-                <i class="bi bi-headset"></i> Cần hỗ trợ? Liên hệ: <strong>1900-xxxx</strong> hoặc <strong>support@hsf302shop.com</strong>
-            </small>
+        <div class="mt-4 text-secondary small">
+            <i class="bi bi-headset"></i> Cần hỗ trợ? Liên hệ <strong>1900-xxxx</strong> hoặc <strong>support@hsf302shop.com</strong>
         </div>
     </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</main>
 </body>
 </html>

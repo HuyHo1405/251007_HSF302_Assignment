@@ -1,174 +1,69 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xác nhận đơn hàng</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .navbar-custom {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 15px 0;
-        }
-        .main-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            padding: 30px;
-            margin: 30px 0;
-        }
-        .page-header {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #f0f0f0;
-            text-align: center;
-        }
-        .page-header h2 {
-            color: #333;
-            font-weight: bold;
-        }
-        .summary-section {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-        }
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        .summary-row:last-child {
-            border-bottom: none;
-            font-size: 20px;
-            font-weight: bold;
-            color: #667eea;
-        }
-        .custom-table thead {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        .custom-table thead th {
-            border: none;
-            padding: 15px;
-            font-weight: 600;
-        }
-        .custom-table tbody td {
-            padding: 15px;
-            vertical-align: middle;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            padding: 15px 40px;
-            font-size: 18px;
-            font-weight: 600;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #5a6fdc 0%, #6842a0 100%);
-        }
-    </style>
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-custom">
-    <div class="container">
-        <a class="navbar-brand fw-bold text-primary" href="/home">
-            <i class="bi bi-shop"></i> HSF302 Shop
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="/home">Trang chủ</a></li>
-                <li class="nav-item"><a class="nav-link" href="/products/list">Sản phẩm</a></li>
-                <li class="nav-item"><a class="nav-link" href="/cart">Giỏ hàng</a></li>
-                <li class="nav-item"><a class="nav-link" href="/orders">Đơn hàng</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<div class="container">
-    <div class="main-card">
-        <div class="page-header">
-            <h2><i class="bi bi-clipboard-check"></i> Xác nhận đơn hàng</h2>
-            <p class="text-muted">Vui lòng kiểm tra thông tin đơn hàng trước khi xác nhận</p>
+<head th:replace="~{layout/base :: head('Xác nhận đơn hàng')}"></head>
+<body th:replace="~{layout/base :: layout(~{::content}, 'Xác nhận đơn hàng', 'Kiểm tra lại thông tin trước khi đặt hàng')}">
+<main th:fragment="content">
+    <div class="glass-card">
+        <div class="text-center mb-4">
+            <div class="avatar-ring mx-auto mb-3">
+                <i class="bi bi-clipboard-check"></i>
+            </div>
+            <h2 class="mb-1">Xác nhận đơn hàng</h2>
+            <p class="text-secondary mb-0">Vui lòng đọc kỹ thông tin trước khi nhấn xác nhận</p>
         </div>
 
-        <!-- Thông tin khách hàng -->
-        <div class="summary-section">
-            <h5 class="mb-3"><i class="bi bi-person"></i> Thông tin khách hàng</h5>
-            <div class="summary-row">
-                <span>Họ tên:</span>
-                <span th:text="${order.userFullName}"></span>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <h4><i class="bi bi-person me-2"></i>Thông tin khách hàng</h4>
+                <p class="mb-1"><strong>Họ tên:</strong> <span th:text="${order.userFullName}">---</span></p>
+                <p class="mb-0"><strong>Số lượng sản phẩm:</strong> <span th:text="${order.items != null ? order.items.size() : 0}">0</span></p>
+            </div>
+            <div class="summary-item">
+                <h4><i class="bi bi-receipt me-2"></i>Tổng quan đơn hàng</h4>
+                <p class="mb-1"><strong>Tạm tính:</strong> <span th:text="${#numbers.formatDecimal(orderTotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span></p>
+                <p class="mb-1"><strong>Phí vận chuyển:</strong> 0 ₫</p>
+                <p class="mb-0"><strong>Tổng thanh toán:</strong> <span th:text="${#numbers.formatDecimal(orderTotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span></p>
             </div>
         </div>
 
-        <!-- Chi tiết sản phẩm -->
-        <h5 class="mb-3"><i class="bi bi-box-seam"></i> Sản phẩm trong đơn hàng</h5>
-        <table class="table custom-table mb-4">
-            <thead>
-            <tr>
-                <th>STT</th>
-                <th>Tên sản phẩm</th>
-                <th>Đơn giá</th>
-                <th>Số lượng</th>
-                <th>Thành tiền</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="item, iterStat : ${order.items}">
-                <td th:text="${iterStat.count}"></td>
-                <td th:text="${item.productName}"></td>
-                <td th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
-                <td th:text="${item.quantity}"></td>
-                <td th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
-            </tr>
-            </tbody>
-        </table>
+        <section class="mt-5">
+            <h3 class="mb-3"><i class="bi bi-box-seam me-2"></i>Sản phẩm trong đơn</h3>
+            <div class="table-responsive">
+                <table class="table-glass">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Đơn giá</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item, iterStat : ${order.items}">
+                        <td th:text="${iterStat.count}">1</td>
+                        <td th:text="${item.productName}">Laptop</td>
+                        <td th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                        <td th:text="${item.quantity}"></td>
+                        <td th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-        <!-- SỬA: Tổng cộng - Tính bằng th:with -->
-        <div class="summary-section">
-<!--            <th:block th:with="orderTotal=${0}">-->
-<!--                <th:block th:each="item : ${order.items}" th:with="orderTotal=${orderTotal + item.subtotal}">-->
-<!--                    &lt;!&ndash; Vòng lặp để cộng dồn &ndash;&gt;-->
-<!--                </th:block>-->
-                <div class="summary-row">
-                    <span>Tổng tiền hàng:</span>
-                    <span th:text="${#numbers.formatDecimal(orderTotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
-                </div>
-                <div class="summary-row">
-                    <span>Phí vận chuyển:</span>
-                    <span>0 ₫</span>
-                </div>
-                <div class="summary-row">
-                    <span>Tổng thanh toán:</span>
-                    <span th:text="${#numbers.formatDecimal(orderTotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
-                </div>
-<!--            </th:block>-->
-        </div>
-
-        <!-- Form xác nhận -->
-        <form th:action="@{/orders/create}" method="post" class="text-center mt-4">
-            <button type="submit" class="btn btn-primary btn-lg">
-                <i class="bi bi-check-circle"></i> Xác nhận đặt hàng
-            </button>
-            <a href="/cart" class="btn btn-secondary btn-lg ms-3">
-                <i class="bi bi-arrow-left"></i> Quay lại giỏ hàng
-            </a>
+        <form th:action="@{/orders/create}" method="post" class="mt-5 text-center">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <div class="d-inline-flex flex-wrap gap-3 justify-content-center">
+                <button type="submit" class="btn-primary btn-lg">
+                    <i class="bi bi-check-circle"></i> Xác nhận đặt hàng
+                </button>
+                <a href="/cart" class="btn-secondary btn-lg">
+                    <i class="bi bi-arrow-left"></i> Quay lại giỏ hàng
+                </a>
+            </div>
         </form>
     </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</main>
 </body>
 </html>

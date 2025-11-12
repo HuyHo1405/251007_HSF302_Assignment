@@ -1,522 +1,111 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chọn phương thức thanh toán</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #1f2937;
-        }
-
-        .navbar-custom {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            padding: 15px 0;
-        }
-
-        .navbar-custom .navbar-brand {
-            font-weight: 700;
-            color: #667eea;
-            font-size: 1.5rem;
-        }
-
-        .navbar-custom .nav-link {
-            color: #374151 !important;
-            font-weight: 500;
-            margin-left: 12px;
-        }
-
-        .navbar-custom .nav-link:hover {
-            color: #667eea !important;
-        }
-
-        .page-wrapper {
-            padding: 60px 0 80px;
-        }
-
-        .page-header-card {
-            background: rgba(255, 255, 255, 0.92);
-            border-radius: 20px;
-            box-shadow: 0 25px 60px rgba(15, 28, 51, 0.15);
-            padding: 36px 28px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .page-header-card h1 {
-            font-size: 32px;
-            font-weight: 800;
-            color: #1f2937;
-            margin-bottom: 10px;
-        }
-
-        .page-header-card p {
-            color: #6b7280;
-            margin-bottom: 0;
-        }
-
-        .summary-card,
-        .payment-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 18px 50px rgba(15, 23, 42, 0.12);
-            padding: 28px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .summary-card::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            border: 1px solid rgba(102, 126, 234, 0.18);
-            pointer-events: none;
-        }
-
-        .card-title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            color: #1f2937;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .badge-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 13px;
-            border-radius: 999px;
-            background: rgba(102, 126, 234, 0.1);
-            color: #4c51bf;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .summary-meta {
-            display: grid;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .summary-meta-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-        }
-
-        .summary-label {
-            color: #6b7280;
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-
-        .summary-value {
-            font-weight: 700;
-            color: #111827;
-        }
-
-        .order-items-table {
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 16px;
-        }
-
-        .order-items-table table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-
-        .order-items-table thead th {
-            font-size: 13px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: #6b7280;
-            padding-bottom: 10px;
-        }
-
-        .order-items-table tbody tr {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
-        }
-
-        .order-items-table tbody tr + tr {
-            margin-top: 12px;
-        }
-
-        .order-items-table tbody td {
-            padding: 16px 18px;
-            vertical-align: middle;
-        }
-
-        .order-items-table tbody tr td:first-child {
-            border-radius: 12px 0 0 12px;
-        }
-
-        .order-items-table tbody tr td:last-child {
-            border-radius: 0 12px 12px 0;
-        }
-
-        .product-name {
-            font-weight: 600;
-            color: #111827;
-        }
-
-        .product-meta {
-            display: block;
-            font-size: 13px;
-            color: #6b7280;
-            margin-top: 4px;
-        }
-
-        .empty-state {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #6b7280;
-            font-size: 14px;
-            background: #eef2ff;
-            border-radius: 12px;
-            padding: 14px 16px;
-        }
-
-        .payment-card {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        .payment-card::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            pointer-events: none;
-        }
-
-        .payment-option {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            border-radius: 18px;
-            padding: 22px;
-            border: 1px solid rgba(102, 126, 234, 0.18);
-            background: linear-gradient(140deg, rgba(255, 255, 255, 0.96), rgba(245, 247, 255, 0.96));
-            box-shadow: 0 18px 40px rgba(79, 70, 229, 0.12);
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-        }
-
-        .payment-option:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 24px 50px rgba(79, 70, 229, 0.18);
-        }
-
-        .option-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .option-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
-            display: grid;
-            place-items: center;
-            font-size: 26px;
-            background: #eef2ff;
-            color: #4338ca;
-        }
-
-        .option-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1f2937;
-        }
-
-        .option-desc {
-            color: #6b7280;
-            font-size: 14px;
-            margin-bottom: 0;
-        }
-
-        .btn-pay {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            padding: 14px 18px;
-            border-radius: 14px;
-            border: none;
-            font-weight: 700;
-            font-size: 16px;
-            letter-spacing: 0.02em;
-            cursor: pointer;
-            transition: transform 0.15s ease, box-shadow 0.2s ease;
-        }
-
-        .btn-pay.btn-vnpay {
-            background: linear-gradient(135deg, #1f6feb, #8247f5);
-            color: white;
-            box-shadow: 0 18px 36px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-pay.btn-vnpay:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 22px 42px rgba(99, 102, 241, 0.45);
-        }
-
-        .btn-pay.btn-cod {
-            background: white;
-            color: #1f2937;
-            border: 1px solid rgba(15, 23, 42, 0.1);
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
-        }
-
-        .btn-pay.btn-cod:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 16px 30px rgba(15, 23, 42, 0.16);
-        }
-
-        .helper-text {
-            font-size: 13px;
-            color: #6b7280;
-            text-align: center;
-        }
-
-        .divider {
-            margin: 6px 0;
-            height: 1px;
-            background: rgba(148, 163, 184, 0.2);
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 32px;
-            font-weight: 600;
-            color: #1f2937;
-            text-decoration: none;
-            padding: 12px 18px;
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 16px 32px rgba(15, 23, 42, 0.12);
-            transition: transform 0.15s ease, box-shadow 0.2s ease;
-        }
-
-        .back-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 22px 40px rgba(15, 23, 42, 0.16);
-            color: #4c51bf;
-        }
-
-        @media (max-width: 991px) {
-            .page-wrapper {
-                padding-top: 40px;
-            }
-            .page-header-card {
-                padding: 28px 20px;
-            }
-            .summary-card,
-            .payment-card {
-                padding: 24px;
-            }
-
-            .payment-option {
-                padding: 20px;
-            }
-        }
-
-        @media (max-width: 575px) {
-            body {
-                font-size: 15px;
-            }
-            .page-header-card h1 {
-                font-size: 26px;
-            }
-            .option-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .option-icon {
-                width: 48px;
-                height: 48px;
-                font-size: 22px;
-            }
-            .order-items-table tbody td {
-                padding: 14px 12px;
-            }
-        }
-    </style>
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-custom">
-    <div class="container">
-        <a class="navbar-brand" href="/home">
-            <i class="bi bi-shop"></i> HSF302 Shop
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="/home"><i class="bi bi-house-door"></i> Trang chủ</a></li>
-                <li class="nav-item"><a class="nav-link" href="/products/list"><i class="bi bi-box-seam"></i> Sản phẩm</a></li>
-                <li class="nav-item"><a class="nav-link" href="/cart"><i class="bi bi-cart3"></i> Giỏ hàng</a></li>
-                <li class="nav-item"><a class="nav-link" href="/orders"><i class="bi bi-receipt"></i> Đơn hàng</a></li>
-                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link" href="/orders/statistics"><i class="bi bi-graph-up-arrow"></i> Thống kê</a>
-                </li>
-                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','STAFF')">
-                    <a class="nav-link" href="/users/list"><i class="bi bi-people"></i> Quản lý User</a>
-                </li>
-                <li class="nav-item"><a class="nav-link" href="/users/profile"><i class="bi bi-person-circle"></i> Profile</a></li>
-                <li class="nav-item">
-                    <form th:action="@{/auth/logout}" method="post" style="display: inline;">
-                        <button type="submit" class="btn btn-danger px-3 py-2 ms-lg-2">Đăng xuất</button>
-                    </form>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<div class="page-wrapper" th:if="${order}">
-    <div class="container">
-        <div class="page-header-card">
-            <div class="badge-pill">
-                <i class="bi bi-hash"></i>
-                <span>Mã đơn</span>
-                <span th:text="${order.id}"></span>
-            </div>
-            <h1>Chọn phương thức thanh toán</h1>
-            <p>Hoàn tất đơn hàng của bạn với phương thức thanh toán phù hợp nhất</p>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-lg-7">
-                <div class="summary-card" th:with="orderTotal=${order.totalPrice != null ? order.totalPrice : 0}">
-                    <div class="card-title">
-                        <i class="bi bi-clipboard-check"></i>
-                        Thông tin đơn hàng
-                    </div>
-                    <div class="summary-meta">
-                        <div class="summary-meta-row">
-                            <span class="summary-label">Trạng thái</span>
-                            <span class="summary-value text-capitalize" th:text="${order.status}"></span>
-                        </div>
-                        <div class="summary-meta-row">
-                            <span class="summary-label">Địa chỉ giao hàng</span>
-                            <span class="summary-value text-end" th:text="${order.shippingAddress != null ? order.shippingAddress : 'Chưa cập nhật'}"></span>
-                        </div>
-                        <div class="summary-meta-row">
-                            <span class="summary-label">Ngày tạo</span>
-                            <span class="summary-value" th:text="${order.createdAt != null ? #temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm') : '---'}"></span>
-                        </div>
-                        <div class="summary-meta-row">
-                            <span class="summary-label">Tổng thanh toán</span>
-                            <span class="summary-value fs-5 text-primary" th:text="${#numbers.formatDecimal(orderTotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
-                        </div>
-                    </div>
-
-                    <div class="divider"></div>
-
-                    <div class="order-items-table mt-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="text-uppercase fw-semibold text-muted small">Chi tiết sản phẩm</span>
-                            <span class="badge rounded-pill text-bg-light" th:text="${order.orderItems != null ? order.orderItems.size() + ' mặt hàng' : '0 mặt hàng'}"></span>
-                        </div>
-                        <table th:if="${order.orderItems != null and !order.orderItems.isEmpty()}">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Sản phẩm</th>
-                                <th class="text-end">Thành tiền</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="item, iterStat : ${order.orderItems}">
-                                <td th:text="${iterStat.count}"></td>
-                                <td>
-                                    <span class="product-name" th:text="${item.product != null ? item.product.name : 'Sản phẩm'}"></span>
-                                    <span class="product-meta"
-                                          th:text="${'x' + item.quantity + ' • ' + #numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫/sp'"></span>
-                                </td>
-                                <td class="text-end fw-semibold" th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <div class="empty-state" th:if="${order.orderItems == null or order.orderItems.isEmpty()}">
-                            <i class="bi bi-box-seam"></i>
-                            <span>Đơn hàng chưa có sản phẩm hiển thị.</span>
-                        </div>
-                    </div>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/base :: head('Chọn phương thức thanh toán')}"></head>
+<body th:replace="~{layout/base :: layout(~{::content}, 'Thanh toán đơn hàng', 'Hoàn tất đơn hàng với phương thức phù hợp')}">
+<main th:fragment="content">
+    <div th:if="${order != null}">
+        <div class="glass-card mb-4 d-flex flex-column flex-lg-row justify-content-lg-between align-items-lg-center gap-3">
+            <div>
+                <div class="chip mb-2">
+                    <i class="bi bi-hash"></i>
+                    Mã đơn <strong th:text="${order.id}">0</strong>
                 </div>
+                <h2 class="mb-1">Thanh toán đơn hàng #<span th:text="${order.id}">0</span></h2>
+                <p class="text-secondary mb-0">Khách hàng: <strong th:text="${order.userFullName}">---</strong></p>
             </div>
-
-            <div class="col-lg-5">
-                <div class="payment-card">
-                    <div class="card-title">
-                        <i class="bi bi-credit-card"></i>
-                        Phương thức thanh toán
-                    </div>
-
-                    <form th:action="@{/payments/vnpay/create}" method="post" class="payment-option">
-                        <input type="hidden" name="orderId" th:value="${order.id}">
-                        <div class="option-header">
-                            <div class="option-icon">
-                                <i class="bi bi-lightning-charge"></i>
-                            </div>
-                            <div>
-                                <div class="option-title">VNPay</div>
-                                <p class="option-desc">Thanh toán trực tuyến nhanh chóng, bảo mật. Hỗ trợ hầu hết ngân hàng nội địa.</p>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn-pay btn-vnpay">
-                            <i class="bi bi-shield-check"></i>
-                            Thanh toán qua VNPay
-                        </button>
-                        <p class="helper-text mb-0"><i class="bi bi-clock-history me-1"></i>Giao dịch được xác nhận tức thì.</p>
-                    </form>
+            <div class="text-lg-end">
+                <span class="status-badge"
+                      th:classappend="${order.status != null ? ' status-' + #strings.toLowerCase(order.status) : ''}"
+                      th:text="${order.status != null ? order.status : 'N/A'}">PENDING</span>
+                <div class="mt-2 fw-semibold text-info">
+                    Tổng thanh toán: <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
                 </div>
             </div>
         </div>
 
-        <div class="text-center">
-            <a class="back-link" th:href="@{'/orders/' + ${order.id}}">
-                <i class="bi bi-arrow-left"></i>
-                Quay lại chi tiết đơn hàng
+        <div class="summary-grid mb-5">
+            <div class="summary-item">
+                <h4><i class="bi bi-calendar-event me-2"></i>Thông tin chung</h4>
+                <p class="mb-1"><strong>Ngày tạo:</strong> <span th:text="${order.createdAt != null ? #temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm') : '---'}"></span></p>
+                <p class="mb-1"><strong>Địa chỉ giao:</strong> <span th:text="${order.shippingAddress != null ? order.shippingAddress : 'Chưa cập nhật'}"></span></p>
+                <p class="mb-0"><strong>Số sản phẩm:</strong> <span th:text="${order.orderItems != null ? order.orderItems.size() : 0}"></span></p>
+            </div>
+            <div class="summary-item">
+                <h4><i class="bi bi-cash-stack me-2"></i>Tóm tắt thanh toán</h4>
+                <p class="mb-1"><strong>Tạm tính:</strong> <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span></p>
+                <p class="mb-1"><strong>Phí vận chuyển:</strong> 0 ₫</p>
+                <p class="mb-0"><strong>Tổng thanh toán:</strong> <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span></p>
+            </div>
+        </div>
+
+        <section class="mb-5">
+            <h3 class="mb-3"><i class="bi bi-box-seam me-2"></i>Chi tiết sản phẩm</h3>
+            <div class="table-responsive">
+                <table class="table-glass">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item, iterStat : ${order.orderItems}">
+                        <td th:text="${iterStat.count}">1</td>
+                        <td th:text="${item.product != null ? item.product.name : 'Sản phẩm'}">Laptop</td>
+                        <td th:text="${item.quantity}"></td>
+                        <td th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                        <td th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="summary-grid">
+            <div class="summary-item">
+                <h4><i class="bi bi-lightning-charge me-2"></i>Thanh toán VNPay</h4>
+                <p class="text-secondary">Thanh toán trực tuyến an toàn, hỗ trợ hầu hết các ngân hàng nội địa.</p>
+                <form th:action="@{/payments/vnpay/create}" method="post" class="d-grid gap-3">
+                    <input type="hidden" name="orderId" th:value="${order.id}"/>
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn-primary justify-content-center">
+                        <i class="bi bi-shield-check"></i> Thanh toán qua VNPay
+                    </button>
+                </form>
+            </div>
+            <div class="summary-item">
+                <h4><i class="bi bi-cash-stack me-2"></i>Thanh toán COD</h4>
+                <p class="text-secondary">Trả tiền mặt khi nhận hàng. Vui lòng chuẩn bị số tiền đúng với giá trị đơn hàng.</p>
+                <form th:action="@{/payments/cod/create}" method="post" class="d-grid gap-3">
+                    <input type="hidden" name="orderId" th:value="${order.id}"/>
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn-secondary justify-content-center">
+                        <i class="bi bi-bag-check"></i> Xác nhận thanh toán COD
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <div class="d-flex justify-content-center mt-5">
+            <a class="btn-secondary" th:href="@{'/orders/' + ${order.id}}">
+                <i class="bi bi-arrow-left"></i> Quay lại chi tiết đơn hàng
             </a>
         </div>
     </div>
-</div>
 
-<div class="container py-5" th:if="${order == null}">
-    <div class="page-header-card">
-        <i class="bi bi-emoji-frown fs-1 text-danger"></i>
-        <h1>Không tìm thấy đơn hàng</h1>
-        <p>Đơn hàng bạn yêu cầu không tồn tại hoặc đã bị xoá.</p>
-        <a class="back-link mt-4" th:href="@{/orders/my}"><i class="bi bi-arrow-left"></i> Quay lại danh sách đơn</a>
+    <div th:if="${order == null}" class="glass-card text-center">
+        <div class="avatar-ring mx-auto mb-3 text-danger">
+            <i class="bi bi-emoji-frown"></i>
+        </div>
+        <h2>Không tìm thấy đơn hàng</h2>
+        <p class="text-secondary">Đơn hàng bạn yêu cầu không tồn tại hoặc đã bị xoá.</p>
+        <a class="btn-primary mt-3" href="/orders/my">
+            <i class="bi bi-arrow-left"></i> Quay lại đơn của tôi
+        </a>
     </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</main>
 </body>
 </html>

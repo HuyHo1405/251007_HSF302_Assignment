@@ -4,6 +4,7 @@ import com.example.demo.model.dto.OrderDTO;
 import com.example.demo.model.dto.OrderItemDTO;
 import com.example.demo.model.entity.Order;
 import com.example.demo.model.entity.OrderItem;
+import com.example.demo.model.entity.Payment;
 import com.example.demo.model.entity.Product;
 import com.example.demo.model.entity.User;
 import com.example.demo.repo.OrderRepository;
@@ -13,8 +14,10 @@ import com.example.demo.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,11 +60,28 @@ public class OrderServiceImpl implements OrderService {
 
         System.out.println("Total price: " + totalPrice + ", Items count: " + items.size());
 
+        User orderUser = order.getUser();
+        String userPhone = orderUser != null ? orderUser.getPhoneNumber() : null;
+        String userEmail = orderUser != null ? orderUser.getEmailAddress() : null;
+
+        String paymentStatus = null;
+        if (order.getPayments() != null && !order.getPayments().isEmpty()) {
+            paymentStatus = order.getPayments().stream()
+                    .sorted(Comparator.comparing(Payment::getUpdatedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+                    .map(Payment::getStatus)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse(null);
+        }
+
         return OrderDTO.builder()
                 .id(order.getId())
-                .userId(order.getUser() != null ? order.getUser().getId() : null)
-                .userFullName(order.getUser() != null ? order.getUser().getFullName() : null)
+                .userId(orderUser != null ? orderUser.getId() : null)
+                .userFullName(orderUser != null ? orderUser.getFullName() : null)
+                .userPhoneNumber(userPhone)
+                .userEmail(userEmail)
                 .status(order.getStatus())
+                .paymentStatus(paymentStatus)
                 .totalPrice(totalPrice)
                 .shippingAddress(order.getShippingAddress())
                 .createdAt(order.getCreatedAt() + "")

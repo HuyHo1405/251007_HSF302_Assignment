@@ -1,276 +1,64 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HSF302 Shop - Trang chủ</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-
-        .navbar-custom {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 15px 0;
-        }
-
-        .navbar-brand {
-            font-weight: bold;
-            color: #667eea !important;
-            font-size: 1.5rem;
-        }
-
-        .nav-link {
-            color: #333 !important;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-link:hover {
-            color: #667eea !important;
-        }
-
-        .welcome-section {
-            background: white;
-            border-radius: 15px;
-            padding: 50px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            margin: 50px auto;
-            max-width: 1200px;
-        }
-
-        .welcome-section h1 {
-            color: #333;
-            font-size: 42px;
-            margin-bottom: 20px;
-        }
-
-        .welcome-section p {
-            color: #666;
-            font-size: 18px;
-            margin-bottom: 30px;
-        }
-
-        .feature-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-            height: 100%;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .feature-card i {
-            font-size: 48px;
-            color: #667eea;
-            margin-bottom: 20px;
-        }
-
-        .feature-card h3 {
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .feature-card p {
-            color: #666;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            padding: 12px 30px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-light {
-            background: white;
-            color: #333;
-            border: none;
-            padding: 12px 30px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-light:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .logout-btn {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.3s;
-        }
-
-        .logout-btn:hover {
-            background-color: #c82333;
-        }
-
-        /* Màu riêng cho card Thống kê */
-        .feature-card.stats-card {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
-        .feature-card.stats-card i {
-            color: white;
-        }
-
-        .feature-card.stats-card h3,
-        .feature-card.stats-card p {
-            color: white;
-        }
-
-        /* Màu riêng cho card Quản lý User */
-        .feature-card.users-card {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-        }
-
-        .feature-card.users-card i {
-            color: white;
-        }
-
-        .feature-card.users-card h3,
-        .feature-card.users-card p {
-            color: white;
-        }
-    </style>
-</head>
-<body>
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-custom">
-    <div class="container">
-        <a class="navbar-brand" href="/home">
-            <i class="bi bi-shop"></i> HSF302 Shop
+<head th:replace="~{layout/base :: head('HSF302 Shop - Trang chủ')}"></head>
+<body th:replace="~{layout/base :: layout(~{::content}, null, null)}">
+<main th:fragment="content">
+    <section class="hero-section">
+        <div class="hero-headline">Khám phá thế giới Laptop Hiệu Năng Cao</div>
+        <p class="hero-tagline">Top 10 sản phẩm bán chạy nhất với sức mạnh xử lý vượt trội, sẵn sàng cho mọi nhu cầu học tập và công việc.</p>
+        <a href="#best-sellers" class="hero-cta">
+            <i class="bi bi-lightning-charge-fill"></i>
+            Xem ngay Top 10 Best Seller
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="/home"><i class="bi bi-house-door"></i> Trang chủ</a></li>
-                <li class="nav-item"><a class="nav-link" href="/products/list"><i class="bi bi-box-seam"></i> Sản phẩm</a></li>
-                <li class="nav-item"><a class="nav-link" href="/cart"><i class="bi bi-cart3"></i> Giỏ hàng</a></li>
-                <li class="nav-item"><a class="nav-link" href="/orders"><i class="bi bi-receipt"></i> Đơn hàng</a></li>
+    </section>
 
-                <!-- Link Thống kê - CHỈ ADMIN -->
-                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link" href="/orders/statistics"><i class="bi bi-graph-up-arrow"></i> Thống kê</a>
-                </li>
-
-                <!-- Link Quản lý User - ADMIN & STAFF -->
-                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','STAFF')">
-                    <a class="nav-link" href="/users/list"><i class="bi bi-people"></i> Quản lý User</a>
-                </li>
-
-                <li class="nav-item"><a class="nav-link" href="/users/profile"><i class="bi bi-person-circle"></i> Profile</a></li>
-                <li class="nav-item">
-                    <form th:action="@{/auth/logout}" method="post" style="display: inline;">
-                        <button type="submit" class="btn logout-btn ms-2">Đăng xuất</button>
-                    </form>
-                </li>
-            </ul>
+    <section id="best-sellers" class="glass-card">
+        <div class="d-flex flex-column flex-lg-row justify-content-lg-between align-items-lg-center gap-3 mb-4">
+            <h2 class="m-0"><i class="bi bi-trophy-fill me-2 text-warning"></i>Top 10 sản phẩm bán chạy</h2>
+            <span class="badge-outline">
+                <i class="bi bi-activity"></i>
+                Luôn cập nhật theo doanh số đơn giao thành công
+            </span>
         </div>
-    </div>
-</nav>
 
-<!-- Welcome Section -->
-<div class="container">
-    <div class="welcome-section">
-        <h1><i class="bi bi-shop"></i> Chào mừng đến HSF302 Shop</h1>
-        <p>Hệ thống quản lý bán hàng chuyên nghiệp</p>
-        <p class="text-primary fw-bold fs-5">
-            Xin chào, <span sec:authentication="principal.username">User</span>!
-        </p>
-
-        <div class="row g-4 mt-4">
-            <!-- Card Sản phẩm -->
-            <div class="col-md-3">
-                <div class="feature-card">
-                    <i class="bi bi-box-seam"></i>
-                    <h3>Sản phẩm</h3>
-                    <p>Quản lý danh sách sản phẩm</p>
-                    <a href="/products/list" class="btn btn-primary">Xem ngay</a>
+        <div th:if="${topProducts != null && !topProducts.isEmpty()}" class="card-grid">
+            <div class="product-card" th:each="product, iterStat : ${topProducts}">
+                <div class="product-image" th:style="|background-image: url('${product.imageUrl != null && !product.imageUrl.isEmpty() ? product.imageUrl : 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80'}')|">
+                    <span class="product-rank">
+                        <i class="bi bi-star-fill text-warning"></i>
+                        Top <span th:text="${iterStat.index + 1}"></span>
+                    </span>
                 </div>
-            </div>
-
-            <!-- Card Giỏ hàng -->
-            <div class="col-md-3">
-                <div class="feature-card">
-                    <i class="bi bi-cart3"></i>
-                    <h3>Giỏ hàng</h3>
-                    <p>Giỏ hàng của bạn</p>
-                    <a href="/cart" class="btn btn-primary">Xem ngay</a>
-                </div>
-            </div>
-
-            <!-- Card Đơn hàng -->
-            <div class="col-md-3">
-                <div class="feature-card">
-                    <i class="bi bi-receipt"></i>
-                    <h3>Đơn hàng</h3>
-                    <p>Theo dõi đơn hàng</p>
-                    <a href="/orders" class="btn btn-primary">Xem ngay</a>
-                </div>
-            </div>
-
-            <!-- Card Tài khoản -->
-            <div class="col-md-3">
-                <div class="feature-card">
-                    <i class="bi bi-person-circle"></i>
-                    <h3>Tài khoản</h3>
-                    <p>Thông tin cá nhân</p>
-                    <a href="/users/profile" class="btn btn-primary">Xem ngay</a>
-                </div>
-            </div>
-
-            <!-- Card Thống kê - CHỈ ADMIN -->
-            <div class="col-md-3" sec:authorize="hasRole('ADMIN')">
-                <div class="feature-card stats-card">
-                    <i class="bi bi-graph-up-arrow"></i>
-                    <h3>Thống kê</h3>
-                    <p>Báo cáo kinh doanh</p>
-                    <a href="/orders/statistics" class="btn btn-light">Xem ngay</a>
-                </div>
-            </div>
-
-            <!-- Card Quản lý User - ADMIN và STAFF -->
-            <div class="col-md-3" sec:authorize="hasAnyRole('ADMIN','STAFF')">
-                <div class="feature-card users-card">
-                    <i class="bi bi-people"></i>
-                    <h3>Quản lý User</h3>
-                    <p>Danh sách người dùng</p>
-                    <a href="/users/list" class="btn btn-light">Xem ngay</a>
+                <div class="product-body">
+                    <div class="product-title" th:text="${product.name}">Laptop</div>
+                    <div class="product-meta">
+                        <span><i class="bi bi-building"></i> <span th:text="${product.brand}">Thương hiệu</span></span>
+                        <span><i class="bi bi-currency-exchange"></i> Đã bán: <span th:text="${product.totalSold}"></span></span>
+                    </div>
+                    <div class="product-price" th:text="${#numbers.formatDecimal(product.unitPrice, 0, 'POINT', 0, 'POINT')} + ' VND'">25.000.000 VND</div>
+                    <div class="product-actions">
+                        <form th:action="@{/cart/add}" method="post" sec:authorize="isAuthenticated()" class="w-100">
+                            <input type="hidden" name="productId" th:value="${product.id}"/>
+                            <input type="hidden" name="quantity" value="1"/>
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <button type="submit" class="btn-primary w-100 justify-content-center">
+                                <i class="bi bi-cart-plus me-2"></i>Thêm vào giỏ
+                            </button>
+                        </form>
+                        <a sec:authorize="isAnonymous()" href="/auth/login" class="btn-login w-100 justify-content-center">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập để mua
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <div th:if="${topProducts == null || topProducts.isEmpty()}" class="empty-state">
+            <i class="bi bi-emoji-neutral fs-1 text-warning"></i>
+            <h4 class="mt-3">Chưa có dữ liệu bán chạy</h4>
+            <p>Hãy thêm sản phẩm và thực hiện đơn hàng đầu tiên để xem bảng xếp hạng xuất hiện.</p>
+        </div>
+    </section>
+</main>
 </body>
 </html>

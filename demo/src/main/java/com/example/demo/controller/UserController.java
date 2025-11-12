@@ -114,7 +114,7 @@ public class UserController {
 
     // Danh sách người dùng (admin/staff) - mặc định hiển thị customers
     @GetMapping("/list")
-    public String listUsers(@RequestParam(required = false) String role,
+    public String listUsers(@RequestParam(required = false, name = "role") String requestedRole,
                             @AuthenticationPrincipal User currentUser,
                             Model model,
                             RedirectAttributes redirectAttributes) {
@@ -125,16 +125,25 @@ public class UserController {
         }
 
         try {
-            // Lấy tất cả users
+            // Lấy tất cả users để thống kê
             List<UserDTO> allUsers = userService.getAllUsers();
-            List<UserDTO> displayUsers = allUsers;
 
-            // Nếu có filter theo role
-            if (role != null && !role.isEmpty()) {
-                User.Role requestedRole = User.Role.valueOf(role);
-                displayUsers = userService.getUserByRole(requestedRole);
-                model.addAttribute("selectedRole", role);
+            // Xác định role hiển thị dựa trên quyền hiện tại
+            String effectiveRole;
+            if (currentUser.getRole() == User.Role.ADMIN) {
+                if ("STAFF".equalsIgnoreCase(requestedRole)) {
+                    effectiveRole = "STAFF";
+                } else {
+                    effectiveRole = "CUSTOMER";
+                }
+            } else if (currentUser.getRole() == User.Role.STAFF) {
+                effectiveRole = "CUSTOMER";
+            } else {
+                effectiveRole = "CUSTOMER";
             }
+
+            List<UserDTO> displayUsers = userService.getUserByRole(User.Role.valueOf(effectiveRole));
+            model.addAttribute("activeRole", effectiveRole);
 
             // Tính toán statistics
             long totalUsers = allUsers.size();
@@ -147,6 +156,7 @@ public class UserController {
             model.addAttribute("adminCount", adminCount);
             model.addAttribute("staffCount", staffCount);
             model.addAttribute("customerCount", customerCount);
+            model.addAttribute("showStaffToggle", currentUser.getRole() == User.Role.ADMIN);
             model.addAttribute("currentUser", currentUser);
 
             return "user/userList";

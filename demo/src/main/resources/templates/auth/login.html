@@ -1,189 +1,70 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HSF302 Shop - Đăng nhập</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .auth-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            max-width: 450px;
-            width: 100%;
-            padding: 40px;
-        }
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .logo h1 {
-            color: #667eea;
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .logo p {
-            color: #666;
-            font-size: 0.95rem;
-        }
-        .form-control {
-            padding: 12px 15px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-        }
-        .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-        }
-        .btn-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px;
-            font-weight: 600;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            border-radius: 8px;
-        }
-        .btn-gradient:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-            color: white;
-        }
-        .divider {
-            text-align: center;
-            margin: 20px 0;
-            position: relative;
-        }
-        .divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #e0e0e0;
-        }
-        .divider span {
-            background: white;
-            padding: 0 15px;
-            position: relative;
-            color: #666;
-            font-size: 14px;
-        }
-        .register-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .register-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .register-link a:hover {
-            text-decoration: underline;
-        }
-        .alert {
-            border-radius: 8px;
-            border: none;
-        }
-        .input-group-text {
-            background: white;
-            border-right: none;
-            color: #667eea;
-        }
-        .input-group .form-control {
-            border-left: none;
-        }
-        .input-group:focus-within .input-group-text {
-            border-color: #667eea;
-        }
-    </style>
-</head>
-<body>
-<div class="auth-card">
-    <!-- Logo & Header -->
-    <div class="logo">
-        <h1><i class="bi bi-shop"></i> HSF302 Shop</h1>
-        <p>Chào mừng bạn trở lại!</p>
-    </div>
+<head th:replace="~{layout/base :: head('Đăng nhập')}"></head>
+<body th:replace="~{layout/base :: layout(~{::content}, 'Đăng nhập', 'Chào mừng bạn quay lại HSF302 Shop')}">
+<main th:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-7">
+            <div class="glass-card">
+                <div class="text-center mb-4">
+                    <div class="avatar-ring mx-auto">
+                        <i class="bi bi-shop"></i>
+                    </div>
+                    <h2 class="mb-1">HSF302 Shop</h2>
+                    <p class="text-secondary mb-0">Đăng nhập để tiếp tục mua sắm và quản lý đơn hàng</p>
+                </div>
 
-    <!-- Success Message (sau khi đăng ký) -->
-    <div th:if="${param.logout}" class="alert alert-success" role="alert">
-        <i class="bi bi-check-circle"></i> Đăng xuất thành công!
-    </div>
+                <div th:if="${param.logout}" class="alert-glass mb-3" role="alert">
+                    <i class="bi bi-check-circle"></i> Đăng xuất thành công!
+                </div>
 
-    <div th:if="${successMessage}" class="alert alert-success" role="alert">
-        <i class="bi bi-check-circle"></i> <span th:text="${successMessage}"></span>
-    </div>
+                <div th:if="${successMessage}" class="alert-glass mb-3" role="alert">
+                    <i class="bi bi-check-circle"></i> <span th:text="${successMessage}"></span>
+                </div>
 
-    <!-- Error Message -->
-    <div th:if="${param.error}" class="alert alert-danger" role="alert">
-        <i class="bi bi-exclamation-triangle"></i> Số điện thoại hoặc mật khẩu không đúng!
-    </div>
+                <div th:if="${param.error}" class="alert-glass alert-danger mb-3" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i> Số điện thoại hoặc mật khẩu không đúng!
+                </div>
 
-    <!-- Login Form -->
-    <form th:action="@{/auth/login}" method="post">
-        <div class="mb-3">
-            <label for="phoneNumber" class="form-label">Số điện thoại</label>
-            <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                <input type="text"
-                       class="form-control"
-                       id="phoneNumber"
-                       name="phoneNumber"
-                       placeholder="Nhập số điện thoại"
-                       required
-                       autofocus>
+                <form th:action="@{/auth/login}" method="post" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="phoneNumber" class="form-label">Số điện thoại</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent text-info"><i class="bi bi-telephone"></i></span>
+                            <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Nhập số điện thoại" required autofocus>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Mật khẩu</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent text-info"><i class="bi bi-lock"></i></span>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Nhập mật khẩu" required>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember-me">
+                        <label class="form-check-label" for="remember">Ghi nhớ đăng nhập</label>
+                    </div>
+
+                    <button type="submit" class="btn-primary w-100 justify-content-center">
+                        <i class="bi bi-box-arrow-in-right"></i> Đăng nhập
+                    </button>
+                </form>
+
+                <div class="divider text-center my-4">
+                    <span class="text-secondary">hoặc</span>
+                </div>
+
+                <div class="text-center">
+                    <p class="mb-0">Chưa có tài khoản?
+                        <a class="text-decoration-underline" href="/auth/register">Đăng ký ngay</a>
+                    </p>
+                </div>
             </div>
         </div>
-
-        <div class="mb-3">
-            <label for="password" class="form-label">Mật khẩu</label>
-            <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                <input type="password"
-                       class="form-control"
-                       id="password"
-                       name="password"
-                       placeholder="Nhập mật khẩu"
-                       required>
-            </div>
-        </div>
-
-        <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="remember" name="remember-me">
-            <label class="form-check-label" for="remember">Ghi nhớ đăng nhập</label>
-        </div>
-
-        <div class="d-grid">
-            <button type="submit" class="btn btn-gradient">
-                <i class="bi bi-box-arrow-in-right"></i> Đăng nhập
-            </button>
-        </div>
-    </form>
-
-    <div class="divider">
-        <span>hoặc</span>
     </div>
-
-    <div class="register-link">
-        <p>Chưa có tài khoản? <a href="/auth/register">Đăng ký ngay</a></p>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</main>
 </body>
 </html>

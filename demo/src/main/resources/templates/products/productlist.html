@@ -1,127 +1,67 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách sản phẩm</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .navbar-custom {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 15px 0;
-        }
-        .main-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            padding: 30px;
-            margin: 30px 0;
-        }
-        .page-header {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        .filter-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-        }
-        .product-card {
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            transition: all 0.3s;
-        }
-        .product-card:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transform: translateY(-5px);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #5a6fdc 0%, #6842a0 100%);
-        }
-    </style>
-</head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-custom">
-    <div class="container">
-        <a class="navbar-brand fw-bold text-primary" href="/home">
-            <i class="bi bi-shop"></i> HSF302 Shop
-        </a>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="/home">Trang chủ</a></li>
-                <li class="nav-item"><a class="nav-link active" href="/products/list">Sản phẩm</a></li>
-                <li class="nav-item"><a class="nav-link" href="/cart">Giỏ hàng</a></li>
-                <li class="nav-item"><a class="nav-link" href="/orders">Đơn hàng</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<div class="container">
-    <div class="main-card">
-        <div class="page-header d-flex justify-content-between align-items-center">
-            <h2><i class="bi bi-box-seam"></i> Danh sách sản phẩm</h2>
-            <a href="/products/create" class="btn btn-primary" sec:authorize="hasAnyRole('ADMIN','STAFF')">
+<head th:replace="~{layout/base :: head('Danh sách sản phẩm')}"></head>
+<body th:replace="~{layout/base :: layout(~{::content}, 'Danh sách sản phẩm', 'Khám phá các sản phẩm đang có mặt tại HSF302 Shop')}">
+<main th:fragment="content">
+    <div class="glass-card">
+        <div class="d-flex flex-column flex-lg-row justify-content-lg-between align-items-lg-center gap-3 mb-4">
+            <div>
+                <h2 class="mb-1"><i class="bi bi-box-seam me-2"></i>Tất cả sản phẩm</h2>
+                <p class="text-secondary mb-0">Lọc theo tên, thương hiệu hoặc mức giá để tìm sản phẩm phù hợp</p>
+            </div>
+            <a href="/products/create" class="btn-primary" sec:authorize="hasAnyRole('ADMIN','STAFF')">
                 <i class="bi bi-plus-circle"></i> Thêm sản phẩm
             </a>
         </div>
 
-        <!-- Filter Section -->
-        <div class="filter-section">
-            <form th:action="@{/products/list}" method="get">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <input type="text" class="form-control" name="name" placeholder="Tên sản phẩm" th:value="${name}">
-                    </div>
-                    <div class="col-md-3">
-                        <input type="text" class="form-control" name="brand" placeholder="Thương hiệu" th:value="${brand}">
-                    </div>
-                    <div class="col-md-3">
-                        <input type="number" class="form-control" name="unitPrice" placeholder="Giá" th:value="${unitPrice}">
-                    </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary w-100">Lọc</button>
-                    </div>
+        <form th:action="@{/products/list}" method="get" class="filter-section mb-4">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Tên sản phẩm</label>
+                    <input type="text" class="form-control" name="name" placeholder="Nhập tên sản phẩm" th:value="${name}">
                 </div>
-            </form>
-        </div>
+                <div class="col-md-3">
+                    <label class="form-label">Thương hiệu</label>
+                    <input type="text" class="form-control" name="brand" placeholder="Thương hiệu" th:value="${brand}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Giá tối đa</label>
+                    <input type="number" class="form-control" name="unitPrice" placeholder="Giá (VND)" th:value="${unitPrice}">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn-primary w-100 justify-content-center">
+                        <i class="bi bi-funnel"></i> Lọc
+                    </button>
+                </div>
+            </div>
+        </form>
 
-        <!-- Products List -->
-        <div class="row">
-            <div class="col-md-4" th:each="product : ${productsList}">
-                <div class="product-card">
-                    <h5 th:text="${product.name}"></h5>
-                    <p class="text-muted" th:text="${product.brand}"></p>
-                    <p class="fw-bold text-primary" th:text="${#numbers.formatDecimal(product.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></p>
-                    <div class="d-flex gap-2">
-                        <a th:href="@{/products/detail/{id}(id=${product.id})}" class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
-                        <form th:action="@{/cart/add}" method="post" style="display:inline;">
+        <div class="card-grid">
+            <div class="product-card" th:each="product : ${productsList}">
+                <div class="product-body">
+                    <div class="product-title" th:text="${product.name}">Laptop</div>
+                    <div class="product-meta">
+                        <span><i class="bi bi-building"></i> <span th:text="${product.brand}">Thương hiệu</span></span>
+                        <span><i class="bi bi-cpu"></i> <span th:text="${product.model != null ? product.model : '---'}">Dòng sản phẩm</span></span>
+                    </div>
+                    <div class="product-price" th:text="${#numbers.formatDecimal(product.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></div>
+                    <div class="product-actions">
+                        <a th:href="@{/products/detail/{id}(id=${product.id})}" class="btn-secondary w-100 justify-content-center">
+                            <i class="bi bi-eye"></i> Xem chi tiết
+                        </a>
+                        <form th:action="@{/cart/add}" method="post" class="w-100">
                             <input type="hidden" name="productId" th:value="${product.id}"/>
                             <input type="hidden" name="quantity" value="1"/>
-                            <button type="submit" class="btn btn-sm btn-primary">Thêm vào giỏ</button>
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <button type="submit" class="btn-primary w-100 justify-content-center">
+                                <i class="bi bi-cart-plus"></i> Thêm vào giỏ
+                            </button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</main>
 </body>
 </html>

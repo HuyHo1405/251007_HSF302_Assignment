@@ -31,8 +31,8 @@ public class SecurityConfig {
                         // Public access
                         .requestMatchers(PUBLIC_URLS).permitAll()
 
-                        // Home - accessible to all authenticated users
-                        .requestMatchers("/", "/home").authenticated()
+                        // Home - accessible to everyone
+                        .requestMatchers("/", "/home").permitAll()
 
                         // Product management
                         .requestMatchers("/products/create", "/products/update/**", "/products/delete/**").hasAnyRole("ADMIN", "STAFF")

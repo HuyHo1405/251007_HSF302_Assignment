@@ -57,4 +57,7 @@ public class Product {
             orphanRemoval = true,
             fetch = FetchType.LAZY)
     private List<ProductImage> productImages;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    private List<OrderItem> orderItems;
 }

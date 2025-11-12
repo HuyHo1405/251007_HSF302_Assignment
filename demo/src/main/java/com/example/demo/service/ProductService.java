@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 
+import com.example.demo.model.dto.BestSellerProductDTO;
 import com.example.demo.model.dto.ProductDetailDTO;
 import com.example.demo.model.dto.ProductListDTO;
 import com.example.demo.model.entity.Product;
@@ -8,6 +9,7 @@ import com.example.demo.model.mapper.ProductMapper;
 import com.example.demo.model.specification.ProductSpecification;
 import com.example.demo.repo.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,10 @@ public class ProductService {
     public List<ProductListDTO> getProductList(Pageable pageable, String name, String brand, Double unitPrice){
         Specification<Product> spec = ProductSpecification.searchBy(name, brand, unitPrice);
          return productRepo.findAll(spec, pageable).map(ProductMapper::toListDTO).getContent();
+    }
+
+    public List<BestSellerProductDTO> getTopBestSellers(int limit) {
+        return productRepo.findTopBestSellers(PageRequest.of(0, limit));
     }
 
     //Xem chi tiết sản phẩm

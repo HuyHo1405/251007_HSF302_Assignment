@@ -99,8 +99,8 @@ public class OrderController {
 
         // Check quyền: Customer chỉ xem đơn của mình, Staff/Admin xem tất cả
         if (currentUser.getRole() == User.Role.CUSTOMER && !dto.getUserId().equals(currentUser.getId())) {
-            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền xem đơn hàng này");
-            return "redirect:/orders/my";
+            model.addAttribute("orderId", id);
+            return "orders/not-owner";
         }
 
         // Danh sách các item (cho table lặp)
