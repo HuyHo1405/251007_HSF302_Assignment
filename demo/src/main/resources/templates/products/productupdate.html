@@ -257,7 +257,9 @@
                 <strong>Ngày tạo:</strong>
                 <span th:text="${#temporals.format(product.createdAt, 'dd/MM/yyyy HH:mm:ss')}"></span>
             </div>
-
+            <!-- Thêm ảnh -->
+            <label>Thêm ảnh</label>
+            <input type="file" name="image" accept="image/*">
             <div class="d-grid gap-2 mt-4">
                 <button type="submit" class="btn btn-primary btn-lg">
                     <i class="bi bi-save"></i> Lưu thay đổi

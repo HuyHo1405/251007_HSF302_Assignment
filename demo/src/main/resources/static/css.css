@@ -1173,3 +1173,16 @@ input:focus, textarea:focus{
     }
 }
 
+.product-meta{
+    margin: 12px 0 24px;
+    font-size: 0.95rem;
+    color: #e5e7eb;                 /* chữ sáng vừa trên nền tối */
+}
+.meta-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:10px 0;
+    border-bottom: 1px dashed rgba(255,255,255,.08);
+}
+
