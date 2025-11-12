@@ -3,7 +3,9 @@ package com.example.demo.service;
 import com.example.demo.model.dto.RegisterDTO;
 import com.example.demo.model.dto.UpdateUserDTO;
 import com.example.demo.model.dto.UserDTO;
+import com.example.demo.model.entity.Order;
 import com.example.demo.model.entity.User;
+import com.example.demo.repo.OrderItemRepository;
 import com.example.demo.repo.OrderRepository;
 import com.example.demo.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
 
     @Override
     @Transactional
@@ -172,6 +175,25 @@ public class UserServiceImpl implements UserService {
             }
         }
         // Admin có thể xóa bất kỳ ai
+
+        List<Order> userOrders = orderRepository.findByUserId(userId);
+
+        if (!userOrders.isEmpty()) {
+            for (Order order : userOrders) {
+                // 1. Xóa tất cả OrderItems của order này
+                if (order.getOrderItems() != null && !order.getOrderItems().isEmpty()) {
+                    orderItemRepository.deleteAll(order.getOrderItems());
+                }
+
+                // 2. Xóa tất cả Payments của order này (nếu có)
+                if (order.getPayments() != null && !order.getPayments().isEmpty()) {
+                    order.getPayments().clear();
+                }
+            }
+
+            // 3. Xóa tất cả orders của user
+            orderRepository.deleteAll(userOrders);
+        }
 
         userRepository.delete(userToDelete);
     }
