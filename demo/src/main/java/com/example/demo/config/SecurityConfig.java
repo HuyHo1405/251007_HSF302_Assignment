@@ -16,12 +16,20 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private static final String[] PUBLIC_URLS = {
+            "/auth**",
+            "/css/**",
+            "/js/**",
+            "/images/**",
+            "/img/**"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((authorize) -> authorize
                         // Public access
-                        .requestMatchers("/auth/register", "/auth/login", "/css/**", "/js/**", "/images/**", "/img/**").permitAll()
+                        .requestMatchers(PUBLIC_URLS).permitAll()
 
                         // Home - accessible to all authenticated users
                         .requestMatchers("/", "/home").authenticated()

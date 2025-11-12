@@ -42,9 +42,7 @@ public class AuthenticationController {
         if (bindingResult.hasErrors()) {
             return "auth/register";
         }
-
         try {
-            // Đăng ký user mới
             userService.register(registerDTO);
             redirectAttributes.addFlashAttribute("successMessage", "Đăng ký thành công! Vui lòng đăng nhập.");
             return "redirect:/auth/login";
