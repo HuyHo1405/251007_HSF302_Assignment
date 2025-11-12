@@ -37,7 +37,7 @@
                     </div>
                     <div class="product-price" th:text="${#numbers.formatDecimal(product.unitPrice, 0, 'POINT', 0, 'POINT')} + ' VND'">25.000.000 VND</div>
                     <div class="product-actions">
-                        <form th:action="@{/cart/add}" method="post" sec:authorize="isAuthenticated()" class="w-100">
+                        <form th:action="@{/cart/add}" method="post" sec:authorize="hasAnyRole('CUSTOMER')" class="w-100">
                             <input type="hidden" name="productId" th:value="${product.id}"/>
                             <input type="hidden" name="quantity" value="1"/>
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
