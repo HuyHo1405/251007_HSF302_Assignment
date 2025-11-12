@@ -35,11 +35,20 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("Initializing database with sample data...");
 
         // 1. Tạo Users
-        User admin = createUser("Admin User", "0123456789", "admin@shop.com", "123456", User.Role.ADMIN);
-        User staff = createUser("Staff User", "0987654321", "staff@shop.com", "123456", User.Role.STAFF);
-        User customer1 = createUser("Nguyễn Văn A", "0912345678", "customer1@gmail.com", "123456", User.Role.CUSTOMER);
-        User customer2 = createUser("Trần Thị B", "0923456789", "customer2@gmail.com", "123456", User.Role.CUSTOMER);
-        User customer3 = createUser("Lê Văn C", "0934567890", "customer3@gmail.com", "123456", User.Role.CUSTOMER);
+        User admin = createUser("Admin User", "0123456789", "admin@shop.com", "123456", User.Role.ADMIN,
+                "Thành phố Hà Nội", "Quận Ba Đình", "Phường Ngọc Hà", "Số 1 Hoàng Diệu");
+
+        User staff = createUser("Staff User", "0987654321", "staff@shop.com", "123456", User.Role.STAFF,
+                "Thành phố Hồ Chí Minh", "Quận 1", "Phường Bến Nghé", "123 Nguyễn Huệ");
+
+        User customer1 = createUser("Nguyễn Văn A", "0912345678", "customer1@gmail.com", "123456", User.Role.CUSTOMER,
+                "Thành phố Hà Nội", "Quận Hoàn Kiếm", "Phường Hàng Bạc", "45 Hàng Bạc");
+
+        User customer2 = createUser("Trần Thị B", "0923456789", "customer2@gmail.com", "123456", User.Role.CUSTOMER,
+                "Thành phố Hồ Chí Minh", "Quận 3", "Phường 07", "78 Võ Văn Tần");
+
+        User customer3 = createUser("Lê Văn C", "0934567890", "customer3@gmail.com", "123456", User.Role.CUSTOMER,
+                "Thành phố Đà Nẵng", "Quận Hải Châu", "Phường Thanh Bình", "99 Trần Phú");
 
         // 2. Tạo 10 Products - Computer Components for PC Shop
         List<Product> products = new ArrayList<>();
@@ -113,13 +122,18 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("====================");
     }
 
-    private User createUser(String fullName, String phoneNumber, String email, String password, User.Role role) {
+    private User createUser(String fullName, String phoneNumber, String email, String password, User.Role role,
+                            String province, String district, String ward, String addressDetail) {
         User user = User.builder()
                 .fullName(fullName)
                 .phoneNumber(phoneNumber)
                 .emailAddress(email)
                 .password(passwordEncoder.encode(password))
                 .role(role)
+                .province(province)
+                .district(district)
+                .ward(ward)
+                .addressDetail(addressDetail)
                 .createdAt(LocalDateTime.now())
                 .build();
         return userRepository.save(user);
