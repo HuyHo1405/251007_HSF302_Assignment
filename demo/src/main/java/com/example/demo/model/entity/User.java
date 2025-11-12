@@ -78,6 +78,26 @@ public class User implements UserDetails {
         return phoneNumber;
     }
 
+    public String getFullAddress() {
+        StringBuilder fullAddress = new StringBuilder();
+        if (addressDetail != null && !addressDetail.isEmpty()) {
+            fullAddress.append(addressDetail);
+        }
+        if (ward != null && !ward.isEmpty()) {
+            if (fullAddress.length() > 0) fullAddress.append(", ");
+            fullAddress.append(ward);
+        }
+        if (district != null && !district.isEmpty()) {
+            if (fullAddress.length() > 0) fullAddress.append(", ");
+            fullAddress.append(district);
+        }
+        if (province != null && !province.isEmpty()) {
+            if (fullAddress.length() > 0) fullAddress.append(", ");
+            fullAddress.append(province);
+        }
+        return fullAddress.toString().isEmpty() ? "Chưa cập nhật" : fullAddress.toString();
+    }
+
     public enum  Role {
         CUSTOMER,
         STAFF,

@@ -58,6 +58,7 @@ public class CartController {
                 .userId(user.getId())
                 .userFullName(user.getFullName())
                 .status("confirmed") // Sửa từ "PENDING" sang "confirmed"
+                .shippingAddress(user.getFullAddress())
                 .shippingFee(SHIPPING_FEE)
                 .items(new ArrayList<>(cart.values()))
                 .build();
@@ -67,11 +68,14 @@ public class CartController {
                 .sum();
 
         double totalWithShipping = subtotal + SHIPPING_FEE;
+        String userAddress = user.getFullAddress();
 
         model.addAttribute("orderSubtotal", subtotal); // Tạm tính (chưa có phí ship)
         model.addAttribute("shippingFee", SHIPPING_FEE); // Phí vận chuyển
         model.addAttribute("orderTotal", totalWithShipping); // Tổng thanh toán (đã bao gồm phí ship)
         model.addAttribute("order", orderDTO); // Truyền đúng là DTO!
+        model.addAttribute("userAddress", userAddress);
+        model.addAttribute("userAddress", user.getFullAddress());
         return "orders/create";
     }
 

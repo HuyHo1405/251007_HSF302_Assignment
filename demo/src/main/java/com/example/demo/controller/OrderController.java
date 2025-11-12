@@ -138,6 +138,8 @@ public class OrderController {
         try {
             // Set user ID from current user
             orderDTO.setUserId(currentUser.getId());
+            orderDTO.setShippingAddress(currentUser.getFullAddress());
+
             Map<Long, OrderItemDTO> cart = (Map<Long, OrderItemDTO>) session.getAttribute("cart");
             if (cart == null || cart.isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "Giỏ hàng trống, không thể tạo đơn hàng.");
