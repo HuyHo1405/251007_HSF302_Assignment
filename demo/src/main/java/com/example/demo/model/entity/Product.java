@@ -60,7 +60,7 @@ public class Product {
 
     public void addImage(ProductImage img) {
         productImages.add(img);
-        img.setProduct(this); // gắn 2 chiều
+        img.setProduct(this);
     }
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)

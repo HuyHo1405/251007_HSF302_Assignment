@@ -38,12 +38,6 @@ public class ProductController {
                                            @AuthenticationPrincipal User currentUser,
                                            Model model) {
 
-
-<<<<<<< HEAD
-        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
-
-        List<ProductListDTO> productsList = productService.getProductList(PageRequest.of(pageNo-1, pageSize, sort), name, brand, unitPrice);
-=======
         Sort sort = null;
         if(sortDir.equalsIgnoreCase("DESC")){
             sort = Sort.by(sortBy).ascending();
@@ -52,7 +46,7 @@ public class ProductController {
         }
         //set attribute to view
         List<ProductListDTO> productsList = productService.getProductList(PageRequest.of(pageNo-1, pageSize), name, brand, unitPrice, type);
->>>>>>> viet
+
 
         model.addAttribute("productsList", productsList);
         model.addAttribute("currentPage", pageNo);
