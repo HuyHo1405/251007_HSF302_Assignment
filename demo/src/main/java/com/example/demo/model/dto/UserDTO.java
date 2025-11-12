@@ -26,9 +26,34 @@ public class UserDTO {
     @NotBlank(message = "Số điện thoại không được để trống")
     private String phoneNumber;
 
+    private String province;
+    private String district;
+    private String ward;
+    private String addressDetail;
+
     private User.Role role;
 
     private LocalDateTime  createdAt;
 
     private Long orderCount;
+
+    public String getFullAddress() {
+        StringBuilder fullAddress = new StringBuilder();
+        if (addressDetail != null && !addressDetail.isEmpty()) {
+            fullAddress.append(addressDetail);
+        }
+        if (ward != null && !ward.isEmpty()) {
+            if (fullAddress.length() > 0) fullAddress.append(", ");
+            fullAddress.append(ward);
+        }
+        if (district != null && !district.isEmpty()) {
+            if (fullAddress.length() > 0) fullAddress.append(", ");
+            fullAddress.append(district);
+        }
+        if (province != null && !province.isEmpty()) {
+            if (fullAddress.length() > 0) fullAddress.append(", ");
+            fullAddress.append(province);
+        }
+        return fullAddress.toString().isEmpty() ? "Chưa cập nhật" : fullAddress.toString();
+    }
 }

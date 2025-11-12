@@ -50,6 +50,10 @@ public class UserServiceImpl implements UserService {
                 .emailAddress(registerDTO.getEmailAddress())
                 .password(passwordEncoder.encode(registerDTO.getPassword()))
                 .phoneNumber(registerDTO.getPhoneNumber())
+                .province(registerDTO.getProvince())
+                .district(registerDTO.getDistrict())
+                .ward(registerDTO.getWard())
+                .addressDetail(registerDTO.getAddressDetail())
                 .build();
 
         return userRepository.save(user);
@@ -136,6 +140,10 @@ public class UserServiceImpl implements UserService {
         user.setFullName(dto.getFullName());
         user.setEmailAddress(dto.getEmailAddress());
         user.setPhoneNumber(dto.getPhoneNumber());
+        user.setProvince(dto.getProvince());
+        user.setDistrict(dto.getDistrict());
+        user.setWard(dto.getWard());
+        user.setAddressDetail(dto.getAddressDetail());
 
         User updated = userRepository.save(user);
         return convertToDTO(updated);
@@ -228,6 +236,10 @@ public class UserServiceImpl implements UserService {
                 .fullName(user.getFullName())
                 .emailAddress(user.getEmailAddress())
                 .phoneNumber(user.getPhoneNumber())
+                .province(user.getProvince())
+                .district(user.getDistrict())
+                .ward(user.getWard())
+                .addressDetail(user.getAddressDetail())
                 .role(user.getRole())
                 .createdAt(user.getCreatedAt())
                 .orderCount(orderCount)

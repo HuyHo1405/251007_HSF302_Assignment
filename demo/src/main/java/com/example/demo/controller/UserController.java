@@ -58,13 +58,17 @@ public class UserController {
     @GetMapping("/profile/edit")
     public String editProfileForm(@AuthenticationPrincipal User currentUser, Model model) {
         UserDTO userDTO = userService.getUserById(currentUser.getId());
-        
+
         UpdateUserDTO dto = UpdateUserDTO.builder()
                 .fullName(userDTO.getFullName())
                 .emailAddress(userDTO.getEmailAddress())
                 .phoneNumber(userDTO.getPhoneNumber())
+                .province(userDTO.getProvince())
+                .district(userDTO.getDistrict())
+                .ward(userDTO.getWard())
+                .addressDetail(userDTO.getAddressDetail())
                 .build();
-        
+
         model.addAttribute("updateProfile", dto);
         model.addAttribute("currentUser", currentUser);
         return "user/editprofile";

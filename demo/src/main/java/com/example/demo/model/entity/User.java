@@ -35,6 +35,18 @@ public class User implements UserDetails {
     @Column(name = "phone_number", nullable = false, unique = true)
     private String phoneNumber;
 
+    @Column(name = "province")
+    private String province;  // Tỉnh/Thành phố
+
+    @Column(name = "district")
+    private String district;  // Quận/Huyện
+
+    @Column(name = "ward")
+    private String ward;  // Phường/Xã
+
+    @Column(name = "address_detail")
+    private String addressDetail;  // Địa chỉ chi tiết
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
