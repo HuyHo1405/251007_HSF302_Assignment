@@ -19,6 +19,8 @@ public class OrderDTO {
     private String userEmail;
     private String paymentStatus;
     private Double totalPrice;
+    @Builder.Default
+    private Double shippingFee = 30000.0;
     private String shippingAddress;
     private String createdAt;
     private String updatedAt;

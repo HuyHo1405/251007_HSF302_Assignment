@@ -21,7 +21,7 @@
             <div class="summary-item">
                 <h4><i class="bi bi-receipt me-2"></i>Tổng quan đơn hàng</h4>
                 <p class="mb-1"><strong>Tạm tính:</strong> <span th:text="${#numbers.formatDecimal(orderTotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span></p>
-                <p class="mb-1"><strong>Phí vận chuyển:</strong> 0 ₫</p>
+                <p class="mb-1"><strong>Phí vận chuyển:</strong> <span th:text="${#numbers.formatDecimal(30000, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span></p>
                 <p class="mb-0"><strong>Tổng thanh toán:</strong> <span th:text="${#numbers.formatDecimal(orderTotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span></p>
             </div>
         </div>

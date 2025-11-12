@@ -28,6 +28,10 @@ public class Order {
     @Column(name = "total_price")
     private Double totalPrice;
 
+    @Column(name = "shipping_fee")
+    @Builder.Default
+    private Double shippingFee = 30000.0;
+
     @Column(name = "shipping_address")
     private String shippingAddress;
 
@@ -51,6 +55,9 @@ public class Order {
         updatedAt = LocalDateTime.now();
         if (status == null) {
             status = "confirmed"; // Default status là "confirmed" thay vì "pending"
+        }
+        if (shippingFee == null) {
+            shippingFee = 30000.0; // Đảm bảo luôn có phí vận chuyển
         }
     }
 
