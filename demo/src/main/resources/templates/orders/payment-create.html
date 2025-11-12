@@ -32,9 +32,19 @@
             </div>
             <div class="summary-item">
                 <h4><i class="bi bi-cash-stack me-2"></i>Tóm tắt thanh toán</h4>
-                <p class="mb-1"><strong>Tạm tính:</strong> <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span></p>
-                <p class="mb-1"><strong>Phí vận chuyển:</strong> <span th:text="${#numbers.formatDecimal(order.shippingFee, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span></p>
-                <p class="mb-0"><strong>Tổng thanh toán:</strong> <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span></p>
+                <!-- Tính tổng tiền sản phẩm (tạm tính) -->
+                <p class="mb-1" th:with="shippingFee=${order.shippingFee != null ? order.shippingFee : 30000},
+                         subtotal=${order.totalPrice - shippingFee}">
+                    <strong>Tạm tính:</strong> <span th:text="${#numbers.formatDecimal(subtotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+                </p>
+                <p class="mb-1">
+                    <strong>Phí vận chuyển:</strong>
+                    <span th:text="${order.shippingFee != null ? #numbers.formatDecimal(order.shippingFee, 0, 'COMMA', 0, 'POINT') + ' ₫' : '30,000 ₫'}">30,000 ₫</span>
+                </p>
+                <p class="mb-0">
+                    <strong>Tổng thanh toán:</strong>
+                    <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+                </p>
             </div>
         </div>
 
@@ -52,12 +62,30 @@
                     </tr>
                     </thead>
                     <tbody>
+                    <!-- Danh sách sản phẩm -->
                     <tr th:each="item, iterStat : ${order.orderItems}">
                         <td th:text="${iterStat.count}">1</td>
                         <td th:text="${item.product != null ? item.product.name : 'Sản phẩm'}">Laptop</td>
                         <td th:text="${item.quantity}"></td>
                         <td th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
                         <td th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                    </tr>
+
+                    <!-- Hàng phí vận chuyển -->
+                    <tr style="border-top: 2px solid rgba(255,255,255,0.1);">
+                        <td colspan="4" class="text-end"><strong>Phí vận chuyển</strong></td>
+                        <td>
+                            <strong th:text="${order.shippingFee != null ? #numbers.formatDecimal(order.shippingFee, 0, 'COMMA', 0, 'POINT') + ' ₫' : '30,000 ₫'}">30,000 ₫</strong>
+                        </td>
+                    </tr>
+
+                    <!-- Hàng tổng cộng -->
+                    <tr style="background: rgba(13, 110, 253, 0.1); border-top: 2px solid rgba(13, 110, 253, 0.3);">
+                        <td colspan="4" class="text-end"><strong style="font-size: 1.1em;">Tổng</strong></td>
+                        <td>
+                            <strong style="font-size: 1.1em; color: #0d6efd;"
+                                    th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</strong>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
