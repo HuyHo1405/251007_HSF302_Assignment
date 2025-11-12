@@ -22,14 +22,25 @@
         <div th:if="${error}" class="alert-glass alert-danger mb-3" role="alert">
             <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
         </div>
+<<<<<<< HEAD
 
         <!-- Form (đÃ sửa: chỉ còn 1 form, có enctype cho upload) -->
+=======
+>>>>>>> 6618da31af65fc9ba017d8ebd7c51a09f9cbd32b
         <form th:action="${product.id != null ? '/products/update/' + product.id : '/products/create'}"
               method="post"
               th:object="${product}"
               enctype="multipart/form-data"
               class="row g-4">
+<<<<<<< HEAD
 
+=======
+        <!-- Form -->
+        <form th:action="@{/products/create}"
+              method="post"
+              th:object="${product}"
+              enctype="multipart/form-data">
+>>>>>>> 6618da31af65fc9ba017d8ebd7c51a09f9cbd32b
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <input type="hidden" th:field="*{id}" th:if="${product.id != null}"/>
 

@@ -332,7 +332,7 @@ textarea:focus {
     text-transform: uppercase;
 }
 
-.status-confirmed{background: coral}
+.status-confirmed{background: rgba(55, 45, 39, 0.7); color: #ffc107}
 .status-pending { background: rgba(246, 191, 38, 0.18); color: var(--warning); }
 .status-paid { background: rgba(56, 189, 248, 0.15); color: var(--accent); }
 .status-shipping { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; }

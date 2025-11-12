@@ -11,7 +11,7 @@
                     Mã đơn <strong th:text="${order.id}">0</strong>
                 </div>
                 <h2 class="mb-1">Thanh toán đơn hàng #<span th:text="${order.id}">0</span></h2>
-                <p class="text-secondary mb-0">Khách hàng: <strong th:text="${order.userFullName}">---</strong></p>
+                <p class="text-secondary mb-0">Khách hàng: <strong th:text="${order.user != null ? order.user.fullName : (order.userFullName != null ? order.userFullName : '---')}">---</strong></p>
             </div>
             <div class="text-lg-end">
                 <span class="status-badge"
