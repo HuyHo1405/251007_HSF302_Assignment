@@ -5,33 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c1fd29f7-f5a2-4567-a11b-df5d1584feec" name="Changes" comment="newupdate">
+      <change afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/config/WebConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/HomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/HomeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/OrderController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/dto/OrderDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/dto/OrderDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/ProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/controller/ProductController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/entity/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/entity/Product.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/repo/ProductRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/repo/ProductRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/OrderServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/OrderServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/specification/ProductSpecification.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/model/specification/ProductSpecification.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/java/com/example/demo/service/ProductService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/auth/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/auth/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/auth/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/auth/register.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/cart/view.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/cart/view.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/home.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/create.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/detail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/list.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/my.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/my.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/payment-create.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/payment-create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/payment-failed.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/payment-failed.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/payment-success.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/payment-success.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/payment.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/payment.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/statistics.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/statistics.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/static/css.css" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/static/css.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/products/productcreate.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/products/productcreate.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/products/productdetail.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/products/productdetail.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/products/productlist.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/products/productlist.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/user/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/user/profile.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/user/userList.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/user/userList.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/products/productupdate.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/products/productupdate.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,6 +27,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="HTML File" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -54,12 +40,12 @@
     &quot;assignee&quot;: &quot;vietkhaht123-bot&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/HuyHo1405/251007_HSF302_Assignment.git&quot;,
-    &quot;accountId&quot;: &quot;945b7630-256e-45be-80e1-faab33376171&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/HuyHo1405/251007_HSF302_Assignment",
+    "accountId": "2b9bc106-5d18-4faf-83ea-d25ffbbacf99"
   }
-}</component>
+}]]></component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -72,50 +58,50 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
-    &quot;Maven.demo [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.demo [install].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
-    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Spring Boot.DemoApplication.executor&quot;: &quot;Run&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Semester 5/HSF302/ass/pe/251007_HSF302_Assignment&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;MavenSettings&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Downloaded.Files.Path.Enabled": "false",
+    "Maven.demo [clean].executor": "Run",
+    "Maven.demo [install].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.DemoApplication.executor": "Run",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "viet",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/6h40",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "MavenSettings",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;sqlserver&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "sqlserver"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\S5\Project_HSF\demo\src\main\resources\static" />
@@ -166,6 +152,7 @@
       <workItem from="1762914648567" duration="237000" />
       <workItem from="1762917040597" duration="2940000" />
       <workItem from="1762922496603" duration="12000" />
+      <workItem from="1762947533191" duration="9685000" />
     </task>
     <task id="LOCAL-00001" summary="newupdate">
       <option name="closed" value="true" />

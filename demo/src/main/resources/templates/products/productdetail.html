@@ -5,11 +5,16 @@
 <main th:fragment="content">
     <div class="glass-card">
         <div class="row g-4 align-items-start">
+
             <div class="col-lg-5">
                 <div class="glass-card text-center" style="min-height:340px;display:flex;align-items:center;justify-content:center">
-                    <i class="bi bi-laptop fs-1 text-info"></i>
+                    <img th:src="${productdetail.imageUrl}"
+                         th:alt="${productdetail.name}"
+                         style="width: auto; max-height: 300px; object-fit: contain;"
+                    />
                 </div>
             </div>
+
             <div class="col-lg-7">
                 <div class="d-flex flex-column gap-2 mb-3">
                     <span class="badge-outline"><i class="bi bi-tag"></i> <span th:text="${productdetail.brand}">Thương hiệu</span></span>
@@ -17,6 +22,23 @@
                     <div class="product-meta text-secondary">
                         <span><i class="bi bi-bar-chart"></i> Model: <span th:text="${productdetail.model}">Model</span></span>
                         <span class="ms-3"><i class="bi bi-cpu"></i> Loại: <span th:text="${productdetail.type}">Loại</span></span>
+
+                        <div class="product-meta">
+                            <div class="meta-row">
+                                <span class="meta-label">Bảo hành: </span>
+                                <span class="meta-value" th:text="${productdetail.warrantyMonths} + ' tháng'">12</span>
+                            </div>
+
+                            <div class="meta-row">
+                                <span class="meta-label">Trạng thái:</span>
+                                <span class="meta-value">
+      <span class="badge status-badge"
+            th:classappend="${productdetail.status} == 'available' ? 'status-available' :
+                            (${productdetail.status} == 'preorder' ? 'status-preorder' : 'status-other')"
+            th:text="${productdetail.status}">Available</span>
+    </span>
+                            </div>
+
                     </div>
                     <div class="product-price" th:text="${#numbers.formatDecimal(productdetail.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></div>
                 </div>
@@ -42,7 +64,7 @@
                     <a th:href="@{/products/update/{id}(id=${productdetail.id})}" class="btn-secondary">
                         <i class="bi bi-pencil"></i> Sửa sản phẩm
                     </a>
-                    <form th:action="@{/products/delete/{id}(id=${productdetail.id})}" method="post" onsubmit="return confirm('Xác nhận xóa sản phẩm này?')">
+                    <form th:action="@{/products/delete/{id}(id=${productdetail.id})}"  onsubmit="return confirm('Xác nhận xóa sản phẩm này?')">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                         <button type="submit" class="btn-danger">
                             <i class="bi bi-trash"></i> Xóa

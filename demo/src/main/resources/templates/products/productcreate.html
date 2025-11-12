@@ -97,10 +97,12 @@
         </div>
 
         <!-- Form -->
-        <form th:action="${product.id != null ? '/products/update/' + product.id : '/products/create'}"
+        <form th:action="@{/products/create}"
               method="post"
-              th:object="${product}">
+              th:object="${product}"
+              enctype="multipart/form-data">
 
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <input type="hidden" th:field="*{id}" th:if="${product.id != null}">
 
             <!-- Tên sản phẩm -->
@@ -244,6 +246,10 @@
                     </select>
                 </div>
             </div>
+
+            <!--Thêm ảnh-->
+            <label class="bi bi-info-circle">Thêm ảnh sản phẩm</label>
+            <input type="file" name="images" class="form-control mb-3" accept="image/*" multiple/>
 
             <div class="d-grid gap-2 mt-4">
                 <button type="submit" class="btn btn-primary btn-lg">

@@ -18,7 +18,7 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name ="producName", length = 100)
+    @Column(name ="product_name", length = 100)
     private String name;
 
     @Column(unique = true)
@@ -57,6 +57,11 @@ public class Product {
             orphanRemoval = true,
             fetch = FetchType.LAZY)
     private List<ProductImage> productImages;
+
+    public void addImage(ProductImage img) {
+        productImages.add(img);
+        img.setProduct(this); // gắn 2 chiều
+    }
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<OrderItem> orderItems;

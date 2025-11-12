@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -27,12 +28,13 @@ public class ProductController {
     //List sản phẩm với filter, paginate, sort
     @GetMapping("/list")
     public String getProduct(@RequestParam (required = false, defaultValue = "1") int pageNo,
-                                           @RequestParam (required = false, defaultValue = "5") int pageSize,
+                                           @RequestParam (required = false, defaultValue = "8") int pageSize,
                                            @RequestParam (required = false, defaultValue = "id") String sortBy,
                                            @RequestParam (required = false, defaultValue = "DESC") String sortDir,
                                            @RequestParam (required = false) String name,
                                            @RequestParam (required = false) String brand,
                                            @RequestParam (required = false) Double unitPrice,
+                                           @RequestParam(required = false) String type,
                                            @AuthenticationPrincipal User currentUser,
                                            Model model) {
 
@@ -44,7 +46,7 @@ public class ProductController {
             sort = Sort.by(sortBy).descending();
         }
         //set attribute to view
-        List<ProductListDTO> productsList = productService.getProductList(PageRequest.of(pageNo-1, pageSize), name, brand, unitPrice);
+        List<ProductListDTO> productsList = productService.getProductList(PageRequest.of(pageNo-1, pageSize), name, brand, unitPrice, type);
 
         model.addAttribute("productsList", productsList);
         model.addAttribute("currentPage", pageNo);
@@ -54,6 +56,7 @@ public class ProductController {
         model.addAttribute("reverseSortDir", sortDir.equalsIgnoreCase("DESC") ? "ASC" : "DESC");
         model.addAttribute("name", name);
         model.addAttribute("brand", brand);
+        model.addAttribute("type", type);
         model.addAttribute("unitPrice", unitPrice);
         model.addAttribute("currentUser", currentUser); // Truyền currentUser để check role trong view
         return "products/productlist";
@@ -81,9 +84,10 @@ public class ProductController {
     //Tạo sản phẩm
     @PostMapping("/create")
     public String createProduct(@ModelAttribute("product") Product pro,
-                               RedirectAttributes redirectAttributes){
+                               RedirectAttributes redirectAttributes,
+                                @RequestParam("images") List<MultipartFile> multipartFile){
         try {
-            productService.createProduct(pro);
+            productService.createProduct(pro, multipartFile);
             redirectAttributes.addFlashAttribute("success", "Tạo sản phẩm thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());

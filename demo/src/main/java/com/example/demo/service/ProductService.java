@@ -5,6 +5,7 @@ import com.example.demo.model.dto.BestSellerProductDTO;
 import com.example.demo.model.dto.ProductDetailDTO;
 import com.example.demo.model.dto.ProductListDTO;
 import com.example.demo.model.entity.Product;
+import com.example.demo.model.entity.ProductImage;
 import com.example.demo.model.mapper.ProductMapper;
 import com.example.demo.model.specification.ProductSpecification;
 import com.example.demo.repo.ProductRepository;
@@ -14,18 +15,27 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
 public class ProductService {
+
+    private final Path rootLocation = Paths.get("uploads"); // thư mục lưu ảnh
+
     @Autowired
     private ProductRepository productRepo;
 
     //Xem tất cả sản phẩm, filter, paginate
-    public List<ProductListDTO> getProductList(Pageable pageable, String name, String brand, Double unitPrice){
-        Specification<Product> spec = ProductSpecification.searchBy(name, brand, unitPrice);
+    public List<ProductListDTO> getProductList(Pageable pageable, String name, String brand, Double unitPrice, String type){
+        Specification<Product> spec = ProductSpecification.searchBy(name, brand, unitPrice, type);
          return productRepo.findAll(spec, pageable).map(ProductMapper::toListDTO).getContent();
     }
 
@@ -39,8 +49,32 @@ public class ProductService {
     }
 
     //Thêm sản phẩm
-    public void createProduct(Product pro){
-        productRepo.save(pro);
+    public void createProduct(Product pro, List<MultipartFile> multipartFile) throws IOException {
+        // Lưu Product trước
+        Product saved = productRepo.save(pro);
+
+        // Tạo thư mục nếu chưa có
+        if (!Files.exists(rootLocation)) {
+            Files.createDirectories(rootLocation);
+        }
+
+        // Duyệt qua danh sách ảnh
+        for (MultipartFile file : multipartFile) {
+            if (!file.isEmpty()) {
+                String fileName = System.currentTimeMillis() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+                Path destinationFile = rootLocation.resolve(fileName);
+                Files.copy(file.getInputStream(), destinationFile);
+
+                // Tạo entity ProductImage
+                ProductImage img = new ProductImage();
+                img.setUrl("/uploads/" + fileName); // đường dẫn public (mapping tĩnh)
+                img.setProduct(saved);
+
+                saved.getProductImages().add(img);
+            }
+        }
+
+        productRepo.save(saved);
     }
     //Get product by id
     public Product getProductById(Long id){
@@ -50,7 +84,6 @@ public class ProductService {
     public void updateProduct(Product pro, Long id){
         Product productExist = productRepo.findById(id).orElse(null);
         if(productExist != null){
-            productExist.setId(pro.getId());
             productExist.setName(pro.getName());
             productExist.setSku(pro.getSku());
             productExist.setType(pro.getType());
