@@ -150,7 +150,7 @@
         <a href="/orders" class="btn-secondary">
             <i class="bi bi-arrow-left"></i> Quay lại danh sách
         </a>
-        <a th:if="${order.status == 'PENDING'}"
+        <a th:if="${order.status != 'PAID'}"
            sec:authorize="hasRole('CUSTOMER')"
            th:href="@{/payments/create/{id}(id=${order.id})}"
            class="btn-primary">
