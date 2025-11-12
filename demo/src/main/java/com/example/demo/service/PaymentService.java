@@ -11,6 +11,9 @@ public interface PaymentService {
     String createVnpayPayment(Long orderId); // Tạo VNPay URL và redirect
     Map<String, String> handleVnpayReturn(Map<String, String> vnpayParams); // Xử lý callback từ VNPay
 
+    // VNPay Refund
+    Map<String, String> refundVnpayPayment(Long orderId, String reason); // Hoàn tiền qua VNPay API
+
     // COD method
     Payment createCODPayment(Long orderId); // Tạo thanh toán COD
 

@@ -50,7 +50,7 @@ public class Order {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
         if (status == null) {
-            status = "pending";
+            status = "confirmed"; // Default status là "confirmed" thay vì "pending"
         }
     }
 

@@ -209,24 +209,24 @@ public class OrderController {
     }
 
     // Xóa đơn (staff/admin only)
-    @PostMapping("/{id}/delete")
-    public String deleteOrder(@PathVariable Long id,
-                             @AuthenticationPrincipal User currentUser,
-                             RedirectAttributes redirectAttributes) {
-        // Check quyền: chỉ STAFF và ADMIN mới xóa được
-        if (currentUser.getRole() == User.Role.CUSTOMER) {
-            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền xóa đơn hàng");
-            return "redirect:/orders/my";
-        }
-
-        try {
-            orderService.deleteOrder(id);
-            redirectAttributes.addFlashAttribute("success", "Xóa đơn hàng thành công!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
-        }
-        return "redirect:/orders";
-    }
+//    @PostMapping("/{id}/delete")
+//    public String deleteOrder(@PathVariable Long id,
+//                             @AuthenticationPrincipal User currentUser,
+//                             RedirectAttributes redirectAttributes) {
+//        // Check quyền: chỉ STAFF và ADMIN mới xóa được
+//        if (currentUser.getRole() == User.Role.CUSTOMER) {
+//            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền xóa đơn hàng");
+//            return "redirect:/orders/my";
+//        }
+//
+//        try {
+//            orderService.deleteOrder(id);
+//            redirectAttributes.addFlashAttribute("success", "Xóa đơn hàng thành công!");
+//        } catch (Exception e) {
+//            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+//        }
+//        return "redirect:/orders";
+//    }
 
     @GetMapping("/{orderId}/items/{itemId}/edit")
     public String showEditItem(@PathVariable Long orderId,

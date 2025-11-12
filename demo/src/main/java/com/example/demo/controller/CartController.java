@@ -55,7 +55,7 @@ public class CartController {
         OrderDTO orderDTO = OrderDTO.builder()
                 .userId(user.getId())
                 .userFullName(user.getFullName())
-                .status("PENDING")
+                .status("confirmed") // Sửa từ "PENDING" sang "confirmed"
                 .items(new ArrayList<>(cart.values()))
                 .build();
         java.util.Collection<OrderItemDTO> items = cart.values();

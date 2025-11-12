@@ -495,24 +495,6 @@
                         </button>
                         <p class="helper-text mb-0"><i class="bi bi-clock-history me-1"></i>Giao dịch được xác nhận tức thì.</p>
                     </form>
-
-                    <form th:action="@{/payments/cod/create}" method="post" class="payment-option">
-                        <input type="hidden" name="orderId" th:value="${order.id}">
-                        <div class="option-header">
-                            <div class="option-icon">
-                                <i class="bi bi-cash-stack"></i>
-                            </div>
-                            <div>
-                                <div class="option-title">Thanh toán khi nhận hàng (COD)</div>
-                                <p class="option-desc">Thanh toán bằng tiền mặt khi đơn hàng được giao tới tay bạn.</p>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn-pay btn-cod">
-                            <i class="bi bi-bag-check"></i>
-                            Xác nhận thanh toán COD
-                        </button>
-                        <p class="helper-text mb-0"><i class="bi bi-info-circle me-1"></i>Vui lòng chuẩn bị tiền mặt đúng giá trị đơn hàng.</p>
-                    </form>
                 </div>
             </div>
         </div>

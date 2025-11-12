@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,7 +24,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemRepository itemRepo;
     private final ProductRepository productRepo;
     private final UserRepository userRepo;
-    private final ProductService productService; // Thêm ProductService
+    private final ProductService productService;
+    private final PaymentService paymentService; // THÊM PaymentService
 
     // Helper convert
     private OrderDTO toDTO(Order order) {
@@ -70,19 +72,30 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDTO createOrder(OrderDTO dto) {
-        Order order = new Order();
         // 1. BẮT BUỘC phải set user TỪ userId
         if (dto.getUserId() == null) throw new IllegalArgumentException("UserId không được null");
         User user = userRepo.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy userId: " + dto.getUserId()));
+
+        // 2. VALIDATE STOCK TRƯỚC KHI TẠO ORDER
+        if (dto.getItems() != null && !dto.getItems().isEmpty()) {
+            for (OrderItemDTO itemDTO : dto.getItems()) {
+                if (!productService.isStockAvailable(itemDTO.getProductId(), itemDTO.getQuantity())) {
+                    Product p = productRepo.findById(itemDTO.getProductId()).orElseThrow();
+                    throw new RuntimeException("Sản phẩm '" + p.getName() + "' không đủ hàng trong kho");
+                }
+            }
+        }
+
+        Order order = new Order();
         order.setUser(user);
 
-        // 2. Các field khác
-        order.setStatus("pending");
+        // 3. Set status = "confirmed" (KHÔNG PHẢI "pending")
+        order.setStatus("confirmed");
         order.setShippingAddress(dto.getShippingAddress());
         order.setTotalPrice(0.0);
 
-        // 3. Xử lý items
+        // 4. Xử lý items
         List<OrderItem> itemEntities = dto.getItems() != null ? dto.getItems().stream().map(itemDTO -> {
             Product p = productRepo.findById(itemDTO.getProductId()).orElseThrow();
             OrderItem item = new OrderItem();
@@ -130,19 +143,13 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepo.findById(id).orElseThrow(() -> new RuntimeException("Order not found: " + id));
         String oldStatus = order.getStatus();
 
-        // Logic trừ stock khi chuyển sang DELIVERED
-        if ("delivered".equalsIgnoreCase(status) && !"delivered".equalsIgnoreCase(oldStatus)) {
-            // Trừ stock cho tất cả items trong order
+        // VALIDATE LUỒNG STATUS (CHỈ CHO PHÉP THEO ĐÚNG FLOW)
+        validateStatusTransition(oldStatus, status);
+
+        // LOGIC TRỪ STOCK KHI CHUYỂN SANG SHIPPING
+        if ("shipping".equalsIgnoreCase(status) && "paid".equalsIgnoreCase(oldStatus)) {
             for (OrderItem item : order.getOrderItems()) {
                 productService.decreaseStock(item.getProduct().getId(), item.getQuantity());
-            }
-        }
-
-        // Logic hoàn stock khi chuyển sang CANCELLED (nếu đã delivered trước đó)
-        if ("cancelled".equalsIgnoreCase(status) && "delivered".equalsIgnoreCase(oldStatus)) {
-            // Hoàn lại stock
-            for (OrderItem item : order.getOrderItems()) {
-                productService.restoreStock(item.getProduct().getId(), item.getQuantity());
             }
         }
 
@@ -153,11 +160,33 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void cancelOrder(Long id) {
         Order order = orderRepo.findById(id).orElseThrow(() -> new RuntimeException("Order not found: " + id));
+        String currentStatus = order.getStatus();
 
-        // Nếu đơn đã delivered thì hoàn stock khi cancel
-        if ("delivered".equalsIgnoreCase(order.getStatus())) {
-            for (OrderItem item : order.getOrderItems()) {
-                productService.restoreStock(item.getProduct().getId(), item.getQuantity());
+        // CHỈ CHO PHÉP CANCEL Ở CONFIRMED VÀ PAID
+        if (!"confirmed".equalsIgnoreCase(currentStatus) && !"paid".equalsIgnoreCase(currentStatus)) {
+            throw new RuntimeException("Không thể hủy đơn hàng ở trạng thái: " + currentStatus);
+        }
+
+        // REFUND: Nếu đã paid thì gọi VNPay refund API
+        if ("paid".equalsIgnoreCase(currentStatus)) {
+            try {
+                Map<String, String> refundResult = paymentService.refundVnpayPayment(
+                    order.getId(),
+                    "Customer cancellation"
+                );
+
+                System.out.println("=== ORDER CANCELLED - REFUND INITIATED ===");
+                System.out.println("Order ID: " + order.getId());
+                System.out.println("Refund Status: " + refundResult.get("status"));
+                System.out.println("Refund Message: " + refundResult.get("message"));
+                System.out.println("Refund Code: " + refundResult.get("refundCode"));
+                System.out.println("Amount: " + refundResult.get("amount") + " VND");
+                System.out.println("==========================================");
+            } catch (Exception e) {
+                System.err.println("=== REFUND FAILED ===");
+                System.err.println("Error: " + e.getMessage());
+                System.err.println("Order will still be cancelled, but refund needs manual processing");
+                System.err.println("=====================");
             }
         }
 
@@ -168,5 +197,57 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void deleteOrder(Long id) {
         orderRepo.deleteById(id);
+    }
+
+    /**
+     * VALIDATE STATUS TRANSITION - CHỈ CHO PHÉP THEO ĐÚNG LUỒNG
+     * confirmed -> paid -> shipping -> delivered
+     * confirmed -> cancelled (OK)
+     * paid -> cancelled (OK)
+     * shipping -> cancelled (KHÔNG ĐƯỢC PHÉP)
+     * cancelled -> bất kỳ (KHÔNG ĐƯỢC PHÉP)
+     * delivered -> bất kỳ (KHÔNG ĐƯỢC PHÉP)
+     */
+    private void validateStatusTransition(String oldStatus, String newStatus) {
+        // Chuẩn hóa về lowercase để so sánh
+        String oldLower = oldStatus != null ? oldStatus.toLowerCase() : "";
+        String newLower = newStatus != null ? newStatus.toLowerCase() : "";
+
+        // RULE 1: Nếu status giống nhau thì không cần validate
+        if (oldLower.equals(newLower)) {
+            return;
+        }
+
+        // RULE 2: Nếu đã cancelled hoặc delivered thì KHÔNG CHO ĐỔI STATUS NỮA (final states)
+        if ("cancelled".equals(oldLower) || "delivered".equals(oldLower)) {
+            throw new RuntimeException("Không thể thay đổi trạng thái từ: " + oldStatus + ". Đây là trạng thái cuối cùng.");
+        }
+
+        // RULE 3: Validate luồng hợp lệ theo từng trạng thái
+        boolean isValid = false;
+
+        switch (oldLower) {
+            case "confirmed":
+                // confirmed chỉ có thể chuyển sang: paid hoặc cancelled
+                isValid = "paid".equals(newLower) || "cancelled".equals(newLower);
+                break;
+
+            case "paid":
+                // paid chỉ có thể chuyển sang: shipping hoặc cancelled
+                isValid = "shipping".equals(newLower) || "cancelled".equals(newLower);
+                break;
+
+            case "shipping":
+                // shipping CHỈ có thể chuyển sang: delivered (KHÔNG được cancel)
+                isValid = "delivered".equals(newLower);
+                break;
+
+            default:
+                isValid = false;
+        }
+
+        if (!isValid) {
+            throw new RuntimeException("Không thể chuyển trạng thái từ '" + oldStatus + "' sang '" + newStatus + "'. Vui lòng kiểm tra lại luồng: confirmed → paid → shipping → delivered");
+        }
     }
 }

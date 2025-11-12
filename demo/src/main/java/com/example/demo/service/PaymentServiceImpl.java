@@ -239,6 +239,127 @@ public class PaymentServiceImpl implements PaymentService {
         return handleVnpayReturn(fakeParams);
     }
 
+    /**
+     * REFUND VNPAY PAYMENT
+     * Gọi VNPay API để hoàn tiền cho giao dịch đã thanh toán
+     *
+     * VNPay Refund API: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
+     * Method: POST
+     *
+     * @param orderId ID của order cần refund
+     * @param reason Lý do refund
+     * @return Map chứa status và message
+     */
+    @Override
+    @Transactional
+    public Map<String, String> refundVnpayPayment(Long orderId, String reason) {
+        Map<String, String> result = new HashMap<>();
+
+        try {
+            // 1. Tìm order
+            Order order = orderRepo.findById(orderId)
+                    .orElseThrow(() -> new RuntimeException("Order not found"));
+
+            // 2. Tìm payment đã thanh toán thành công
+            List<Payment> payments = paymentRepo.findByOrderId(orderId);
+            Payment successfulPayment = payments.stream()
+                    .filter(p -> "successful".equals(p.getStatus()))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("No successful payment found for this order"));
+
+            // 3. Kiểm tra đã refund chưa (check transactionRef thay vì responseCode)
+            if (successfulPayment.getTransactionRef() != null &&
+                successfulPayment.getTransactionRef().startsWith("REFUND")) {
+                result.put("status", "error");
+                result.put("message", "Payment đã được refund trước đó");
+                return result;
+            }
+
+            // 4. Tạo refund request params cho VNPay API
+            String refundCode = "REFUND" + System.currentTimeMillis();
+            String transDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+
+            Map<String, String> refundParams = new TreeMap<>();
+            refundParams.put("vnp_RequestId", refundCode); // Mã yêu cầu refund unique
+            refundParams.put("vnp_Version", VnpayConfig.VERSION);
+            refundParams.put("vnp_Command", "refund"); // Command refund
+            refundParams.put("vnp_TmnCode", vnpayConfig.getTmnCode());
+            refundParams.put("vnp_TransactionType", "02"); // 02 = toàn bộ, 03 = một phần
+            refundParams.put("vnp_TxnRef", successfulPayment.getOrderCode()); // Mã giao dịch gốc
+            refundParams.put("vnp_Amount", String.valueOf((long)(successfulPayment.getAmount() * 100))); // Số tiền refund
+            refundParams.put("vnp_OrderInfo", "Hoan tien don hang " + orderId + ". Ly do: " + reason);
+            refundParams.put("vnp_TransactionNo", successfulPayment.getTransactionRef()); // Mã giao dịch VNPay gốc
+            refundParams.put("vnp_TransactionDate", transDate);
+            refundParams.put("vnp_CreateBy", "admin"); // User thực hiện refund
+            refundParams.put("vnp_CreateDate", transDate);
+            refundParams.put("vnp_IpAddr", getIpAddress());
+
+            // 5. Tạo secure hash cho refund request
+            StringBuilder hashData = new StringBuilder();
+            for (Map.Entry<String, String> entry : refundParams.entrySet()) {
+                hashData.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
+            }
+            String data = hashData.substring(0, hashData.length() - 1);
+            String secureHash = createVnpayHash(data, vnpayConfig.getHashSecret());
+            refundParams.put("vnp_SecureHash", secureHash);
+
+            // 6. GỌI VNPAY API (Trong production, cần gọi HTTP POST)
+            // URL: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
+            // Hiện tại MOCK để test (vì VNPay sandbox cần merchant account thật)
+
+            System.out.println("=== VNPAY REFUND REQUEST ===");
+            System.out.println("Refund Code: " + refundCode);
+            System.out.println("Order ID: " + orderId);
+            System.out.println("Amount: " + successfulPayment.getAmount());
+            System.out.println("Original Transaction: " + successfulPayment.getTransactionRef());
+            System.out.println("Reason: " + reason);
+            System.out.println("===========================");
+
+            // 7. Cập nhật payment record
+            String originalTransactionRef = successfulPayment.getTransactionRef();
+
+            // UPDATE STATUS: successful → refunded
+            successfulPayment.setStatus("refunded");
+            successfulPayment.setTransactionRef(refundCode); // Lưu refund code
+
+            // Lưu thông tin refund vào rawResponseData
+            String refundInfo = String.format(
+                "[REFUND] %s | Code: %s | Amount: %.0f | Original Txn: %s | Reason: %s",
+                LocalDateTime.now(),
+                refundCode,
+                successfulPayment.getAmount(),
+                originalTransactionRef,
+                reason
+            );
+
+            String existingData = successfulPayment.getRawResponseData() != null ?
+                successfulPayment.getRawResponseData() : "";
+            successfulPayment.setRawResponseData(existingData + "\n" + refundInfo);
+
+            paymentRepo.save(successfulPayment);
+
+            // 8. Log thành công (trong thực tế sẽ parse response từ VNPay)
+            result.put("status", "success");
+            result.put("message", "Đã tạo yêu cầu hoàn tiền thành công");
+            result.put("refundCode", refundCode);
+            result.put("amount", String.valueOf(successfulPayment.getAmount()));
+
+            System.out.println("=== REFUND SUCCESS ===");
+            System.out.println("Refund Code: " + refundCode);
+            System.out.println("Amount: " + successfulPayment.getAmount() + " VND");
+            System.out.println("======================");
+
+        } catch (Exception e) {
+            result.put("status", "error");
+            result.put("message", e.getMessage());
+            System.err.println("=== REFUND ERROR ===");
+            System.err.println("Error: " + e.getMessage());
+            System.err.println("====================");
+        }
+
+        return result;
+    }
+
     // Helper: Tạo HMAC SHA512 hash
     private String createVnpayHash(String data, String secret) {
         try {

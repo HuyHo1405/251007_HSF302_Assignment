@@ -53,9 +53,9 @@ public class DataInitializer implements CommandLineRunner {
 
         // 3. Tạo Orders - 3 đơn cho mỗi status
         // Status: pending (3 đơn)
-        createOrderWithItems(customer1, "123 Nguyễn Huệ, Q1, TP.HCM", "pending", products, 0, 1, 2);
-        createOrderWithItems(customer2, "456 Lê Lợi, Q1, TP.HCM", "pending", products, 3, 4, 5);
-        createOrderWithItems(customer3, "789 Trần Hưng Đạo, Q5, TP.HCM", "pending", products, 6, 7, 8);
+        createOrderWithItems(customer1, "123 Nguyễn Huệ, Q1, TP.HCM", "confirmed", products, 0, 1, 2);
+        createOrderWithItems(customer2, "456 Lê Lợi, Q1, TP.HCM", "confirmed", products, 3, 4, 5);
+        createOrderWithItems(customer3, "789 Trần Hưng Đạo, Q5, TP.HCM", "confirmed", products, 6, 7, 8);
 
         // Status: paid (3 đơn)
         createOrderWithItems(customer1, "123 Nguyễn Huệ, Q1, TP.HCM", "paid", products, 1, 2, 3);
