@@ -49,7 +49,7 @@
                         <a th:href="@{/products/detail/{id}(id=${product.id})}" class="btn-secondary w-100 justify-content-center">
                             <i class="bi bi-eye"></i> Xem chi tiết
                         </a>
-                        <form th:action="@{/cart/add}" method="post" class="w-100">
+                        <form th:action="@{/cart/add}" method="post" class="w-100" sec:authorize="hasRole('CUSTOMER')">
                             <input type="hidden" name="productId" th:value="${product.id}"/>
                             <input type="hidden" name="quantity" value="1"/>
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>

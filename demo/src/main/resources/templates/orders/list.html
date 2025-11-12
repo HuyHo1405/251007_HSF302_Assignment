@@ -9,29 +9,28 @@
                 <h2 class="mb-1"><i class="bi bi-receipt me-2"></i>Danh sách đơn hàng</h2>
                 <p class="text-secondary mb-0">Sử dụng bộ lọc để thu hẹp danh sách theo trạng thái mong muốn</p>
             </div>
-            <a href="/orders/my" class="btn-secondary">
+            <a href="/orders/my" class="btn-secondary" sec:authorize="hasRole('CUSTOMER')">
                 <i class="bi bi-person-lines-fill"></i> Đơn của tôi
             </a>
         </div>
 
         <form th:action="@{/orders}" method="get" class="filter-section mb-4">
-            <div class="row g-3 align-items-center">
-                <div class="col-md-9 col-lg-10">
-                    <label for="status" class="form-label mb-1">Trạng thái đơn hàng</label>
-                    <select class="form-select" id="status" name="status">
+            <div class="d-flex flex-column flex-md-row align-items-md-center gap-3">
+                <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 flex-grow-1">
+                    <label for="status" class="form-label mb-0 text-secondary">Trạng thái đơn hàng</label>
+                    <select class="form-select flex-grow-1" id="status" name="status">
                         <option value="" th:selected="${status == null or #strings.isEmpty(status)}">Tất cả trạng thái</option>
                         <option value="PENDING" th:selected="${status == 'PENDING'}">Pending</option>
                         <option value="PAID" th:selected="${status == 'PAID'}">Paid</option>
                         <option value="SHIPPING" th:selected="${status == 'SHIPPING'}">Shipping</option>
                         <option value="DELIVERED" th:selected="${status == 'DELIVERED'}">Delivered</option>
                         <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">Cancelled</option>
+                        <option value="CONFIRMED" th:selected="${status == 'CONFIRMED'}">Confirmed</option>
                     </select>
                 </div>
-                <div class="col-md-3 col-lg-2">
-                    <button type="submit" class="btn-primary w-100 justify-content-center">
-                        <i class="bi bi-funnel"></i> Lọc
-                    </button>
-                </div>
+                <button type="submit" class="btn-primary d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-funnel"></i> Lọc
+                </button>
             </div>
         </form>
 

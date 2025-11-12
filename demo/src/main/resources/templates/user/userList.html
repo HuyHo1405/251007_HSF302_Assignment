@@ -67,7 +67,7 @@
                                 <a th:href="@{/users/{id}(id=${user.id})}" class="btn-secondary btn-sm">
                                     <i class="bi bi-eye"></i> Xem
                                 </a>
-                                <form th:if="${user.role.name() != 'ADMIN'}"
+                                <form th:if="${activeRole != 'CUSTOMER' and user.role.name() != 'ADMIN'}"
                                       sec:authorize="hasRole('ADMIN')"
                                       th:action="@{/users/{id}/delete(id=${user.id})}"
                                       method="post"

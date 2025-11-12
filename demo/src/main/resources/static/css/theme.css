@@ -245,6 +245,12 @@ textarea {
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+.form-control::placeholder,
+.form-select::placeholder,
+textarea::placeholder {
+    color: rgba(248, 250, 252, 0.65);
+}
+
 .form-control:focus,
 .form-select:focus,
 textarea:focus {
@@ -326,6 +332,7 @@ textarea:focus {
     text-transform: uppercase;
 }
 
+.status-confirmed{background: coral}
 .status-pending { background: rgba(246, 191, 38, 0.18); color: var(--warning); }
 .status-paid { background: rgba(56, 189, 248, 0.15); color: var(--accent); }
 .status-shipping { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; }
