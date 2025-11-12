@@ -46,6 +46,42 @@
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('emailAddress')}" th:errors="*{emailAddress}"></div>
                     </div>
 
+                    <!-- Địa chỉ -->
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-geo-alt"></i> Địa chỉ</label>
+
+                        <!-- Tỉnh/Thành phố -->
+                        <div class="mb-2">
+                            <select class="form-select" id="province" th:field="*{province}" th:classappend="${#fields.hasErrors('province')} ? ' is-invalid' : ''" required>
+                                <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('province')}" th:errors="*{province}"></div>
+                        </div>
+
+                        <!-- Quận/Huyện -->
+                        <div class="mb-2">
+                            <select class="form-select" id="district" th:field="*{district}" th:classappend="${#fields.hasErrors('district')} ? ' is-invalid' : ''" required disabled>
+                                <option value="">-- Chọn Quận/Huyện --</option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('district')}" th:errors="*{district}"></div>
+                        </div>
+
+                        <!-- Phường/Xã -->
+                        <div class="mb-2">
+                            <select class="form-select" id="ward" th:field="*{ward}" th:classappend="${#fields.hasErrors('ward')} ? ' is-invalid' : ''" required disabled>
+                                <option value="">-- Chọn Phường/Xã --</option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('ward')}" th:errors="*{ward}"></div>
+                        </div>
+
+                        <!-- Địa chỉ chi tiết -->
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent text-info"><i class="bi bi-house"></i></span>
+                            <input type="text" class="form-control" id="addressDetail" th:field="*{addressDetail}" th:classappend="${#fields.hasErrors('addressDetail')} ? ' is-invalid' : ''" placeholder="Số nhà, tên đường..." required>
+                        </div>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('addressDetail')}" th:errors="*{addressDetail}"></div>
+                    </div>
+
                     <div class="mb-3">
                         <label for="password" class="form-label">Mật khẩu</label>
                         <div class="input-group">
@@ -80,6 +116,94 @@
             </div>
         </div>
     </div>
+
+    <!-- JavaScript để load dữ liệu địa chỉ Việt Nam -->
+    <script>
+        // Dữ liệu địa chỉ Việt Nam từ API provinces.open-api.vn
+        let provinces = [];
+        let districts = [];
+        let wards = [];
+
+        // Load Tỉnh/Thành phố
+        fetch('https://provinces.open-api.vn/api/p/')
+            .then(response => response.json())
+            .then(data => {
+                provinces = data;
+                const provinceSelect = document.getElementById('province');
+                data.forEach(province => {
+                    const option = document.createElement('option');
+                    option.value = province.name;
+                    option.textContent = province.name;
+                    option.dataset.code = province.code;
+                    provinceSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error loading provinces:', error));
+
+        // Khi chọn Tỉnh/Thành phố
+        document.getElementById('province').addEventListener('change', function() {
+            const districtSelect = document.getElementById('district');
+            const wardSelect = document.getElementById('ward');
+
+            // Reset district và ward
+            districtSelect.innerHTML = '<option value="">-- Chọn Quận/Huyện --</option>';
+            wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+            wardSelect.disabled = true;
+
+            if (this.value) {
+                const selectedOption = this.options[this.selectedIndex];
+                const provinceCode = selectedOption.dataset.code;
+
+                // Load Quận/Huyện
+                fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
+                    .then(response => response.json())
+                    .then(data => {
+                        districts = data.districts;
+                        data.districts.forEach(district => {
+                            const option = document.createElement('option');
+                            option.value = district.name;
+                            option.textContent = district.name;
+                            option.dataset.code = district.code;
+                            districtSelect.appendChild(option);
+                        });
+                        districtSelect.disabled = false;
+                    })
+                    .catch(error => console.error('Error loading districts:', error));
+            } else {
+                districtSelect.disabled = true;
+            }
+        });
+
+        // Khi chọn Quận/Huyện
+        document.getElementById('district').addEventListener('change', function() {
+            const wardSelect = document.getElementById('ward');
+
+            // Reset ward
+            wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+
+            if (this.value) {
+                const selectedOption = this.options[this.selectedIndex];
+                const districtCode = selectedOption.dataset.code;
+
+                // Load Phường/Xã
+                fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
+                    .then(response => response.json())
+                    .then(data => {
+                        wards = data.wards;
+                        data.wards.forEach(ward => {
+                            const option = document.createElement('option');
+                            option.value = ward.name;
+                            option.textContent = ward.name;
+                            wardSelect.appendChild(option);
+                        });
+                        wardSelect.disabled = false;
+                    })
+                    .catch(error => console.error('Error loading wards:', error));
+            } else {
+                wardSelect.disabled = true;
+            }
+        });
+    </script>
 </main>
 </body>
 </html>
