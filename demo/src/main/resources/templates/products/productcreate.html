@@ -23,22 +23,15 @@
             <i class="bi bi-exclamation-triangle"></i> <span th:text="${error}"></span>
         </div>
 
-<<<<<<< HEAD
+        <!-- Form (đÃ sửa: chỉ còn 1 form, có enctype cho upload) -->
         <form th:action="${product.id != null ? '/products/update/' + product.id : '/products/create'}"
               method="post"
               th:object="${product}"
+              enctype="multipart/form-data"
               class="row g-4">
-=======
-        <!-- Form -->
-        <form th:action="@{/products/create}"
-              method="post"
-              th:object="${product}"
-              enctype="multipart/form-data">
->>>>>>> viet
 
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-            <input type="hidden" th:field="*{id}" th:if="${product.id != null}">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <input type="hidden" th:field="*{id}" th:if="${product.id != null}"/>
 
             <div class="col-12">
                 <label for="name" class="form-label">
@@ -83,7 +76,7 @@
                        class="form-control"
                        id="type"
                        th:field="*{type}"
-                       placeholder="VD: Laptop, Desktop, Monitor...">
+                       placeholder="VD: Laptop, Linh kiện...">
             </div>
 
             <div class="col-md-6">
@@ -135,7 +128,6 @@
                        required>
             </div>
 
-<<<<<<< HEAD
             <div class="col-md-6">
                 <label for="warrantyMonths" class="form-label">
                     <i class="bi bi-shield-check"></i> Bảo hành (tháng)
@@ -163,21 +155,27 @@
                 </select>
             </div>
 
+            <!-- ẢNH: tuỳ chọn dùng link ảnh hoặc upload file -->
+            <div class="col-12">
+                <label class="form-label"><i class="bi bi-link-45deg"></i> Link ảnh (có thể nhập nhiều)</label>
+                <input type="url" name="imageUrls" class="form-control mb-2" placeholder="https://.../image1.jpg">
+                <input type="url" name="imageUrls" class="form-control mb-2" placeholder="https://.../image2.png">
+                <input type="url" name="imageUrls" class="form-control mb-2" placeholder="https://.../image3.webp">
+                <small class="text-secondary">Bỏ trống nếu bạn dùng upload file bên dưới.</small>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label"><i class="bi bi-upload"></i> Upload ảnh (tùy chọn)</label>
+                <input type="file" name="images" class="form-control" accept="image/*" multiple/>
+            </div>
+
             <div class="col-12 d-flex flex-wrap gap-3 justify-content-end mt-3">
                 <a href="/products/list" class="btn-secondary">
                     <i class="bi bi-arrow-left"></i> Quay lại danh sách
                 </a>
                 <button type="submit" class="btn-primary">
-=======
-            <!--Thêm ảnh-->
-            <label class="bi bi-info-circle">Thêm ảnh sản phẩm</label>
-            <input type="file" name="images" class="form-control mb-3" accept="image/*" multiple/>
-
-            <div class="d-grid gap-2 mt-4">
-                <button type="submit" class="btn btn-primary btn-lg">
->>>>>>> viet
                     <i class="bi bi-save"></i>
-                    <span th:text="${product.id != null ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm'}">Thêm sản phẩm</span>
+                    <span th:text="${product.id != null ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm'}">Lưu</span>
                 </button>
             </div>
         </form>

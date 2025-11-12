@@ -47,9 +47,11 @@ public class ProductService {
     public ProductDetailDTO getProductDetail(Long id){
         return productRepo.findById(id).map(ProductMapper::toDetailDTO).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found" + id));
     }
-
-    //Thêm sản phẩm
-    public void createProduct(Product pro, List<MultipartFile> multipartFile) throws IOException {
+    public void createProduct(Product pro){
+        productRepo.save(pro);
+    }
+    //Thêm sản phẩm, upload file
+    public void createProductWithImage(Product pro, List<MultipartFile> multipartFile) throws IOException {
         // Lưu Product trước
         Product saved = productRepo.save(pro);
 
@@ -76,6 +78,22 @@ public class ProductService {
 
         productRepo.save(saved);
     }
+    //upload url
+    public void createProductWithUrls(Product pro, List<String> imageUrls) {
+        Product saved = productRepo.save(pro);
+        if (imageUrls != null) {
+            for (String url : imageUrls) {
+                if (url == null || url.isBlank()) continue;
+                ProductImage img = ProductImage.builder()
+                        .url(url.trim())      // link tuyệt đối http/https
+                        .product(saved)
+                        .build();
+                saved.addImage(img); // gắn 2 chiều
+            }
+        }
+        productRepo.save(saved);
+    }
+
     //Get product by id
     public Product getProductById(Long id){
         return productRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found" + id));

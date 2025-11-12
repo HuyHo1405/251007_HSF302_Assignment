@@ -56,6 +56,7 @@ public class Product {
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
+
     private List<ProductImage> productImages;
 
     public void addImage(ProductImage img) {

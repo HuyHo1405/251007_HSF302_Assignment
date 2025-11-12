@@ -69,8 +69,11 @@
                         <span><i class="bi bi-cpu"></i> <span th:text="${product.model != null ? product.model : '---'}">Dòng sản phẩm</span></span>
                     </div>
                     <div class="product-price" th:text="${#numbers.formatDecimal(product.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></div>
-                    <img th:src="@{${product.imageUrl}}"
+                    <!--url ảnh-->
+                    <img th:if="${product.imageUrl != null}"
+                         th:src="${product.imageUrl}"
                          th:alt="${product.name}" />
+
                     <div class="product-actions">
                         <a th:href="@{/products/detail/{id}(id=${product.id})}" class="btn-secondary w-100 justify-content-center">
                             <i class="bi bi-eye"></i> Xem chi tiết

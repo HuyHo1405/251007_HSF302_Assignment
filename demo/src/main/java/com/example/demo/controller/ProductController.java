@@ -85,14 +85,19 @@ public class ProductController {
     @PostMapping("/create")
     public String createProduct(@ModelAttribute("product") Product pro,
                                RedirectAttributes redirectAttributes,
-                                @RequestParam("images") List<MultipartFile> multipartFile,
+                                @RequestParam("images") List<MultipartFile> files,
                                 @RequestParam(value = "imageUrls", required = false) List<String> imageUrls){
         try {
 
-            if(multipartFile!=null && imageUrls.stream().allMatch(f ->!f.isBlank())){//upload file
-                productService.createProduct(pro, multipartFile);
-            }else{// Tạo sản phẩm từ LINK ảnh (không upload file)
-                productService.createProductWithUrls(pro, imageUrls);
+            boolean hasFiles = files != null && files.stream().anyMatch(f -> !f.isEmpty());
+            boolean hasUrls  = imageUrls != null && imageUrls.stream().anyMatch(u -> u != null && !u.isBlank());
+
+            if (hasFiles) {
+                productService.createProductWithImage(pro, files);           // upload file -> /uploads/...
+            } else if (hasUrls) {
+                productService.createProductWithUrls(pro, imageUrls); // link ảnh ngoài
+            } else {
+                productService.createProduct(pro);// vẫn cho tạo SP không ảnh
             }
 
             redirectAttributes.addFlashAttribute("success", "Tạo sản phẩm thành công!");
