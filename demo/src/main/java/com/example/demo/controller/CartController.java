@@ -30,6 +30,8 @@ public class CartController {
     private final ProductService productService; // Đã tiêm qua constructor
     private final OrderService orderService;
 
+    private static final double SHIPPING_FEE = 30000.0;
+
     @GetMapping("")
     public String viewCart(HttpSession session, Model model) {
         Map<Long, OrderItemDTO> cart = (Map<Long, OrderItemDTO>) session.getAttribute("cart");
@@ -56,13 +58,19 @@ public class CartController {
                 .userId(user.getId())
                 .userFullName(user.getFullName())
                 .status("confirmed") // Sửa từ "PENDING" sang "confirmed"
+                .shippingFee(SHIPPING_FEE)
                 .items(new ArrayList<>(cart.values()))
                 .build();
         java.util.Collection<OrderItemDTO> items = cart.values();
-        double total = items.stream()
+        double subtotal = items.stream()
                 .mapToDouble(i -> i.getSubtotal() != null ? i.getSubtotal() : 0.0)
                 .sum();
-        model.addAttribute("orderTotal", total); //truền tổng tiền tu controller ve chu k tinh trong form
+
+        double totalWithShipping = subtotal + SHIPPING_FEE;
+
+        model.addAttribute("orderSubtotal", subtotal); // Tạm tính (chưa có phí ship)
+        model.addAttribute("shippingFee", SHIPPING_FEE); // Phí vận chuyển
+        model.addAttribute("orderTotal", totalWithShipping); // Tổng thanh toán (đã bao gồm phí ship)
         model.addAttribute("order", orderDTO); // Truyền đúng là DTO!
         return "orders/create";
     }
