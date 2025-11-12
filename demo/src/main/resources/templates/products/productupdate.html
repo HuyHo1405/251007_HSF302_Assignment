@@ -173,17 +173,17 @@
             </div>
         </form>
 
-        <div class="mt-5 pt-4 border-top border-glass">
-            <h5 class="text-danger mb-2"><i class="bi bi-exclamation-triangle me-2"></i>Vùng nguy hiểm</h5>
-            <p class="text-secondary mb-3">Xóa sản phẩm này sẽ không thể khôi phục, hãy chắc chắn trước khi tiếp tục.</p>
-            <form th:action="@{/products/delete/{id}(id=${product.id})}"
-                  method="post"
-                  onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác!')">
-                <button type="submit" class="btn-danger d-inline-flex align-items-center gap-2">
-                    <i class="bi bi-trash"></i> Xóa sản phẩm
-                </button>
-            </form>
-        </div>
+<!--        <div class="mt-5 pt-4 border-top border-glass">-->
+<!--            <h5 class="text-danger mb-2"><i class="bi bi-exclamation-triangle me-2"></i>Vùng nguy hiểm</h5>-->
+<!--            <p class="text-secondary mb-3">Xóa sản phẩm này sẽ không thể khôi phục, hãy chắc chắn trước khi tiếp tục.</p>-->
+<!--            <form th:action="@{/products/delete/{id}(id=${product.id})}"-->
+<!--                  method="post"-->
+<!--                  onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác!')">-->
+<!--                <button type="submit" class="btn-danger d-inline-flex align-items-center gap-2">-->
+<!--                    <i class="bi bi-trash"></i> Xóa sản phẩm-->
+<!--                </button>-->
+<!--            </form>-->
+<!--        </div>-->
     </div>
 </main>
 </body>

@@ -343,7 +343,7 @@ public class OrderController {
 
         // Đơn đang xử lý là (Pending, Paid, Shipping)
         long pendingOrders = allOrders.stream()
-                .filter(o -> "pending".equals(o.getStatus()) || "paid".equals(o.getStatus()) || "shipping".equals(o.getStatus()))
+                .filter(o -> "confirmed".equals(o.getStatus()) || "paid".equals(o.getStatus()) || "shipping".equals(o.getStatus()))
                 .count();
 
         // === 2. BỔ SUNG DỮ LIỆU CHO BIỂU ĐỒ TRÒN (statusCounts) ===

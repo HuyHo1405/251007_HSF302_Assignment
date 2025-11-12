@@ -317,11 +317,11 @@ public class PaymentServiceImpl implements PaymentService {
 
             // 7. Cập nhật payment record
             String originalTransactionRef = successfulPayment.getTransactionRef();
-
+            
             // UPDATE STATUS: successful → refunded
             successfulPayment.setStatus("refunded");
             successfulPayment.setTransactionRef(refundCode); // Lưu refund code
-
+            
             // Lưu thông tin refund vào rawResponseData
             String refundInfo = String.format(
                 "[REFUND] %s | Code: %s | Amount: %.0f | Original Txn: %s | Reason: %s",
@@ -331,11 +331,11 @@ public class PaymentServiceImpl implements PaymentService {
                 originalTransactionRef,
                 reason
             );
-
-            String existingData = successfulPayment.getRawResponseData() != null ?
+            
+            String existingData = successfulPayment.getRawResponseData() != null ? 
                 successfulPayment.getRawResponseData() : "";
             successfulPayment.setRawResponseData(existingData + "\n" + refundInfo);
-
+            
             paymentRepo.save(successfulPayment);
 
             // 8. Log thành công (trong thực tế sẽ parse response từ VNPay)

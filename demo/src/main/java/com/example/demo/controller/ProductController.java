@@ -131,7 +131,7 @@ public class ProductController {
         return "redirect:/products/list";
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     //Xóa sản phẩm
     public String deleteProduct(@PathVariable Long id,
                                RedirectAttributes redirectAttributes){

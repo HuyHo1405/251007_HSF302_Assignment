@@ -64,12 +64,12 @@
                     <a th:href="@{/products/update/{id}(id=${productdetail.id})}" class="btn-secondary">
                         <i class="bi bi-pencil"></i> Sửa sản phẩm
                     </a>
-                    <form th:action="@{/products/delete/{id}(id=${productdetail.id})}"  onsubmit="return confirm('Xác nhận xóa sản phẩm này?')">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button type="submit" class="btn-danger">
-                            <i class="bi bi-trash"></i> Xóa
-                        </button>
-                    </form>
+<!--                    <form th:action="@{/products/delete/{id}(id=${productdetail.id})}" method="post"  onsubmit="return confirm('Xác nhận xóa sản phẩm này?')">-->
+<!--                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
+<!--                        <button type="submit" class="btn-danger">-->
+<!--                            <i class="bi bi-trash"></i> Xóa-->
+<!--                        </button>-->
+<!--                    </form>-->
                 </div>
 
                 <a href="/products/list" class="btn-secondary mt-4">

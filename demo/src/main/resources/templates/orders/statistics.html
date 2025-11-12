@@ -3,11 +3,40 @@
 <head th:replace="~{layout/base :: head('Thống kê đơn hàng')}"></head>
 <body th:replace="~{layout/base :: layout(~{::content}, 'Thống kê đơn hàng', 'Tổng quan doanh thu và tình trạng đơn hàng')}">
 <main th:fragment="content">
+    <style>
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .chart-card {
+            box-sizing: border-box;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+        }
+
+        .chart-card h5 {
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+
+        .chart-card canvas {
+            flex: 1;
+            max-height: 320px !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+
     <div class="glass-card">
         <div class="summary-grid mb-4">
             <div class="summary-item">
                 <h4><i class="bi bi-cash-stack me-2"></i>Tổng doanh thu</h4>
-                <p class="display-6 fw-semibold text-info mb-1" th:text="${totalRevenue != null ? #numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT') + ' ₫' : '0 ₫'}">0 ₫</p>
+                <p class="display-6 fw-semibold text-info mb-1" th:text="${totalRevenue != null ? #numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT') + ' vnđ' : '0 vnđ'}">0 ₫</p>
                 <p class="text-secondary mb-0">Chỉ tính đơn hàng đã giao</p>
             </div>
             <div class="summary-item">
@@ -91,11 +120,15 @@
                         labels: ['Chờ xử lý', 'Đã thanh toán', 'Đang giao', 'Đã giao', 'Đã hủy'],
                         datasets: [{
                             data: [statusData.pending, statusData.paid, statusData.shipping, statusData.delivered, statusData.cancelled],
-                            backgroundColor: ['#facc15', '#38bdf8', '#6366f1', '#22c55e', '#ef4444'],
+                            backgroundColor: ['#0ea5e9', '#f59e0b', '#cbd5f5', '#f8fafc', '#ef4444'],
                             borderWidth: 0
                         }]
                     },
-                    options: { plugins: { legend: { position: 'bottom' } } }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
                 });
             }
 
@@ -103,30 +136,52 @@
             if (revenueCtx) {
                 const monthlyRevenue = /*[[${monthlyRevenue}]]*/ [0, 0, 0, 0, 0, 0];
                 new Chart(revenueCtx, {
-                    type: 'bar',
+                    type: 'line',
                     data: {
-                        labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
+                        labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6'],
                         datasets: [{
-                            label: 'Doanh thu (VNĐ)',
+                            label: 'Doanh thu',
                             data: monthlyRevenue,
-                            backgroundColor: 'rgba(56, 189, 248, 0.8)',
-                            borderRadius: 8,
-                            borderWidth: 0
+                            borderColor: 'rgba(14, 165, 233, 1)',
+                            backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: 'rgba(14, 165, 233, 1)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
                         }]
                     },
                     options: {
-                        plugins: { legend: { display: false } },
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                                padding: 12
+                            }
+                        },
                         scales: {
                             y: {
                                 beginAtZero: true,
+                                grid: { color: 'rgba(148, 163, 184, 0.1)' },
                                 ticks: {
-                                    callback: value => value.toLocaleString('vi-VN') + ' ₫'
+                                    color: '#94a3b8',
+                                    callback: v => v.toLocaleString('vi-VN') + '₫'
                                 }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#94a3b8' }
                             }
                         }
                     }
                 });
             }
+
         </script>
     </th:block>
 </main>

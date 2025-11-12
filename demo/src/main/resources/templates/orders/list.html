@@ -20,12 +20,11 @@
                     <label for="status" class="form-label mb-0 text-secondary">Trạng thái đơn hàng</label>
                     <select class="form-select flex-grow-1" id="status" name="status">
                         <option value="" th:selected="${status == null or #strings.isEmpty(status)}">Tất cả trạng thái</option>
-                        <option value="PENDING" th:selected="${status == 'PENDING'}">Pending</option>
+                        <option value="CONFIRMED" th:selected="${status == 'CONFIRMED'}">Confirmed</option>
                         <option value="PAID" th:selected="${status == 'PAID'}">Paid</option>
                         <option value="SHIPPING" th:selected="${status == 'SHIPPING'}">Shipping</option>
                         <option value="DELIVERED" th:selected="${status == 'DELIVERED'}">Delivered</option>
                         <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">Cancelled</option>
-                        <option value="CONFIRMED" th:selected="${status == 'CONFIRMED'}">Confirmed</option>
                     </select>
                 </div>
                 <button type="submit" class="btn-primary d-flex align-items-center justify-content-center gap-2">

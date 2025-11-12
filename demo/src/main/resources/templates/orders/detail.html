@@ -25,7 +25,7 @@
             <div class="d-flex flex-column align-items-lg-end gap-2">
                 <span class="status-badge"
                       th:classappend="${order.status != null ? ' status-' + #strings.toLowerCase(order.status) : ''}"
-                      th:text="${order.status != null ? order.status : 'N/A'}">PENDING</span>
+                      th:text="${order.status != null ? order.status.toUpperCase() : 'N/A'}">PENDING</span>
                 <div class="chip">
                     <i class="bi bi-cash-stack"></i>
                     Tổng tiền:
@@ -48,7 +48,7 @@
         </div>
         <div class="summary-item">
             <h4><i class="bi bi-truck me-2"></i>Vận chuyển</h4>
-            <p class="mb-1"><strong>Trạng thái:</strong> <span th:text="${order.status != null ? order.status : 'N/A'}"></span></p>
+            <p class="mb-1"><strong>Trạng thái:</strong> <span th:text="${order.status != null ? order.status.toUpperCase() : 'N/A'}"></span></p>
             <p class="mb-1"><strong>Địa chỉ giao:</strong> <span th:text="${order.shippingAddress != null ? order.shippingAddress : 'Chưa có địa chỉ'}"></span></p>
             <p class="mb-0"><strong>Cập nhật gần nhất:</strong> <span th:text="${order.updatedAt != null ? order.updatedAt : '---'}"></span></p>
         </div>
@@ -148,11 +148,11 @@
                 <div class="col-lg-8">
                     <label class="form-label">Trạng thái mới</label>
                     <select class="form-select" name="status" required>
-                        <option value="PENDING" th:selected="${order.status == 'PENDING'}">Pending</option>
-                        <option value="PAID" th:selected="${order.status == 'PAID'}">Paid</option>
-                        <option value="SHIPPING" th:selected="${order.status == 'SHIPPING'}">Shipping</option>
-                        <option value="DELIVERED" th:selected="${order.status == 'DELIVERED'}">Delivered</option>
-                        <option value="CANCELLED" th:selected="${order.status == 'CANCELLED'}">Cancelled</option>
+                        <option value="CONFIRMED" th:selected="${order.status == 'confirmed' or order.status == 'CONFIRMED'}">Confirmed</option>
+                        <option value="PAID" th:selected="${order.status == 'paid' or order.status == 'PAID'}">Paid</option>
+                        <option value="SHIPPING" th:selected="${order.status == 'shipping' or order.status == 'SHIPPING'}">Shipping</option>
+                        <option value="DELIVERED" th:selected="${order.status == 'delivered' or order.status == 'DELIVERED'}">Delivered</option>
+                        <option value="CANCELLED" th:selected="${order.status == 'cancelled' or order.status == 'CANCELLED'}">Cancelled</option>
                     </select>
                 </div>
                 <div class="col-lg-4">
