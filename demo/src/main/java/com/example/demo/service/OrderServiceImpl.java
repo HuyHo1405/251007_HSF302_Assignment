@@ -30,6 +30,9 @@ public class OrderServiceImpl implements OrderService {
     private final ProductService productService;
     private final PaymentService paymentService; // THÊM PaymentService
 
+    // Phí vận chuyển mặc định
+    private static final double DEFAULT_SHIPPING_FEE = 30000.0;
+
     // Helper convert
     private OrderDTO toDTO(Order order) {
         System.out.println("Converting Order #" + order.getId() + " to DTO");
@@ -53,9 +56,11 @@ public class OrderServiceImpl implements OrderService {
         // Tính totalPrice từ items nếu order.totalPrice = 0 hoặc null
         Double totalPrice = order.getTotalPrice();
         if (totalPrice == null || totalPrice == 0.0) {
-            totalPrice = items.stream()
+            double subtotal = items.stream()
                     .mapToDouble(OrderItemDTO::getSubtotal)
                     .sum();
+            Double shippingFee = order.getShippingFee() != null ? order.getShippingFee() : DEFAULT_SHIPPING_FEE;
+            totalPrice = subtotal + shippingFee;
         }
 
         System.out.println("Total price: " + totalPrice + ", Items count: " + items.size());
@@ -83,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
                 .status(order.getStatus())
                 .paymentStatus(paymentStatus)
                 .totalPrice(totalPrice)
-                .shippingFee(order.getShippingFee())
+                .shippingFee(order.getShippingFee() != null ? order.getShippingFee() : DEFAULT_SHIPPING_FEE)
                 .shippingAddress(order.getShippingAddress())
                 .createdAt(order.getCreatedAt() + "")
                 .updatedAt(order.getUpdatedAt() + "")
@@ -127,21 +132,19 @@ public class OrderServiceImpl implements OrderService {
             return item;
         }).collect(Collectors.toList()) : List.of();
 
-        // Tính tổng tiền sản phẩm
+        order.setOrderItems(itemEntities);
+
+        // 5. Tính tổng tiền sản phẩm
         double subtotal = itemEntities.stream()
                 .mapToDouble(i -> i.getUnitPrice() * i.getQuantity())
                 .sum();
 
-        // Set phí vận chuyển (mặc định 30k nếu không có)
-        Double shippingFee = dto.getShippingFee() != null ? dto.getShippingFee() : 30000.0;
+        // 6. Lấy phí vận chuyển từ DTO hoặc dùng mặc định
+        Double shippingFee = dto.getShippingFee() != null ? dto.getShippingFee() : DEFAULT_SHIPPING_FEE;
         order.setShippingFee(shippingFee);
 
-        // Tổng tiền = tạm tính + phí ship
+        // 7. Tổng tiền = tạm tính + phí ship
         order.setTotalPrice(subtotal + shippingFee);
-
-        order.setOrderItems(itemEntities);
-        double total = itemEntities.stream().mapToDouble(i -> i.getUnitPrice() * i.getQuantity()).sum();
-        order.setTotalPrice(total);
 
         // Save (cascade lưu luôn items)
         Order saved = orderRepo.save(order);

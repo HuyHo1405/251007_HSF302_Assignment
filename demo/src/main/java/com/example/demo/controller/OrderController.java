@@ -36,6 +36,8 @@ public class OrderController {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
 
+    private static final double SHIPPING_FEE = 30000.0;
+
     // Xem đơn hàng - Tự động lọc theo role
     @GetMapping
     public String listOrders(@RequestParam(required = false) String status,
@@ -142,7 +144,9 @@ public class OrderController {
                 return "redirect:/cart";
             }
             orderDTO.setItems(new ArrayList<>(cart.values()));
-            double total = orderDTO.getItems().stream()
+
+            // Tính tổng tiền sản phẩm
+            double subtotal = orderDTO.getItems().stream()
                     .mapToDouble(item -> {
                         if (item.getSubtotal() != null) {
                             return item.getSubtotal();
@@ -152,7 +156,14 @@ public class OrderController {
                         return unitPrice * quantity;
                     })
                     .sum();
-            orderDTO.setTotalPrice(total);
+
+            // Cộng thêm phí vận chuyển vào tổng tiền
+            double totalWithShipping = subtotal + SHIPPING_FEE;
+
+            // Set shippingFee và totalPrice
+            orderDTO.setShippingFee(SHIPPING_FEE);
+            orderDTO.setTotalPrice(totalWithShipping);
+
             OrderDTO created = orderService.createOrder(orderDTO);
             if (session != null) {
                 session.removeAttribute("cart");
