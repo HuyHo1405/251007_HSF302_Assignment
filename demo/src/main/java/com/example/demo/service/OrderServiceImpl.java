@@ -83,6 +83,7 @@ public class OrderServiceImpl implements OrderService {
                 .status(order.getStatus())
                 .paymentStatus(paymentStatus)
                 .totalPrice(totalPrice)
+                .shippingFee(order.getShippingFee())
                 .shippingAddress(order.getShippingAddress())
                 .createdAt(order.getCreatedAt() + "")
                 .updatedAt(order.getUpdatedAt() + "")
@@ -125,6 +126,18 @@ public class OrderServiceImpl implements OrderService {
             item.setOrder(order);
             return item;
         }).collect(Collectors.toList()) : List.of();
+
+        // Tính tổng tiền sản phẩm
+        double subtotal = itemEntities.stream()
+                .mapToDouble(i -> i.getUnitPrice() * i.getQuantity())
+                .sum();
+
+        // Set phí vận chuyển (mặc định 30k nếu không có)
+        Double shippingFee = dto.getShippingFee() != null ? dto.getShippingFee() : 30000.0;
+        order.setShippingFee(shippingFee);
+
+        // Tổng tiền = tạm tính + phí ship
+        order.setTotalPrice(subtotal + shippingFee);
 
         order.setOrderItems(itemEntities);
         double total = itemEntities.stream().mapToDouble(i -> i.getUnitPrice() * i.getQuantity()).sum();

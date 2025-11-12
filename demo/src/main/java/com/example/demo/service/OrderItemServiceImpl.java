@@ -81,7 +81,8 @@ public class OrderItemServiceImpl implements OrderItemService {
         double total = order.getOrderItems().stream()
                 .mapToDouble(i -> i.getUnitPrice() * i.getQuantity())
                 .sum();
-        order.setTotalPrice(total);
+        Double shippingFee = order.getShippingFee() != null ? order.getShippingFee() : 30000.0;
+        order.setTotalPrice(total + shippingFee);
         orderRepo.save(order);
     }
 

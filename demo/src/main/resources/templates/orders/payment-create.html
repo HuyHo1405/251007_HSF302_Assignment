@@ -33,7 +33,7 @@
             <div class="summary-item">
                 <h4><i class="bi bi-cash-stack me-2"></i>Tóm tắt thanh toán</h4>
                 <p class="mb-1"><strong>Tạm tính:</strong> <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span></p>
-                <p class="mb-1"><strong>Phí vận chuyển:</strong> 0 ₫</p>
+                <p class="mb-1"><strong>Phí vận chuyển:</strong> <span th:text="${#numbers.formatDecimal(order.shippingFee, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span></p>
                 <p class="mb-0"><strong>Tổng thanh toán:</strong> <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span></p>
             </div>
         </div>
