@@ -4,14 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c1fd29f7-f5a2-4567-a11b-df5d1584feec" name="Changes" comment="">
+    <list default="true" id="c1fd29f7-f5a2-4567-a11b-df5d1584feec" name="Changes" comment="fixx conflict and push new">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/static/css/theme.css" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/static/css/theme.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/orders/detail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/products/productcreate.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/products/productcreate.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/products/productlist.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/products/productlist.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo/src/main/resources/templates/products/productupdate.html" beforeDir="false" afterPath="$PROJECT_DIR$/demo/src/main/resources/templates/products/productupdate.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -192,7 +188,15 @@
       <option name="project" value="LOCAL" />
       <updated>1762956899240</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="fixx conflict and push new">
+      <option name="closed" value="true" />
+      <created>1762963423989</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1762963423989</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -214,6 +218,7 @@
     <MESSAGE value="update trang home và giao diện, có sửa 1 chút ở order và product để hợp lý với trang web" />
     <MESSAGE value="update trang home và giao diện" />
     <MESSAGE value="update mới nhữung lỗi đã note" />
-    <option name="LAST_COMMIT_MESSAGE" value="update mới nhữung lỗi đã note" />
+    <MESSAGE value="fixx conflict and push new" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixx conflict and push new" />
   </component>
 </project>
