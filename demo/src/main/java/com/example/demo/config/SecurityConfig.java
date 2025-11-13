@@ -19,25 +19,29 @@ public class SecurityConfig {
     private static final String[] PUBLIC_URLS = {
             "/",
             "/home",
-            "products/list",
+            "/products/list",
             "/products/view/**",
-            "/products/details/**",
-            "/products/cart",
+            "/products/detail/**",
+            "/cart",
             "/auth/**",
             "/auth",
             "/auth/**",
+            "/error",
+
             "/css/**",
             "/js/**",
             "/images/**",
             "/img/**",
             "/webjars/**",
-            "/favicon.ico",
-            "/error"
+            "/favicon.ico"
     };
 
     // Nhận UserDetailsService làm tham số để dùng cho remember-me
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService, DaoAuthenticationProvider authenticationProvider) throws Exception {
+        // Đăng ký authenticationProvider rõ ràng để đảm bảo provider sử dụng password encoder mình cấu hình
+        http.authenticationProvider(authenticationProvider);
+
         http
                 .authorizeHttpRequests((authorize) -> authorize
                         // Public access
@@ -96,7 +100,7 @@ public class SecurityConfig {
                         .logoutUrl("/auth/logout")
                         .logoutSuccessUrl("/auth/login?logout=true")
                         .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID", "remember-me") // xóa cookie remember-me khi logout
+                        .deleteCookies("JSESSIONID", "remember-me")
                         .permitAll()
                 )
                 .exceptionHandling((exception) -> exception
@@ -113,8 +117,9 @@ public class SecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(passwordEncoder);
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
     }
 

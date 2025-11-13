@@ -67,7 +67,7 @@
                                 <a th:href="@{/orders/{id}(id=${order.id})}" class="btn-primary btn-sm">
                                     <i class="bi bi-eye"></i> Chi tiết
                                 </a>
-                                <a th:if="${order.status == 'PENDING'}" th:href="@{/payments/create/{id}(id=${order.id})}" class="btn-secondary btn-sm">
+                                <a th:if="${order.status == null or !#strings.equalsIgnoreCase(order.status, 'PAID')}" th:href="@{/payments/create/{id}(id=${order.id})}" class="btn-secondary btn-sm">
                                     <i class="bi bi-credit-card"></i> Thanh toán
                                 </a>
                             </div>

@@ -129,9 +129,13 @@ public class CartController {
                              HttpSession session) {
         Map<Long, OrderItemDTO> cart = (Map<Long, OrderItemDTO>) session.getAttribute("cart");
         if (cart != null && cart.containsKey(productId)) {
-            OrderItemDTO item = cart.get(productId);
-            item.setQuantity(quantity);
-             item.setSubtotal(item.getUnitPrice() * quantity);
+            if (quantity < 1) {
+                cart.remove(productId);
+            } else {
+                OrderItemDTO item = cart.get(productId);
+                item.setQuantity(quantity);
+                item.setSubtotal(item.getUnitPrice() * quantity);
+            }
             session.setAttribute("cart", cart);
         }
         return "redirect:/cart";

@@ -33,7 +33,23 @@
                         </td>
                         <td th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
                         <td>
-                            <span class="badge-outline"><i class="bi bi-hash"></i> <span th:text="${item.quantity}"></span></span>
+                            <div class="d-flex align-items-center gap-2">
+                                <form th:action="@{/cart/update}" method="post" class="m-0 p-0">
+                                    <input type="hidden" name="productId" th:value="${item.productId}" />
+                                    <input type="hidden" name="quantity" th:value="${item.quantity - 1}" />
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <button type="submit" class="btn btn-sm btn-light" th:if="${item.quantity > 1}">-</button>
+                                </form>
+
+                                <span class="badge-outline px-2 py-1" th:text="${item.quantity}"></span>
+
+                                <form th:action="@{/cart/update}" method="post" class="m-0 p-0">
+                                    <input type="hidden" name="productId" th:value="${item.productId}" />
+                                    <input type="hidden" name="quantity" th:value="${item.quantity + 1}" />
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <button type="submit" class="btn btn-sm btn-light">+</button>
+                                </form>
+                            </div>
                         </td>
                         <td th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
                         <td class="text-end">
